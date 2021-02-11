@@ -1,4 +1,4 @@
-from params import *
+from src.params import *
 
 TOOL_NEURONS = 0
 TOOL_CONNECTIONS = 1
