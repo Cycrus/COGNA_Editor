@@ -1,14 +1,3 @@
-try:
-    import tkinter as tk
-except:
-    print("[ERROR] Missing package. Install package <tkinter> first.")
-try:
-    from PIL import ImageTk, Image
-except:
-    print("[ERROR] Missing package. Install package <pillow> first.")
-import math
-from src.network_manager import *
-
 default_neuron_filename = "img/default_neuron_filled.png"
 neuron_selected_filename = "img/default_neuron_filled_selected.png"
 

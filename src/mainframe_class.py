@@ -1,4 +1,4 @@
-from src.params import *
+from src.global_libraries import *
 
 TOOL_NEURONS = 0
 TOOL_CONNECTIONS = 1
@@ -389,9 +389,6 @@ class Mainframe:
 
                 x_offset = posx % corrected_grid_size
                 y_offset = posy % corrected_grid_size
-
-                cam_x_offset = self.camera_x % corrected_grid_size
-                cam_y_offset = self.camera_y % corrected_grid_size
 
                 if x_offset < corrected_grid_size / 2:
                     self.cursor_x = posx - x_offset
