@@ -1,4 +1,4 @@
-from params import *
+from src.params import *
 
 class Topmenu:
     def __init__(self, root, network_manager):

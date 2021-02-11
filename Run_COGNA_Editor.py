@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
-from ui import *
+import os
+from src.ui import *
 
 if __name__ == "__main__":
+    os.path.dirname(os.path.abspath(__file__))
+
     root = tk.Tk()
     if root.winfo_screenwidth() == 2736:
         root.tk.call('tk', 'scaling', 2.0)
