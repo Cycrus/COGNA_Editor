@@ -165,6 +165,7 @@ class Mainframe:
         self.neuron_button.configure(background=active_button_color)
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=inactive_button_color)
+        self.discard_connection()
         self.deselect_neurons()
         self.deselect_connections()
         self.show_parameters()
@@ -185,6 +186,7 @@ class Mainframe:
         self.neuron_button.configure(background=inactive_button_color)
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=active_button_color)
+        self.discard_connection()
         self.render_scene()
 
     def project_coordinate(self, coordinate, camera_axis):
