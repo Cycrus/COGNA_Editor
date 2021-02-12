@@ -119,9 +119,9 @@ class Mainframe:
             padding_y = 10
             if i == 2:
                 padding_y = 40
-            self.parameter_frame[i].pack(side=tk.TOP, fill=tk.BOTH, padx=40, pady=padding_y, expand=False)
+            self.parameter_frame[i].pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=padding_y, expand=False)
 
-        self.edit_1.pack(side=tk.TOP, fill=tk.BOTH, padx=20, pady=20, expand=False)
+        self.edit_1.pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=20, expand=False)
 
         self.viewframe.pack(side=tk.LEFT, fill=tk.BOTH, padx=0, pady=0, expand=True)
         self.editorcanvas.pack(side=tk.RIGHT, fill=tk.BOTH, padx=0, pady=0, expand=True)
