@@ -5,6 +5,16 @@ except:
 
 from src.ParameterHandler import *
 
+connection_parameter = ("Activation type",
+                        "Activation function",
+                        "Learning type",
+                        "Transmitter type",
+                        "Base weight",
+                        "Short weight",
+                        "Long weight",
+                        "Long learning weight",
+                        "Presynaptic potential")
+
 class Connection:
     def __init__(self, id, source_neuron):
         self.id = id
@@ -12,16 +22,11 @@ class Connection:
         self.prev_neuron = source_neuron.id
         self.vertices.append(np.array([source_neuron.posx, source_neuron.posy]))
 
-        self.param = ParameterHandler()
-
         self.next_neuron = None
         self.next_connection = None
-        self.activation_type = None
-        self.activation_function = None
-        self.learning_type = None
-        self.transmitter_type = None
-        self.base_weight = None
-        self.short_weight = None
-        self.long_weight = None
-        self.long_learning_weight = None
-        self.presynaptic_potential = None
+
+        self.param = ParameterHandler()
+
+        self.specific_parameter = {}
+        for idx, name in enumerate(connection_parameter):
+            self.specific_parameter[name] = 0.0

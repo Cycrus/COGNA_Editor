@@ -1,5 +1,8 @@
 from src.global_libraries import *
 
+# Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
+
+
 class Topmenu:
     def __init__(self, root, network_manager):
         self.root_frame = root
@@ -23,28 +26,32 @@ class Topmenu:
                                      fg=top_button_textcolor,
                                      width=top_button_width,
                                      borderwidth=0,
-                                     highlightthickness=0)
+                                     highlightthickness=0,
+                                     activebackground=mainframe_backcolor)
 
         self.button_edit = tk.Button(master=self.topmenu, text="Edit",
                                      background=topmenu_backcolor,
                                      fg=top_button_textcolor,
                                      width=top_button_width,
                                      borderwidth=0,
-                                     highlightthickness=0)
+                                     highlightthickness=0,
+                                     activebackground=mainframe_backcolor)
 
         self.button_view = tk.Button(master=self.topmenu, text="View",
                                      background=topmenu_backcolor,
                                      fg=top_button_textcolor,
                                      width=top_button_width,
                                      borderwidth=0,
-                                     highlightthickness=0)
+                                     highlightthickness=0,
+                                     activebackground=mainframe_backcolor)
 
         self.button_help = tk.Button(master=self.topmenu, text="Help",
                                      background=topmenu_backcolor,
                                      fg=top_button_textcolor,
                                      width=top_button_width,
                                      borderwidth=0,
-                                     highlightthickness=0)
+                                     highlightthickness=0,
+                                     activebackground=mainframe_backcolor)
 
         self.topmenu.pack(side=tk.TOP, fill=tk.BOTH, padx=0, pady=0, expand=False)
         self.button_file.pack(side=tk.LEFT, padx=top_button_padx, pady=top_button_pady)

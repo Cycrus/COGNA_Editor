@@ -8,4 +8,4 @@ except:
     print("[ERROR] Missing package. Install package <pillow> first.")
 import math
 from src.network_manager import *
-from src.params import *
+from src.design import *
