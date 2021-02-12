@@ -1,5 +1,12 @@
 from src.ParameterHandler import *
 
+network_parameter = ("Transmitter count",
+                     "Transmitter change curvature",
+                     "Transmitter change steepness",
+                     "Transmitter backfall curvature",
+                     "Transmitter backfall steepness")
+
+
 class Network:
     def __init__(self):
         self.neurons = []
@@ -7,8 +14,9 @@ class Network:
 
         self.param = ParameterHandler()
 
-        self.transmitter_count = 1
-        self.transmitter_change_curvature = 0.0
-        self.transmitter_change_steepness = 0.0
-        self.transmitter_backfall_curvature = 0.0
-        self.transmitter_backfall_steepness = 0.0
+        self.specific_parameter = {}
+        for idx, name in enumerate(network_parameter):
+            if idx == 0:
+                self.specific_parameter[name] = 1
+            else:
+                self.specific_parameter[name] = 0.0
