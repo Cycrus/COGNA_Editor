@@ -6,4 +6,5 @@ This editor is supposed to allow an easier way of building and editing COGNA net
 ## File Format
 The main file format will be Json.
 
-## Example Image
+## Screenshot
+![Example Screenshot](https://raw.githubusercontent.com/Cycrus/COGNA_Editor/main/img/editor_example_image.PNG?token=AOAXV6EZIQ4RKF6MTYYS5ITAEXKSQ)
