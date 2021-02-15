@@ -30,6 +30,10 @@ class Mainframe:
         self.img_default_neuron = ImageTk.PhotoImage(Image.open(default_neuron_filename))
         self.img_neuron_selected = ImageTk.PhotoImage(Image.open(neuron_selected_filename))
 
+        root.update()
+
+        self.editframe_width = int(root.winfo_width()/4)
+
         self.mainframe = tk.Frame(master=root, background=mainframe_backcolor,
                                   borderwidth=0,
                                   highlightthickness=1,
@@ -42,14 +46,14 @@ class Mainframe:
                                   borderwidth=2,
                                   highlightthickness=0,
                                   height=self.mainframe.winfo_height(),
-                                  width=editframe_width,
+                                  width=self.editframe_width,
                                   relief=tk.FLAT)
         self.editframe.pack_propagate(0)
 
         self.edit_top = tk.Frame(master=self.editframe, background=editframe_backcolor,
                                  borderwidth=0,
                                  highlightthickness=0,
-                                 width=editframe_width)
+                                 width=self.editframe_width)
 
         self.neuron_button = tk.Button(master=self.edit_top, text="N", background=active_button_color,
                                        fg=textcolor, command=self.switch_tool_neurons,
@@ -77,31 +81,33 @@ class Mainframe:
         self.edit_1 = tk.Frame(master=self.editframe, background=editframe_backcolor,
                                borderwidth=0,
                                highlightthickness=0,
-                               width=editframe_width)
+                               width=self.editframe_width)
         self.parameter_count = 50
         self.parameter_frame = []
         for i in range(0, self.parameter_count):
             self.parameter_frame.append(tk.Frame(master=self.editframe, background=editframe_backcolor,
                                         borderwidth=0,
                                         highlightthickness=0,
-                                        width=editframe_width))
+                                        width=self.editframe_width))
 
         self.general_info = tk.Label(master=self.parameter_frame[0], text="No Entity Selected", bg=editframe_backcolor,
                                      fg=mode_text_color)
         self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=editframe_backcolor,
                                 fg=textcolor)
 
-        self.edit_drop_options = ["Specific Parameters",
-                                  "Activation Parameters",
-                                  "Weight Parameters",
-                                  "Habituation Parameters",
-                                  "Sensitization Parameters",
-                                  "Presynaptic Parameters"]
+        self.edit_drop_options = ["Connection Specific Parameter",
+                                  "Connection Habituation Parameter",
+                                  "Connection Sensitization Parameter",
+                                  "Connection Presynaptic Parameter",
+                                  "Neuron Activation Parameter",
+                                  "Neuron Transmitter Parameter",
+                                  "Neuron Random Parameter",
+                                  "Network Parameter"]
         self.edit_selection = tk.StringVar()
         self.edit_selection.set(self.edit_drop_options[0])
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
-        self.edit_drop_menu.config(bg=editframe_backcolor, width=editframe_width, fg=textcolor,
+        self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
                                    borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
                                    activebackground=mainframe_backcolor)
 
@@ -158,6 +164,22 @@ class Mainframe:
         self.root_frame.bind("<space>", self.reset_camera)
 
     def show_network_information(self):
+        self.edit_drop_options = ["Connection Specific Parameter",
+                                  "Connection Habituation Parameter",
+                                  "Connection Sensitization Parameter",
+                                  "Connection Presynaptic Parameter",
+                                  "Neuron Activation Parameter",
+                                  "Neuron Transmitter Parameter",
+                                  "Neuron Random Parameter",
+                                  "Network Parameter"]
+
+        self.edit_drop_menu.destroy()
+        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
+                                            command=self.show_parameters)
+        self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
+                                   borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
+                                   activebackground=mainframe_backcolor)
+
         self.general_info.config(text="Neural Network Selected")
         self.id_info.pack_forget()
         self.general_info.pack(side=tk.LEFT)
@@ -174,27 +196,28 @@ class Mainframe:
         temp_param_list = network_parameter
 
         if self.edit_selection.get() == self.edit_drop_options[0]:
-            temp_param_list = network_parameter
+            temp_param_list = connection_special_parameter
         elif self.edit_selection.get() == self.edit_drop_options[1]:
-            temp_param_list = activation_parameter
+            temp_param_list = connection_habituation_parameter
         elif self.edit_selection.get() == self.edit_drop_options[2]:
-            temp_param_list = weight_parameter
+            temp_param_list = connection_sensitization_parameter
         elif self.edit_selection.get() == self.edit_drop_options[3]:
-            temp_param_list = habituation_parameter
+            temp_param_list = connection_presynaptic_parameter
         elif self.edit_selection.get() == self.edit_drop_options[4]:
-            temp_param_list = sensitization_parameter
+            temp_param_list = neuron_activation_parameter
         elif self.edit_selection.get() == self.edit_drop_options[5]:
-            temp_param_list = presynaptic_parameter
+            temp_param_list = neuron_transmitter_parameter
+        elif self.edit_selection.get() == self.edit_drop_options[6]:
+            temp_param_list = neuron_random_parameter
+        elif self.edit_selection.get() == self.edit_drop_options[7]:
+            temp_param_list = network_parameter
 
         for i, name in enumerate(temp_param_list):
             self.parameter_textbox.append(tk.Text(master=self.parameter_frame[i+3], height=1, width=5,
                                                   bg=mainframe_backcolor, borderwidth=0,
                                                   highlightthickness=2, highlightbackground=highlight_color))
 
-            if self.edit_selection.get() == self.edit_drop_options[0]:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].specific_parameter[name])
-            else:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].param.list[name])
+            self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].param.list[name])
             self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
@@ -202,6 +225,21 @@ class Mainframe:
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_neuron_information(self):
+        self.edit_drop_options = ["Connection Specific Parameter",
+                                  "Connection Habituation Parameter",
+                                  "Connection Sensitization Parameter",
+                                  "Connection Presynaptic Parameter",
+                                  "Neuron Activation Parameter",
+                                  "Neuron Transmitter Parameter",
+                                  "Neuron Random Parameter"]
+
+        self.edit_drop_menu.destroy()
+        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
+                                            command=self.show_parameters)
+        self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
+                                   borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
+                                   activebackground=mainframe_backcolor)
+
         self.general_info.config(text="Neuron Selected")
         self.id_info.config(text=f"ID: {self.selected_neuron}")
         self.general_info.pack(side=tk.LEFT)
@@ -216,32 +254,30 @@ class Mainframe:
             self.parameter_textbox[i].destroy()
         self.parameter_textbox.clear()
 
-        temp_param_list = neuron_parameter
+        temp_param_list = neuron_activation_parameter
 
         if self.edit_selection.get() == self.edit_drop_options[0]:
-            temp_param_list = neuron_parameter
+            temp_param_list = connection_special_parameter
         elif self.edit_selection.get() == self.edit_drop_options[1]:
-            temp_param_list = activation_parameter
+            temp_param_list = connection_habituation_parameter
         elif self.edit_selection.get() == self.edit_drop_options[2]:
-            temp_param_list = weight_parameter
+            temp_param_list = connection_sensitization_parameter
         elif self.edit_selection.get() == self.edit_drop_options[3]:
-            temp_param_list = habituation_parameter
+            temp_param_list = connection_presynaptic_parameter
         elif self.edit_selection.get() == self.edit_drop_options[4]:
-            temp_param_list = sensitization_parameter
+            temp_param_list = neuron_activation_parameter
         elif self.edit_selection.get() == self.edit_drop_options[5]:
-            temp_param_list = presynaptic_parameter
+            temp_param_list = neuron_transmitter_parameter
+        elif self.edit_selection.get() == self.edit_drop_options[6]:
+            temp_param_list = neuron_random_parameter
 
         for i, name in enumerate(temp_param_list):
             self.parameter_textbox.append(tk.Text(master=self.parameter_frame[i + 3], height=1, width=5,
                                                   bg=mainframe_backcolor, borderwidth=0,
                                                   highlightthickness=2, highlightbackground=highlight_color))
 
-            if self.edit_selection.get() == self.edit_drop_options[0]:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
-                                                 neurons[self.selected_neuron-1].specific_parameter[name])
-            else:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
-                                                 neurons[self.selected_neuron-1].param.list[name])
+            self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
+                                             neurons[self.selected_neuron-1].param.list[name])
             self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
@@ -249,6 +285,18 @@ class Mainframe:
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_connection_information(self):
+        self.edit_drop_options = ["Connection Specific Parameter",
+                                  "Connection Habituation Parameter",
+                                  "Connection Sensitization Parameter",
+                                  "Connection Presynaptic Parameter"]
+
+        self.edit_drop_menu.destroy()
+        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
+                                            command=self.show_parameters)
+        self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
+                                   borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
+                                   activebackground=mainframe_backcolor)
+
         self.general_info.config(text="Connection Selected")
         self.id_info.config(text=f"ID: {self.selected_connection}")
         self.general_info.pack(side=tk.LEFT)
@@ -263,32 +311,24 @@ class Mainframe:
             self.parameter_textbox[i].destroy()
         self.parameter_textbox.clear()
 
-        temp_param_list = connection_parameter
+        temp_param_list = connection_special_parameter
 
         if self.edit_selection.get() == self.edit_drop_options[0]:
-            temp_param_list = connection_parameter
+            temp_param_list = connection_special_parameter
         elif self.edit_selection.get() == self.edit_drop_options[1]:
-            temp_param_list = activation_parameter
+            temp_param_list = connection_habituation_parameter
         elif self.edit_selection.get() == self.edit_drop_options[2]:
-            temp_param_list = weight_parameter
+            temp_param_list = connection_sensitization_parameter
         elif self.edit_selection.get() == self.edit_drop_options[3]:
-            temp_param_list = habituation_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[4]:
-            temp_param_list = sensitization_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[5]:
-            temp_param_list = presynaptic_parameter
+            temp_param_list = connection_presynaptic_parameter
 
         for i, name in enumerate(temp_param_list):
             self.parameter_textbox.append(tk.Text(master=self.parameter_frame[i + 3], height=1, width=5,
                                                   bg=mainframe_backcolor, borderwidth=0,
                                                   highlightthickness=2, highlightbackground=highlight_color))
-            
-            if self.edit_selection.get() == self.edit_drop_options[0]:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
-                                                 connections[self.selected_connection].specific_parameter[name])
-            else:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
-                                                 connections[self.selected_connection].param.list[name])
+
+            self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
+                                             connections[self.selected_connection].param.list[name])
             self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
