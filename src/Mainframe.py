@@ -1,4 +1,4 @@
-from src.global_libraries import *
+from src.GlobalLibraries import *
 
 TOOL_NEURONS = 0
 TOOL_CONNECTIONS = 1
@@ -95,14 +95,14 @@ class Mainframe:
         self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=editframe_backcolor,
                                 fg=textcolor)
 
-        self.edit_drop_options = ["Connection Specific Parameter",
-                                  "Connection Habituation Parameter",
-                                  "Connection Sensitization Parameter",
-                                  "Connection Presynaptic Parameter",
-                                  "Neuron Activation Parameter",
-                                  "Neuron Transmitter Parameter",
-                                  "Neuron Random Parameter",
-                                  "Network Parameter"]
+        self.edit_drop_options = ["Connection Specific",
+                                  "Connection Habituation",
+                                  "Connection Sensitization",
+                                  "Connection Presynaptic",
+                                  "Neuron Activation",
+                                  "Neuron Transmitter",
+                                  "Neuron Random",
+                                  "Network"]
         self.edit_selection = tk.StringVar()
         self.edit_selection.set(self.edit_drop_options[0])
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
@@ -164,14 +164,14 @@ class Mainframe:
         self.root_frame.bind("<space>", self.reset_camera)
 
     def show_network_information(self):
-        self.edit_drop_options = ["Connection Specific Parameter",
-                                  "Connection Habituation Parameter",
-                                  "Connection Sensitization Parameter",
-                                  "Connection Presynaptic Parameter",
-                                  "Neuron Activation Parameter",
-                                  "Neuron Transmitter Parameter",
-                                  "Neuron Random Parameter",
-                                  "Network Parameter"]
+        self.edit_drop_options = ["Connection Specific",
+                                  "Connection Habituation",
+                                  "Connection Sensitization",
+                                  "Connection Presynaptic",
+                                  "Neuron Activation",
+                                  "Neuron Transmitter",
+                                  "Neuron Random",
+                                  "Network"]
 
         self.edit_drop_menu.destroy()
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
@@ -225,13 +225,13 @@ class Mainframe:
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_neuron_information(self):
-        self.edit_drop_options = ["Connection Specific Parameter",
-                                  "Connection Habituation Parameter",
-                                  "Connection Sensitization Parameter",
-                                  "Connection Presynaptic Parameter",
-                                  "Neuron Activation Parameter",
-                                  "Neuron Transmitter Parameter",
-                                  "Neuron Random Parameter"]
+        self.edit_drop_options = ["Connection Specific",
+                                  "Connection Habituation",
+                                  "Connection Sensitization",
+                                  "Connection Presynaptic",
+                                  "Neuron Activation",
+                                  "Neuron Transmitter",
+                                  "Neuron Random"]
 
         self.edit_drop_menu.destroy()
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
@@ -285,10 +285,10 @@ class Mainframe:
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_connection_information(self):
-        self.edit_drop_options = ["Connection Specific Parameter",
-                                  "Connection Habituation Parameter",
-                                  "Connection Sensitization Parameter",
-                                  "Connection Presynaptic Parameter"]
+        self.edit_drop_options = ["Connection Specific",
+                                  "Connection Habituation",
+                                  "Connection Sensitization",
+                                  "Connection Presynaptic"]
 
         self.edit_drop_menu.destroy()
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,

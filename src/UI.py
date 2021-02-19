@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from src.topmenu_class import *
-from src.bottommenu_class import *
-from src.mainframe_class import *
+from src.Topmenu import *
+from src.Bottommenu import *
+from src.Mainframe import *
 
 class UI:
     def __init__(self, root, network_manager):

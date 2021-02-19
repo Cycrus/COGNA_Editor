@@ -7,5 +7,5 @@ try:
 except:
     print("[ERROR] Missing package. Install package <pillow> first.")
 import math
-from src.network_manager import *
-from src.design import *
+from src.NetworkManager import *
+from src.Design import *
