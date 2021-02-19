@@ -1,4 +1,5 @@
-from src.global_libraries import *
+from src.GlobalLibraries import *
+
 
 class Bottommenu:
     def __init__(self, root):

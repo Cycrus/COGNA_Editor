@@ -1,4 +1,4 @@
-from src.global_libraries import *
+from src.GlobalLibraries import *
 
 # Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
 
