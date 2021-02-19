@@ -534,10 +534,11 @@ class Mainframe:
 
     def connection_cursor_collision(self, connection):
         for vert in range(0, len(connection.vertices) - 1):
+            connection_bounding_box_width = 15
             uninormal_vector = np.array(self.calc_vector(connection.vertices[vert],
                                                          connection.vertices[vert + 1]))
             uninormal_vector = self.uninormal_vector(uninormal_vector)
-            uninormal_vector = uninormal_vector * 10
+            uninormal_vector = uninormal_vector * connection_bounding_box_width
 
             c = [connection.vertices[vert] + uninormal_vector,
                  connection.vertices[vert] - uninormal_vector,
@@ -615,9 +616,8 @@ class Mainframe:
             self.render_scene()
             connection_position = len(self.network_manager.networks[0].connections) - 1
             vertex_position = len(self.network_manager.networks[0].connections[connection_position].vertices) - 1
-            self.network_manager.networks[0].connections[connection_position].vertices[vertex_position] = [
-                self.cursor_x,
-                self.cursor_y]
+            self.network_manager.networks[0].connections[connection_position].vertices[vertex_position] = [self.cursor_x,
+                                                                                                           self.cursor_y]
 
     def discard_connection(self):
         if self.do_connection:
@@ -662,7 +662,7 @@ class Mainframe:
             self.grid_snap = True
         self.render_scene()
 
-    def prepare_connection(self, neuron):
+    def create_neuron_connection(self, neuron):
         if self.do_connection:
             can_connect = True
             connection_position = len(self.network_manager.networks[0].connections) - 1
@@ -681,14 +681,32 @@ class Mainframe:
         else:
             self.init_connection(neuron)
 
+    def create_synaptic_connection(self, connection):
+        if self.do_connection:
+            if connection.id < len(self.network_manager.networks[0].connections) - 1:
+                can_connect = True
+                connection_position = len(self.network_manager.networks[0].connections) - 1
+                for check_con in self.network_manager.networks[0].connections:
+                    if check_con.prev_neuron == self.network_manager.networks[0].connections[connection_position].prev_neuron \
+                            and check_con.next_connection == connection.id:
+                        can_connect = False
+                if can_connect:
+                    vertex_position = len(self.network_manager.networks[0].connections[connection_position].vertices) - 1
+                    self.network_manager.networks[0].connections[connection_position].next_connection = connection.id
+                    self.network_manager.networks[0].connections[connection_position].vertices[vertex_position] = [
+                        self.cursor_x, self.cursor_y]
+                    print(self.network_manager.networks[0].connections[connection_position].next_connection)
+                else:
+                    self.discard_connection()
+                self.do_connection = False
+
     def left_click(self, event):
         neuron_collision = False
         connection_collision = False
         for neuron in self.network_manager.networks[0].neurons:
             if self.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron):
                 if self.tool == TOOL_CONNECTIONS:
-                    self.prepare_connection(neuron)
-
+                    self.create_neuron_connection(neuron)
                 elif self.tool == TOOL_SELECT:
                     self.deselect_connections()
                     self.selected_neuron = neuron.id
@@ -697,6 +715,11 @@ class Mainframe:
                 neuron_collision = True
 
         if not neuron_collision:
+            for connection in self.network_manager.networks[0].connections:
+                if self.connection_cursor_collision(connection):
+                    if self.tool == TOOL_CONNECTIONS:
+                        self.create_synaptic_connection(connection)
+
             if not self.do_connection:
                 if self.tool == TOOL_NEURONS:
                     self.add_neuron()
