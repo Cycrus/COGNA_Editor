@@ -35,6 +35,9 @@ class NetworkManager:
                                                                 source_neuron))
 
     def delete_connection(self, id, network_id=0):
+        for connection in self.networks[network_id].connections:
+            if connection.next_connection == id:
+                self.delete_connection(connection.id, network_id)
         self.networks[network_id].connections.pop(id)
         for connection in reversed(self.networks[network_id].connections):
             if connection.id > id:
