@@ -10,9 +10,9 @@ class NetworkManager:
         self.networks = []
         self.networks.append(Network())
 
-    def add_neuron(self, posx, posy, image, network_id=0):
+    def add_neuron(self, posx, posy, size, network_id=0):
         self.networks[network_id].neurons.append(Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
-                                                        posx, posy, image))
+                                                        posx, posy, size))
 
     def delete_neuron(self, id, network_id=0):
         for connection in reversed(self.networks[network_id].connections):

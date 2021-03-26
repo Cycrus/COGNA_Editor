@@ -2,11 +2,10 @@ from src.ParameterHandler import *
 
 
 class Neuron:
-    def __init__(self, id, posx, posy, image):
+    def __init__(self, id, posx, posy, size):
         self.posx = posx
         self.posy = posy
-        self.img_width = image.width()
-        self.img_height = image.height()
+        self.size = size
 
         self.id = id
 
