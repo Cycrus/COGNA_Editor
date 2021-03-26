@@ -1,4 +1,5 @@
 from src.GlobalLibraries import *
+from src.VectorUtils import VectorUtils
 
 TOOL_NEURONS = 0
 TOOL_CONNECTIONS = 1
@@ -7,6 +8,8 @@ TOOL_SELECT = 2
 
 class Mainframe:
     def __init__(self, root, network_manager):
+        self.neuron_size = 25
+
         self.cursor_x = 0.0
         self.cursor_y = 0.0
         self.camera_x = 0.0
@@ -26,9 +29,6 @@ class Mainframe:
 
         self.root_frame = root
         self.network_manager = network_manager
-
-        self.img_default_neuron = ImageTk.PhotoImage(Image.open(default_neuron_filename))
-        self.img_neuron_selected = ImageTk.PhotoImage(Image.open(neuron_selected_filename))
 
         root.update()
 
@@ -60,7 +60,7 @@ class Mainframe:
                                        activebackground=mainframe_backcolor)
         self.connection_button = tk.Button(master=self.edit_top, text="C", background=inactive_button_color,
                                            fg=textcolor, command=self.switch_tool_connections,
-                                       activebackground=mainframe_backcolor)
+                                           activebackground=mainframe_backcolor)
         self.select_button = tk.Button(master=self.edit_top, text="S", background=inactive_button_color,
                                        fg=textcolor, command=self.switch_tool_select,
                                        activebackground=mainframe_backcolor)
@@ -375,9 +375,6 @@ class Mainframe:
         self.discard_connection()
         self.render_scene()
 
-    def project_coordinate(self, coordinate, camera_axis):
-        return (coordinate + camera_axis) * self.zoom_factor
-
     def reset_camera(self, event):
         self.camera_x = self.editorcanvas.winfo_width() / 2
         self.camera_y = self.editorcanvas.winfo_height() / 2
@@ -389,8 +386,8 @@ class Mainframe:
         temp_y = self.camera_y % self.grid_size
 
         if self.zoom_factor < 1:
-            corrected_y = self.correct_zoom(self.editorcanvas.winfo_height())
-            corrected_x = self.correct_zoom(self.editorcanvas.winfo_width())
+            corrected_y = VectorUtils.correct_zoom(self.editorcanvas.winfo_height(), self.zoom_factor)
+            corrected_x = VectorUtils.correct_zoom(self.editorcanvas.winfo_width(), self.zoom_factor)
         else:
             corrected_y = self.editorcanvas.winfo_height()*self.zoom_factor
             corrected_x = self.editorcanvas.winfo_width()*self.zoom_factor
@@ -404,58 +401,90 @@ class Mainframe:
         else:
             temp_camera_y = -self.camera_y
 
-        while temp_x < self.correct_zoom(self.editorcanvas.winfo_width()+temp_camera_x):
+        while temp_x < VectorUtils.correct_zoom(self.editorcanvas.winfo_width()+temp_camera_x, self.zoom_factor):
             self.editorcanvas.create_line(temp_x*self.zoom_factor, 0,
                                           temp_x*self.zoom_factor, corrected_y,
                                           fill=grid_color, width=2)
             temp_x = temp_x + self.grid_size
 
-        while temp_y < self.correct_zoom(self.editorcanvas.winfo_height()+temp_camera_y):
+        while temp_y < VectorUtils.correct_zoom(self.editorcanvas.winfo_height()+temp_camera_y, self.zoom_factor):
             self.editorcanvas.create_line(0, temp_y*self.zoom_factor,
                                           corrected_x, temp_y*self.zoom_factor,
                                           fill=grid_color, width=2)
             temp_y = temp_y + self.grid_size
 
-    def render_scene(self):
-        self.editorcanvas.delete("all")
+    def render_connections(self):
+        for connection_i, connection in enumerate(self.network_manager.networks[0].connections):
+            neuron_distance = 5
+            direction_marker_length = 8
+            scaled_vert = VectorUtils.calc_vector(connection.vertices[len(connection.vertices)-1],
+                                                  connection.vertices[len(connection.vertices)-2])
+            scaled_vert = connection.vertices[len(connection.vertices) - 1] + VectorUtils.unit_vector(scaled_vert) *\
+                              (self.neuron_size + neuron_distance)
+            temp_verts = connection.vertices[:]
+            if not np.isnan(scaled_vert[0]) and not self.do_connection or\
+                    connection_i < len(self.network_manager.networks[0].connections) - 1:
+                temp_verts[len(temp_verts)-1] = scaled_vert
+            try:
+                normal_vector = VectorUtils.uninormal_vector(VectorUtils.calc_vector(temp_verts[len(temp_verts)-1],
+                                                                                     temp_verts[len(temp_verts)-2]))
+                direction_marker_a = temp_verts[len(temp_verts)-1] + normal_vector * direction_marker_length
+                direction_marker_b = temp_verts[len(temp_verts)-1] - normal_vector * direction_marker_length
+                self.editorcanvas.create_line(VectorUtils.project_coordinate(direction_marker_a[0],
+                                                                             self.camera_x, self.zoom_factor),
+                                              VectorUtils.project_coordinate(direction_marker_a[1],
+                                                                             self.camera_y, self.zoom_factor),
+                                              VectorUtils.project_coordinate(direction_marker_b[0],
+                                                                             self.camera_x, self.zoom_factor),
+                                              VectorUtils.project_coordinate(direction_marker_b[1],
+                                                                             self.camera_y, self.zoom_factor),
+                                              fill=connection_color, width=connection_width)
+            except IndexError:
+                pass
 
-        if self.grid_snap:
-            self.render_grid()
-
-        for connection in self.network_manager.networks[0].connections:
-            for vert in range(0, len(connection.vertices) - 1):
+            for vert in range(0, len(temp_verts)-1):
                 if connection.id == self.selected_connection:
-                    self.editorcanvas.create_line(self.project_coordinate(connection.vertices[vert][0], self.camera_x),
-                                                  self.project_coordinate(connection.vertices[vert][1], self.camera_y),
-                                                  self.project_coordinate(connection.vertices[vert + 1][0],
-                                                                          self.camera_x),
-                                                  self.project_coordinate(connection.vertices[vert + 1][1],
-                                                                          self.camera_y),
+                    self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
+                                                                                 self.camera_x, self.zoom_factor),
+                                                  VectorUtils.project_coordinate(temp_verts[vert][1],
+                                                                                 self.camera_y, self.zoom_factor),
+                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][0],
+                                                                                 self.camera_x, self.zoom_factor),
+                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][1],
+                                                                                 self.camera_y, self.zoom_factor),
                                                   fill=selected_connection_color, width=selected_connection_width)
                 else:
-                    self.editorcanvas.create_line(self.project_coordinate(connection.vertices[vert][0], self.camera_x),
-                                                  self.project_coordinate(connection.vertices[vert][1], self.camera_y),
-                                                  self.project_coordinate(connection.vertices[vert + 1][0], self.camera_x),
-                                                  self.project_coordinate(connection.vertices[vert + 1][1], self.camera_y),
+                    self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
+                                                                                 self.camera_x, self.zoom_factor),
+                                                  VectorUtils.project_coordinate(temp_verts[vert][1],
+                                                                                 self.camera_y, self.zoom_factor),
+                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][0],
+                                                                                 self.camera_x, self.zoom_factor),
+                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][1],
+                                                                                 self.camera_y, self.zoom_factor),
                                                   fill=connection_color, width=connection_width)
 
+    def render_neurons(self):
         for neuron in self.network_manager.networks[0].neurons:
             if self.selected_neuron == neuron.id:
-                self.editorcanvas.create_image(self.project_coordinate(neuron.posx, self.camera_x),
-                                               self.project_coordinate(neuron.posy, self.camera_y),
-                                               image=self.img_neuron_selected)
+                self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.camera_x,
+                                                                               self.zoom_factor),
+                                                VectorUtils.project_coordinate(neuron.posy, self.camera_y,
+                                                                               self.zoom_factor),
+                                                self.neuron_size * self.zoom_factor, fill=neuron_color,
+                                                outline=connection_color,
+                                                width=5 * self.zoom_factor)
             else:
-                self.editorcanvas.create_image(self.project_coordinate(neuron.posx, self.camera_x),
-                                               self.project_coordinate(neuron.posy, self.camera_y),
-                                               image=self.img_default_neuron)
-            self.editorcanvas.create_text(self.project_coordinate(neuron.posx, self.camera_x),
-                                          self.project_coordinate(neuron.posy, self.camera_y),
+                self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.camera_x,
+                                                                               self.zoom_factor),
+                                                VectorUtils.project_coordinate(neuron.posy, self.camera_y,
+                                                                               self.zoom_factor),
+                                                self.neuron_size * self.zoom_factor, fill=neuron_color)
+            self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, self.camera_x, self.zoom_factor),
+                                          VectorUtils.project_coordinate(neuron.posy, self.camera_y, self.zoom_factor),
                                           text=f"{neuron.id}", fill=viewframe_neurontext)
 
-        self.editorcanvas.create_text(self.project_coordinate(0, self.camera_x),
-                                      self.project_coordinate(0, self.camera_y),
-                                      text="X", fill=mode_text_color, font="arial 15")
-
+    def render_ui_description(self):
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 15, anchor="w",
                                       text="Mode:", fill=viewframe_textcolor)
         if self.tool == TOOL_SELECT:
@@ -487,85 +516,20 @@ class Mainframe:
                                           anchor="e", fill=mode_text_color,
                                           text="Grid Snap Active")
 
-    def calc_cursor_collision(self, x, y, object):
-        if x <= object.posx + self.correct_zoom(object.img_width / 2) and \
-                x >= object.posx - self.correct_zoom(object.img_width / 2):
-            if y <= object.posy + self.correct_zoom(object.img_height / 2) and \
-                    y >= object.posy - self.correct_zoom(object.img_height / 2):
-                return True
-        return False
+    def render_scene(self):
+        self.editorcanvas.delete("all")
 
-    def calc_rect_collision(self, cursor, bottom_left, top_right):
-        if cursor[0] > bottom_left[0] and cursor[0] < top_right[0] and \
-                cursor[1] < bottom_left[1] and cursor[1] > top_right[1]:
-            return True
-        return False
+        if self.grid_snap:
+            self.render_grid()
 
-    def calc_vector(self, point_1, point_2):
-        return np.array([point_2[0]-point_1[0], point_2[1]-point_1[1]])
+        self.render_connections()
+        self.render_neurons()
 
-    def unit_vector(self, vector):
-        length = math.sqrt(math.pow(vector[0], 2) + math.pow(vector[1], 2))
-        return np.array([vector[0]/length, vector[1]/length])
+        self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.camera_x, self.zoom_factor),
+                                      VectorUtils.project_coordinate(0, self.camera_y, self.zoom_factor),
+                                      text="X", fill=mode_text_color, font="arial 15")
 
-    def normal_vector(self, vector):
-        return np.array([-vector[1], vector[0]])
-
-    def uninormal_vector(self, vector):
-        return self.unit_vector(self.normal_vector(vector))
-
-    def get_rect_center(self, c1, c2, c3, c4):
-        v1 = self.calc_vector(c1, c2) * 0.5
-        v2 = self.calc_vector(c3, c1) * 0.5
-        return c1 - v2 + v1
-
-    def rotate_point(self, point, angle, origin):
-        translated_point = point - origin
-        temp = np.array([translated_point[0] * math.cos(angle) - translated_point[1] * math.sin(angle),
-                         translated_point[0] * math.sin(angle) + translated_point[1] * math.cos(angle)])
-        return temp + origin
-
-    def get_vector_rotation(self, vector):
-        coord_vector = np.array([1, 0])
-        scalarproduct = (vector[0]*coord_vector[0]+vector[1]*coord_vector[1])
-        absolute_vector = math.sqrt(vector[0]**2 + vector[1]**2)
-        absolute_coord_vector = math.sqrt(coord_vector[0]**2 + coord_vector[1]**2)
-        return math.acos(scalarproduct / (absolute_vector * absolute_coord_vector))
-
-    def connection_cursor_collision(self, connection):
-        for vert in range(0, len(connection.vertices) - 1):
-            connection_bounding_box_width = 15
-            uninormal_vector = np.array(self.calc_vector(connection.vertices[vert],
-                                                         connection.vertices[vert + 1]))
-            uninormal_vector = self.uninormal_vector(uninormal_vector)
-            uninormal_vector = uninormal_vector * connection_bounding_box_width
-
-            c = [connection.vertices[vert] + uninormal_vector,
-                 connection.vertices[vert] - uninormal_vector,
-                 connection.vertices[vert + 1] + uninormal_vector,
-                 connection.vertices[vert + 1] - uninormal_vector]
-            for i in range(0, len(c)):
-                c[i][0] = self.project_coordinate(c[i][0], self.camera_x)
-                c[i][1] = self.project_coordinate(c[i][1], self.camera_y)
-
-            temp_angle = self.get_vector_rotation(np.array(self.calc_vector(c[0], c[2])))
-            temp_origin = self.get_rect_center(c[0], c[1], c[2], c[3])
-            temp_cursor = np.array([self.cursor_x + self.camera_x, self.cursor_y + self.camera_y])
-            temp_cursor = temp_cursor * self.zoom_factor
-            if connection.vertices[vert][1] < connection.vertices[vert + 1][1]:
-                temp_angle = -temp_angle
-            temp_cursor = self.rotate_point(temp_cursor, temp_angle, temp_origin)
-
-            bottom_left = c[0]
-            top_right = c[3]
-
-            if self.calc_rect_collision(temp_cursor, self.rotate_point(bottom_left, temp_angle, temp_origin),
-                                        self.rotate_point(top_right, temp_angle, temp_origin)):
-                return True
-        return False
-
-    def correct_zoom(self, coord):
-        return coord * 1 / self.zoom_factor
+        self.render_ui_description()
 
     def snap_cursor_to_grid(self):
         if self.tool != TOOL_SELECT:
@@ -586,8 +550,8 @@ class Mainframe:
                     self.cursor_y = posy + (self.grid_size - y_offset)
 
     def get_free_cursor(self, event):
-        self.cursor_x = self.correct_zoom(event.x) - self.camera_x
-        self.cursor_y = self.correct_zoom(event.y) - self.camera_y
+        self.cursor_x = VectorUtils.correct_zoom(event.x, self.zoom_factor) - self.camera_x
+        self.cursor_y = VectorUtils.correct_zoom(event.y, self.zoom_factor) - self.camera_y
 
     def get_cursor_position(self, event):
         self.get_free_cursor(event)
@@ -599,7 +563,7 @@ class Mainframe:
         neuron_x = self.cursor_x
         neuron_y = self.cursor_y
 
-        self.network_manager.add_neuron(neuron_x, neuron_y, self.img_default_neuron)
+        self.network_manager.add_neuron(neuron_x, neuron_y, self.neuron_size)
 
     def init_connection(self, neuron):
         self.connecting_neuron = neuron
@@ -704,7 +668,7 @@ class Mainframe:
         neuron_collision = False
         connection_collision = False
         for neuron in self.network_manager.networks[0].neurons:
-            if self.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron):
+            if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                 if self.tool == TOOL_CONNECTIONS:
                     self.create_neuron_connection(neuron)
                 elif self.tool == TOOL_SELECT:
@@ -716,7 +680,8 @@ class Mainframe:
 
         if not neuron_collision:
             for connection in self.network_manager.networks[0].connections:
-                if self.connection_cursor_collision(connection):
+                if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
+                                                           self.camera_x, self.camera_y, self.zoom_factor):
                     if self.tool == TOOL_CONNECTIONS:
                         self.create_synaptic_connection(connection)
 
@@ -734,7 +699,8 @@ class Mainframe:
             if self.tool == TOOL_SELECT:
                 for connection in self.network_manager.networks[0].connections:
                     self.deselect_neurons()
-                    if self.connection_cursor_collision(connection):
+                    if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
+                                                               self.camera_x, self.camera_y, self.zoom_factor):
                         self.selected_connection = connection.id
                         connection_collision = True
                 if not connection_collision:
@@ -750,14 +716,15 @@ class Mainframe:
     def delete_neuron(self):
         if self.tool == TOOL_NEURONS:
             for neuron in self.network_manager.networks[0].neurons:
-                if self.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron):
+                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                     self.network_manager.delete_neuron(neuron.id)
             self.render_scene()
 
     def delete_connection(self):
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
             for connection in self.network_manager.networks[0].connections:
-                if self.connection_cursor_collision(connection):
+                if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
+                                                           self.camera_x, self.camera_y, self.zoom_factor):
                     self.network_manager.delete_connection(connection.id)
             self.render_scene()
 
@@ -776,8 +743,10 @@ class Mainframe:
         self.prev_wheel_pos_x = event.x
         self.prev_wheel_pos_y = event.y
 
-        self.camera_x = self.camera_x - self.correct_zoom(self.next_wheel_pos_x - self.prev_wheel_pos_x)
-        self.camera_y = self.camera_y - self.correct_zoom(self.next_wheel_pos_y - self.prev_wheel_pos_y)
+        self.camera_x = self.camera_x - VectorUtils.correct_zoom(self.next_wheel_pos_x - self.prev_wheel_pos_x,
+                                                                 self.zoom_factor)
+        self.camera_y = self.camera_y - VectorUtils.correct_zoom(self.next_wheel_pos_y - self.prev_wheel_pos_y,
+                                                                 self.zoom_factor)
 
         self.next_wheel_pos_x = event.x
         self.next_wheel_pos_y = event.y

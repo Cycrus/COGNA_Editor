@@ -11,6 +11,7 @@ mainframe_backcolor = "#777777"
 viewframe_textcolor = "#CCCCCC"
 viewframe_neurontext = viewframe_backcolor
 connection_color = "#1cd4d8"
+neuron_color = "#FFFFFF"
 selected_connection_color = "#CCCCCC"
 grid_color = "#444444"
 connection_width = 3
