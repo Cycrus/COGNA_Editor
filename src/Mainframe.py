@@ -29,6 +29,7 @@ class Mainframe:
 
         self.root_frame = root
         self.network_manager = network_manager
+        self.curr_network = 0
 
         root.update()
 
@@ -163,35 +164,30 @@ class Mainframe:
         self.root_frame.bind("<g>", self.toggle_grid_snap)
         self.root_frame.bind("<space>", self.reset_camera)
 
-    def show_network_information(self):
-        self.edit_drop_options = ["Connection Specific",
-                                  "Connection Habituation",
-                                  "Connection Sensitization",
-                                  "Connection Presynaptic",
-                                  "Neuron Activation",
-                                  "Neuron Transmitter",
-                                  "Neuron Random",
-                                  "Network"]
+    def show_entity_parameters(self):
+        if self.selected_connection > -1:
+            self.general_info.config(text="Connection Selected")
+        elif self.selected_neuron > -1:
+            self.edit_drop_options.append("Neuron Activation")
+            self.edit_drop_options.append("Neuron Transmitter")
+            self.edit_drop_options.append("Neuron Random")
+            self.general_info.config(text="Neuron Selected")
+        else:
+            self.edit_drop_options.append("Neuron Activation")
+            self.edit_drop_options.append("Neuron Transmitter")
+            self.edit_drop_options.append("Neuron Random")
+            self.general_info.config(text="Neuron Selected")
+            self.edit_drop_options.append("Network")
+            self.general_info.config(text="Neural Network Selected")
 
-        self.edit_drop_menu.destroy()
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
         self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
                                    borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
                                    activebackground=mainframe_backcolor)
 
-        self.general_info.config(text="Neural Network Selected")
-        self.id_info.pack_forget()
         self.general_info.pack(side=tk.LEFT)
-
         self.edit_drop_menu.pack(side=tk.LEFT)
-
-        for i in range(0, len(self.parameter_info)):
-            self.parameter_info[i].destroy()
-        self.parameter_info.clear()
-        for i in range(0, len(self.parameter_textbox)):
-            self.parameter_textbox[i].destroy()
-        self.parameter_textbox.clear()
 
         temp_param_list = network_parameter
 
@@ -217,118 +213,10 @@ class Mainframe:
                                                   bg=mainframe_backcolor, borderwidth=0,
                                                   highlightthickness=2, highlightbackground=highlight_color))
 
-            self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].param.list[name])
-            self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
-
-            self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
-                                                bg=editframe_backcolor, fg=textcolor))
-            self.parameter_info[i].pack(side=tk.LEFT)
-
-    def show_neuron_information(self):
-        self.edit_drop_options = ["Connection Specific",
-                                  "Connection Habituation",
-                                  "Connection Sensitization",
-                                  "Connection Presynaptic",
-                                  "Neuron Activation",
-                                  "Neuron Transmitter",
-                                  "Neuron Random"]
-
-        self.edit_drop_menu.destroy()
-        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
-                                            command=self.show_parameters)
-        self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
-                                   borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
-                                   activebackground=mainframe_backcolor)
-
-        self.general_info.config(text="Neuron Selected")
-        self.id_info.config(text=f"ID: {self.selected_neuron}")
-        self.general_info.pack(side=tk.LEFT)
-        self.id_info.pack(side=tk.LEFT)
-
-        self.edit_drop_menu.pack(side=tk.LEFT)
-
-        for i in range(0, len(self.parameter_info)):
-            self.parameter_info[i].destroy()
-        self.parameter_info.clear()
-        for i in range(0, len(self.parameter_textbox)):
-            self.parameter_textbox[i].destroy()
-        self.parameter_textbox.clear()
-
-        temp_param_list = neuron_activation_parameter
-
-        if self.edit_selection.get() == self.edit_drop_options[0]:
-            temp_param_list = connection_special_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[1]:
-            temp_param_list = connection_habituation_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[2]:
-            temp_param_list = connection_sensitization_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[3]:
-            temp_param_list = connection_presynaptic_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[4]:
-            temp_param_list = neuron_activation_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[5]:
-            temp_param_list = neuron_transmitter_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[6]:
-            temp_param_list = neuron_random_parameter
-
-        for i, name in enumerate(temp_param_list):
-            self.parameter_textbox.append(tk.Text(master=self.parameter_frame[i + 3], height=1, width=5,
-                                                  bg=mainframe_backcolor, borderwidth=0,
-                                                  highlightthickness=2, highlightbackground=highlight_color))
-
-            self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
-                                             neurons[self.selected_neuron-1].param.list[name])
-            self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
-
-            self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
-                                                bg=editframe_backcolor, fg=textcolor))
-            self.parameter_info[i].pack(side=tk.LEFT)
-
-    def show_connection_information(self):
-        self.edit_drop_options = ["Connection Specific",
-                                  "Connection Habituation",
-                                  "Connection Sensitization",
-                                  "Connection Presynaptic"]
-
-        self.edit_drop_menu.destroy()
-        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
-                                            command=self.show_parameters)
-        self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
-                                   borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
-                                   activebackground=mainframe_backcolor)
-
-        self.general_info.config(text="Connection Selected")
-        self.id_info.config(text=f"ID: {self.selected_connection}")
-        self.general_info.pack(side=tk.LEFT)
-        self.id_info.pack(side=tk.LEFT)
-
-        self.edit_drop_menu.pack(side=tk.LEFT)
-
-        for i in range(0, len(self.parameter_info)):
-            self.parameter_info[i].destroy()
-        self.parameter_info.clear()
-        for i in range(0, len(self.parameter_textbox)):
-            self.parameter_textbox[i].destroy()
-        self.parameter_textbox.clear()
-
-        temp_param_list = connection_special_parameter
-
-        if self.edit_selection.get() == self.edit_drop_options[0]:
-            temp_param_list = connection_special_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[1]:
-            temp_param_list = connection_habituation_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[2]:
-            temp_param_list = connection_sensitization_parameter
-        elif self.edit_selection.get() == self.edit_drop_options[3]:
-            temp_param_list = connection_presynaptic_parameter
-
-        for i, name in enumerate(temp_param_list):
-            self.parameter_textbox.append(tk.Text(master=self.parameter_frame[i + 3], height=1, width=5,
-                                                  bg=mainframe_backcolor, borderwidth=0,
-                                                  highlightthickness=2, highlightbackground=highlight_color))
-
-            self.parameter_textbox[i].insert("1.0", self.network_manager.networks[0].
-                                             connections[self.selected_connection].param.list[name])
+            if not self.network_manager.networks[self.curr_network].param.list[name]:
+                self.parameter_textbox[i].insert("1.0", "None")
+            else:
+                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[self.curr_network].param.list[name])
             self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
@@ -336,15 +224,32 @@ class Mainframe:
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_parameters(self, event=None):
+        self.edit_drop_menu.destroy()
+        self.id_info.pack_forget()
+        for i in range(0, len(self.parameter_info)):
+            self.parameter_info[i].destroy()
+        self.parameter_info.clear()
+        for i in range(0, len(self.parameter_textbox)):
+            self.parameter_textbox[i].destroy()
+        self.parameter_textbox.clear()
+        self.edit_drop_options.clear()
+        self.general_info.forget()
+
+        self.edit_drop_options = ["Connection Specific",
+                                  "Connection Habituation",
+                                  "Connection Sensitization",
+                                  "Connection Presynaptic"]
+
         if not event:
             self.edit_selection.set(self.edit_drop_options[0])
 
-        if self.selected_neuron > -1:
-            self.show_neuron_information()
-        elif self.selected_connection > -1:
-            self.show_connection_information()
-        else:
-            self.show_network_information()
+        if self.tool == TOOL_SELECT:
+            if self.selected_neuron > -1:
+                self.show_entity_parameters()
+            elif self.selected_connection > -1:
+                self.show_entity_parameters()
+            else:
+                self.show_entity_parameters()
 
     def switch_tool_neurons(self):
         self.tool = TOOL_NEURONS
@@ -373,6 +278,7 @@ class Mainframe:
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=active_button_color)
         self.discard_connection()
+        self.show_parameters()
         self.render_scene()
 
     def reset_camera(self, event):
@@ -414,16 +320,23 @@ class Mainframe:
             temp_y = temp_y + self.grid_size
 
     def render_connections(self):
-        for connection_i, connection in enumerate(self.network_manager.networks[0].connections):
-            neuron_distance = 5
+        for connection_i, connection in enumerate(self.network_manager.networks[self.curr_network].connections):
+            distance = 5
             direction_marker_length = 8
+
+            if connection.next_neuron:
+                distance = self.neuron_size + distance
+            if connection.next_connection:
+                distance = 5 + distance
+
             scaled_vert = VectorUtils.calc_vector(connection.vertices[len(connection.vertices)-1],
                                                   connection.vertices[len(connection.vertices)-2])
             scaled_vert = connection.vertices[len(connection.vertices) - 1] + VectorUtils.unit_vector(scaled_vert) *\
-                              (self.neuron_size + neuron_distance)
+                          distance
+
             temp_verts = connection.vertices[:]
             if not np.isnan(scaled_vert[0]) and not self.do_connection or\
-                    connection_i < len(self.network_manager.networks[0].connections) - 1:
+                    connection_i < len(self.network_manager.networks[self.curr_network].connections) - 1:
                 temp_verts[len(temp_verts)-1] = scaled_vert
             try:
                 normal_vector = VectorUtils.uninormal_vector(VectorUtils.calc_vector(temp_verts[len(temp_verts)-1],
@@ -465,7 +378,7 @@ class Mainframe:
                                                   fill=connection_color, width=connection_width)
 
     def render_neurons(self):
-        for neuron in self.network_manager.networks[0].neurons:
+        for neuron in self.network_manager.networks[self.curr_network].neurons:
             if self.selected_neuron == neuron.id:
                 self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.camera_x,
                                                                                self.zoom_factor),
@@ -570,22 +483,22 @@ class Mainframe:
         self.do_connection = True
 
         self.network_manager.add_connection(neuron)
-        connection_position = len(self.network_manager.networks[0].connections) - 1
-        self.network_manager.networks[0].connections[connection_position].vertices.append(
+        connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
+        self.network_manager.networks[self.curr_network].connections[connection_position].vertices.append(
             np.array([self.cursor_x,
                       self.cursor_y]))
 
     def draw_connection(self):
         if self.do_connection:
             self.render_scene()
-            connection_position = len(self.network_manager.networks[0].connections) - 1
-            vertex_position = len(self.network_manager.networks[0].connections[connection_position].vertices) - 1
-            self.network_manager.networks[0].connections[connection_position].vertices[vertex_position] = [self.cursor_x,
+            connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
+            vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
+            self.network_manager.networks[self.curr_network].connections[connection_position].vertices[vertex_position] = [self.cursor_x,
                                                                                                            self.cursor_y]
 
     def discard_connection(self):
         if self.do_connection:
-            connection_position = len(self.network_manager.networks[0].connections) - 1
+            connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
             self.network_manager.delete_connection(connection_position)
             self.do_connection = False
 
@@ -629,15 +542,15 @@ class Mainframe:
     def create_neuron_connection(self, neuron):
         if self.do_connection:
             can_connect = True
-            connection_position = len(self.network_manager.networks[0].connections) - 1
-            for check_con in self.network_manager.networks[0].connections:
-                if check_con.prev_neuron == self.network_manager.networks[0].connections[connection_position].prev_neuron \
+            connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
+            for check_con in self.network_manager.networks[self.curr_network].connections:
+                if check_con.prev_neuron == self.network_manager.networks[self.curr_network].connections[connection_position].prev_neuron \
                         and check_con.next_neuron == neuron.id:
                     can_connect = False
             if can_connect:
-                vertex_position = len(self.network_manager.networks[0].connections[connection_position].vertices) - 1
-                self.network_manager.networks[0].connections[connection_position].next_neuron = neuron.id
-                self.network_manager.networks[0].connections[connection_position].vertices[vertex_position] = [
+                vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
+                self.network_manager.networks[self.curr_network].connections[connection_position].next_neuron = neuron.id
+                self.network_manager.networks[self.curr_network].connections[connection_position].vertices[vertex_position] = [
                     neuron.posx, neuron.posy]
             else:
                 self.discard_connection()
@@ -647,19 +560,19 @@ class Mainframe:
 
     def create_synaptic_connection(self, connection):
         if self.do_connection:
-            if connection.id < len(self.network_manager.networks[0].connections) - 1:
+            if connection.id < len(self.network_manager.networks[self.curr_network].connections) - 1:
                 can_connect = True
-                connection_position = len(self.network_manager.networks[0].connections) - 1
-                for check_con in self.network_manager.networks[0].connections:
-                    if check_con.prev_neuron == self.network_manager.networks[0].connections[connection_position].prev_neuron \
+                connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
+                for check_con in self.network_manager.networks[self.curr_network].connections:
+                    if check_con.prev_neuron == self.network_manager.networks[self.curr_network].connections[connection_position].prev_neuron \
                             and check_con.next_connection == connection.id:
                         can_connect = False
                 if can_connect:
-                    vertex_position = len(self.network_manager.networks[0].connections[connection_position].vertices) - 1
-                    self.network_manager.networks[0].connections[connection_position].next_connection = connection.id
-                    self.network_manager.networks[0].connections[connection_position].vertices[vertex_position] = [
+                    vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
+                    self.network_manager.networks[self.curr_network].connections[connection_position].next_connection = connection.id
+                    self.network_manager.networks[self.curr_network].connections[connection_position].vertices[vertex_position] = [
                         self.cursor_x, self.cursor_y]
-                    print(self.network_manager.networks[0].connections[connection_position].next_connection)
+                    print(self.network_manager.networks[self.curr_network].connections[connection_position].next_connection)
                 else:
                     self.discard_connection()
                 self.do_connection = False
@@ -667,7 +580,7 @@ class Mainframe:
     def left_click(self, event):
         neuron_collision = False
         connection_collision = False
-        for neuron in self.network_manager.networks[0].neurons:
+        for neuron in self.network_manager.networks[self.curr_network].neurons:
             if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                 if self.tool == TOOL_CONNECTIONS:
                     self.create_neuron_connection(neuron)
@@ -679,7 +592,7 @@ class Mainframe:
                 neuron_collision = True
 
         if not neuron_collision:
-            for connection in self.network_manager.networks[0].connections:
+            for connection in self.network_manager.networks[self.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.camera_x, self.camera_y, self.zoom_factor):
                     if self.tool == TOOL_CONNECTIONS:
@@ -689,15 +602,15 @@ class Mainframe:
                 if self.tool == TOOL_NEURONS:
                     self.add_neuron()
             else:
-                connection_position = len(self.network_manager.networks[0].connections) - 1
-                self.network_manager.networks[0].connections[connection_position].vertices.append(
+                connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
+                self.network_manager.networks[self.curr_network].connections[connection_position].vertices.append(
                     np.array([self.cursor_x, self.cursor_y]))
             if self.tool == TOOL_SELECT:
                 self.deselect_neurons()
                 self.show_parameters()
 
             if self.tool == TOOL_SELECT:
-                for connection in self.network_manager.networks[0].connections:
+                for connection in self.network_manager.networks[self.curr_network].connections:
                     self.deselect_neurons()
                     if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                                self.camera_x, self.camera_y, self.zoom_factor):
@@ -715,14 +628,14 @@ class Mainframe:
 
     def delete_neuron(self):
         if self.tool == TOOL_NEURONS:
-            for neuron in self.network_manager.networks[0].neurons:
+            for neuron in self.network_manager.networks[self.curr_network].neurons:
                 if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                     self.network_manager.delete_neuron(neuron.id)
             self.render_scene()
 
     def delete_connection(self):
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
-            for connection in self.network_manager.networks[0].connections:
+            for connection in self.network_manager.networks[self.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.camera_x, self.camera_y, self.zoom_factor):
                     self.network_manager.delete_connection(connection.id)
