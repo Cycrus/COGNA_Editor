@@ -53,3 +53,5 @@ class Network:
         self.param.list["Transmitter backfall steepness"] = 0.0000001
         self.param.list["Max transmitter weight"] = 5.0
         self.param.list["Min transmitter weight"] = 0.0
+
+        print(self.param.list["Min weight"])

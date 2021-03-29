@@ -1,3 +1,4 @@
+import re
 from src.GlobalLibraries import *
 from src.VectorUtils import VectorUtils
 
@@ -146,7 +147,7 @@ class Mainframe:
         self.camera_y = self.editorcanvas.winfo_height() / 2
         self.render_scene()
 
-        self.show_parameters()
+        self.show_parameters(store=False)
 
         self.editorcanvas.bind("<Motion>", self.motion_event)
 
@@ -178,7 +179,10 @@ class Mainframe:
             connection_network = self.selected_entity.network_id
             prev_neuron = self.selected_entity.prev_neuron
             neuron_param = self.network_manager.networks[connection_network].neurons[prev_neuron-1].param.list[parameter_name]
+            network_param = self.network_manager.networks[connection_network].param.list[parameter_name]
             if connection_param == neuron_param:
+                return False
+            elif neuron_param is None and connection_param == network_param:
                 return False
         else:
             return True
@@ -199,6 +203,29 @@ class Mainframe:
                         is_unique = self.check_parameter_uniqueness(name)
                         if not is_unique:
                             self.selected_entity.param.list[name] = None
+
+    def print_parameter(self, entity, param_index, name):
+        if entity.param.list[name] is None:
+            if isinstance(entity, Connection):
+                network_id = entity.network_id
+                neuron_id = entity.prev_neuron-1
+                self.print_parameter(self.network_manager.networks[network_id].neurons[neuron_id], param_index, name)
+                self.parameter_textbox[param_index][0].config(fg=warning_textcolor)
+            elif isinstance(entity, Neuron):
+                network_id = entity.network_id
+                self.print_parameter(self.network_manager.networks[network_id], param_index, name)
+                self.parameter_textbox[param_index][0].config(fg=warning_textcolor)
+            else:
+                self.parameter_textbox[param_index][0].insert("1.0", "Missing...")
+                self.parameter_textbox[param_index][0].config(fg=error_textcolor)
+        else:
+            try:
+                regex = re.compile("([0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
+                param_str = regex.findall(format(entity.param.list[name], ".15f"))
+                self.parameter_textbox[param_index][0].insert("1.0", param_str[0][0])
+            except TypeError:
+                self.parameter_textbox[param_index][0].insert("1.0", "Missing...")
+                self.parameter_textbox[param_index][0].config(fg=error_textcolor)
 
     def show_entity_parameters(self):
         if self.selected_connection > -1:
@@ -243,23 +270,21 @@ class Mainframe:
             self.param_list = network_parameter
 
         for i, name in enumerate(self.param_list):
-            self.parameter_textbox.append([tk.Text(master=self.parameter_frame[i+3], height=1, width=5,
+            self.parameter_textbox.append([tk.Text(master=self.parameter_frame[i+3], height=1, width=10,
                                                   bg=mainframe_backcolor, borderwidth=0,
                                                   highlightthickness=2, highlightbackground=highlight_color),
                                            name])
 
-            if not self.selected_entity.param.list[name]:
-                self.parameter_textbox[i][0].insert("1.0", "None")
-            else:
-                self.parameter_textbox[i][0].insert("1.0", self.selected_entity.param.list[name])
+            self.print_parameter(self.selected_entity, i, name)
             self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
                                                 bg=editframe_backcolor, fg=textcolor))
             self.parameter_info[i].pack(side=tk.LEFT)
 
-    def show_parameters(self, event=None):
-        #self.store_parameters()
+    def show_parameters(self, event=None, store=True):
+        if store:
+            self.store_parameters()
         if self.selected_connection > -1:
             self.selected_entity = self.network_manager.networks[self.curr_network].connections[self.selected_connection]
         elif self.selected_neuron > -1:
@@ -298,7 +323,7 @@ class Mainframe:
         self.discard_connection()
         self.deselect_neurons()
         self.deselect_connections()
-        self.show_parameters()
+        self.show_parameters(store=False)
         self.render_scene()
 
     def switch_tool_connections(self):
@@ -309,7 +334,7 @@ class Mainframe:
         self.select_button.configure(background=inactive_button_color)
         self.deselect_neurons()
         self.deselect_connections()
-        self.show_parameters()
+        self.show_parameters(store=False)
         self.render_scene()
 
     def switch_tool_select(self):
@@ -318,7 +343,7 @@ class Mainframe:
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=active_button_color)
         self.discard_connection()
-        self.show_parameters()
+        self.show_parameters(store=False)
         self.render_scene()
 
     def reset_camera(self, event):
@@ -633,7 +658,7 @@ class Mainframe:
                     self.store_parameters()
                     self.deselect_connections()
                     self.selected_neuron = neuron.id
-                    self.show_parameters()
+                    self.show_parameters(store=False)
 
                 neuron_collision = True
 
@@ -655,7 +680,7 @@ class Mainframe:
             if self.tool == TOOL_SELECT:
                 self.store_parameters()
                 self.deselect_neurons()
-                self.show_parameters()
+                self.show_parameters(store=False)
                 for connection in self.network_manager.networks[self.curr_network].connections:
                     if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                                self.camera_x, self.camera_y, self.zoom_factor):
@@ -663,7 +688,7 @@ class Mainframe:
                         connection_collision = True
                 if not connection_collision:
                     self.deselect_connections()
-                self.show_parameters()
+                self.show_parameters(store=False)
 
         self.render_scene()
 
