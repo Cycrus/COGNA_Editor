@@ -12,7 +12,7 @@ class NetworkManager:
 
     def add_neuron(self, posx, posy, size, network_id=0):
         self.networks[network_id].neurons.append(Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
-                                                        posx, posy, size))
+                                                        posx, posy, size, network_id))
 
     def delete_neuron(self, id, network_id=0):
         for connection in reversed(self.networks[network_id].connections):
@@ -32,7 +32,7 @@ class NetworkManager:
 
     def add_connection(self, source_neuron, network_id=0):
         self.networks[network_id].connections.append(Connection(len(self.networks[network_id].connections),
-                                                                source_neuron))
+                                                                source_neuron, network_id))
 
     def delete_connection(self, id, network_id=0):
         for connection in self.networks[network_id].connections:

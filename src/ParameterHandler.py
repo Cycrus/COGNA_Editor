@@ -6,6 +6,7 @@ neuron_activation_parameter = ("Activation threshold", #numeric
 
 neuron_transmitter_parameter = ("Transmitter change curvature", #numeric
                                 "Transmitter change steepness", #numeric
+                                "Influences transmitter" #int<No:0, Yes:1>
                                 "Influenced transmitter", #int<Possible transmitters:?>
                                 "Transmitter influence direction") #int<Positive influence:1, Negative influence:-1>
 
@@ -26,7 +27,7 @@ connection_sensitization_parameter = ("Sensitization threshold", #numeric
                                       "Short sensitization curvature", #numeric
                                       "Short sensitization steepness", #numeric
                                       "Short desensitization curvature", #numeric
-                                      "Short desensitizationsteepness", #numeric
+                                      "Short desensitization steepness", #numeric
                                       "Long sensitization curvature", #numeric
                                       "Long sensitization steepness", #numeric
                                       "Long desensitization curvature", #numeric

@@ -7,11 +7,12 @@ from src.ParameterHandler import *
 
 
 class Connection:
-    def __init__(self, id, source_neuron):
+    def __init__(self, id, source_neuron, network_id):
         self.id = id
         self.vertices = []
         self.prev_neuron = source_neuron.id
         self.vertices.append(np.array([source_neuron.posx, source_neuron.posy]))
+        self.network_id = network_id
 
         self.next_neuron = None
         self.next_connection = None

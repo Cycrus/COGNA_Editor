@@ -24,8 +24,10 @@ class Mainframe:
         self.tool = TOOL_NEURONS
         self.selected_neuron = -1
         self.selected_connection = -1
+        self.selected_entity = None
 
         self.connecting_neuron = None
+        self.connection_source_neuron = None
 
         self.root_frame = root
         self.network_manager = network_manager
@@ -164,16 +166,41 @@ class Mainframe:
         self.root_frame.bind("<g>", self.toggle_grid_snap)
         self.root_frame.bind("<space>", self.reset_camera)
 
+    def check_parameter_uniqueness(self, parameter_name):
+        if self.selected_neuron > -1:
+            neuron_param = self.selected_entity.param.list[parameter_name]
+            neuron_network = self.selected_entity.network_id
+            network_param = self.network_manager.networks[neuron_network].param.list[parameter_name]
+            if neuron_param == network_param:
+                return False
+        elif self.selected_connection > -1:
+            connection_param = self.selected_entity.param.list[parameter_name]
+            connection_network = self.selected_entity.network_id
+            prev_neuron = self.selected_entity.prev_neuron
+            neuron_param = self.network_manager.networks[connection_network].neurons[prev_neuron-1].param.list[parameter_name]
+            if connection_param == neuron_param:
+                return False
+        else:
+            return True
+
+        return True
+
     def store_parameters(self):
         if self.tool == TOOL_SELECT:
-            if self.selected_neuron > -1:
-                print("neuron saved")
-            elif self.selected_connection > -1:
-                print("connection saved")
-            else:
-                print("network saved")
+            for i, name in enumerate(self.param_list):
+                for param_container in self.parameter_textbox:
+                    if param_container[1] == name:
+                        temp_param = param_container[0].get("1.0", "end")
+                        try:
+                            self.selected_entity.param.list[name] = float(temp_param)
+                        except ValueError:
+                            self.selected_entity.param.list[name] = None
 
-    def show_entity_parameters(self, selected_entity):
+                        is_unique = self.check_parameter_uniqueness(name)
+                        if not is_unique:
+                            self.selected_entity.param.list[name] = None
+
+    def show_entity_parameters(self):
         if self.selected_connection > -1:
             self.general_info.config(text="Connection Selected")
         elif self.selected_neuron > -1:
@@ -216,27 +243,29 @@ class Mainframe:
             self.param_list = network_parameter
 
         for i, name in enumerate(self.param_list):
-            self.parameter_textbox.append(tk.Text(master=self.parameter_frame[i+3], height=1, width=5,
+            self.parameter_textbox.append([tk.Text(master=self.parameter_frame[i+3], height=1, width=5,
                                                   bg=mainframe_backcolor, borderwidth=0,
-                                                  highlightthickness=2, highlightbackground=highlight_color))
+                                                  highlightthickness=2, highlightbackground=highlight_color),
+                                           name])
 
-            if not self.network_manager.networks[self.curr_network].param.list[name]:
-                self.parameter_textbox[i].insert("1.0", "None")
+            if not self.selected_entity.param.list[name]:
+                self.parameter_textbox[i][0].insert("1.0", "None")
             else:
-                self.parameter_textbox[i].insert("1.0", self.network_manager.networks[self.curr_network].param.list[name])
-            self.parameter_textbox[i].pack(side=tk.LEFT, padx=20)
+                self.parameter_textbox[i][0].insert("1.0", self.selected_entity.param.list[name])
+            self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
                                                 bg=editframe_backcolor, fg=textcolor))
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_parameters(self, event=None):
+        #self.store_parameters()
         if self.selected_connection > -1:
-            selected_entity = self.network_manager.networks[self.curr_network].connections[self.selected_connection]
+            self.selected_entity = self.network_manager.networks[self.curr_network].connections[self.selected_connection]
         elif self.selected_neuron > -1:
-            selected_entity = self.network_manager.networks[self.curr_network].neurons[self.selected_neuron-1]
+            self.selected_entity = self.network_manager.networks[self.curr_network].neurons[self.selected_neuron-1]
         else:
-            selected_entity = self.network_manager.networks[self.curr_network]
+            self.selected_entity = self.network_manager.networks[self.curr_network]
 
         self.edit_drop_menu.destroy()
         self.id_info.pack_forget()
@@ -244,7 +273,7 @@ class Mainframe:
             self.parameter_info[i].destroy()
         self.parameter_info.clear()
         for i in range(0, len(self.parameter_textbox)):
-            self.parameter_textbox[i].destroy()
+            self.parameter_textbox[i][0].destroy()
         self.parameter_textbox.clear()
         self.edit_drop_options.clear()
         self.general_info.forget()
@@ -258,10 +287,11 @@ class Mainframe:
             self.edit_selection.set(self.edit_drop_options[0])
 
         if self.tool == TOOL_SELECT:
-            self.show_entity_parameters(selected_entity)
+            self.show_entity_parameters()
 
     def switch_tool_neurons(self):
         self.tool = TOOL_NEURONS
+        self.selected_entity = None
         self.neuron_button.configure(background=active_button_color)
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=inactive_button_color)
@@ -273,6 +303,7 @@ class Mainframe:
 
     def switch_tool_connections(self):
         self.tool = TOOL_CONNECTIONS
+        self.selected_entity = None
         self.neuron_button.configure(background=inactive_button_color)
         self.connection_button.configure(background=active_button_color)
         self.select_button.configure(background=inactive_button_color)
@@ -491,7 +522,7 @@ class Mainframe:
         self.connecting_neuron = neuron
         self.do_connection = True
 
-        self.network_manager.add_connection(neuron)
+        self.network_manager.add_connection(self.connection_source_neuron)
         connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
         self.network_manager.networks[self.curr_network].connections[connection_position].vertices.append(
             np.array([self.cursor_x,
@@ -577,6 +608,7 @@ class Mainframe:
                     if check_con.prev_neuron == self.network_manager.networks[self.curr_network].connections[connection_position].prev_neuron \
                             and check_con.next_connection == connection.id:
                         can_connect = False
+
                 if can_connect:
                     vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
                     self.network_manager.networks[self.curr_network].connections[connection_position].next_connection = connection.id
@@ -592,7 +624,11 @@ class Mainframe:
         for neuron in self.network_manager.networks[self.curr_network].neurons:
             if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                 if self.tool == TOOL_CONNECTIONS:
+                    if not self.do_connection:
+                        self.connection_source_neuron = neuron
                     self.create_neuron_connection(neuron)
+                    if not self.do_connection:
+                        self.connection_source_neuron = None
                 elif self.tool == TOOL_SELECT:
                     self.store_parameters()
                     self.deselect_connections()
@@ -615,6 +651,7 @@ class Mainframe:
                 connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
                 self.network_manager.networks[self.curr_network].connections[connection_position].vertices.append(
                     np.array([self.cursor_x, self.cursor_y]))
+
             if self.tool == TOOL_SELECT:
                 self.store_parameters()
                 self.deselect_neurons()
