@@ -20,13 +20,13 @@ connection_width = 3
 selected_connection_width = connection_width+3
 editframe_backcolor = topmenu_backcolor
 mode_text_color = connection_color
+editbutton_size_relation = 3
 
 active_button_color = "#14405a"
 inactive_button_color = viewframe_backcolor
 button_padding_x = 5
 button_padding_y = 5
 
-#editframe_width = 550
 topmenu_height = 40
 zoom_widget_width = 8
 zoom_widget_padx = 20

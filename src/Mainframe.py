@@ -55,20 +55,41 @@ class Mainframe:
                                   relief=tk.FLAT)
         self.editframe.pack_propagate(0)
 
+        self.editresize = tk.Frame(master=self.editframe, background="#222222",
+                                   borderwidth=1,
+                                   highlightthickness=0,
+                                   height=self.mainframe.winfo_height(),
+                                   width=7,
+                                   relief=tk.FLAT,
+                                   cursor="sb_h_double_arrow")
+        self.editresize.pack(side=tk.RIGHT, fill=tk.BOTH, padx=0, pady=0, expand=True)
+
         self.edit_top = tk.Frame(master=self.editframe, background=editframe_backcolor,
                                  borderwidth=0,
                                  highlightthickness=0,
                                  width=self.editframe_width)
 
-        self.neuron_button = tk.Button(master=self.edit_top, text="N", background=active_button_color,
-                                       fg=textcolor, command=self.switch_tool_neurons,
-                                       activebackground=mainframe_backcolor)
-        self.connection_button = tk.Button(master=self.edit_top, text="C", background=inactive_button_color,
-                                           fg=textcolor, command=self.switch_tool_connections,
-                                           activebackground=mainframe_backcolor)
+        self.mainframe.pack(side=tk.TOP, fill=tk.BOTH, padx=0, pady=0, expand=True)
+        self.editframe.pack(side=tk.LEFT, fill=tk.Y, padx=0, pady=0, expand=False)
+        self.edit_top.pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=15, expand=False)
+
+        self.root_frame.update()
+
+        self.pixelVirtual = tk.PhotoImage(width=1, height=1)
+
         self.select_button = tk.Button(master=self.edit_top, text="S", background=inactive_button_color,
-                                       fg=textcolor, command=self.switch_tool_select,
-                                       activebackground=mainframe_backcolor)
+                                       fg=textcolor, command=self.switch_tool_select, image=self.pixelVirtual,
+                                       activebackground=mainframe_backcolor,
+                                       width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40,
+                                       compound="c")
+        self.neuron_button = tk.Button(master=self.edit_top, text="N", background=active_button_color,
+                                       fg=textcolor, command=self.switch_tool_neurons, image=self.pixelVirtual,
+                                       activebackground=mainframe_backcolor,
+                                       width=int(self.edit_top.winfo_width()/editbutton_size_relation)-40, compound="c")
+        self.connection_button = tk.Button(master=self.edit_top, text="C", background=inactive_button_color,
+                                           fg=textcolor, command=self.switch_tool_connections, image=self.pixelVirtual,
+                                           activebackground=mainframe_backcolor,
+                                           width=int(self.edit_top.winfo_width()/editbutton_size_relation)-40, compound="c")
 
         self.viewframe = tk.Frame(master=self.mainframe, background=viewframe_backcolor,
                                   highlightthickness=0,
@@ -81,7 +102,8 @@ class Mainframe:
                                       highlightthickness=0,
                                       borderwidth=0,
                                       height=self.viewframe.winfo_height(),
-                                      width=self.viewframe.winfo_width())
+                                      width=self.viewframe.winfo_width(),
+                                      cursor="crosshair")
 
         self.edit_1 = tk.Frame(master=self.editframe, background=editframe_backcolor,
                                borderwidth=0,
@@ -119,12 +141,9 @@ class Mainframe:
         self.parameter_info = []
         self.parameter_textbox = []
 
-        self.mainframe.pack(side=tk.TOP, fill=tk.BOTH, padx=0, pady=0, expand=True)
-        self.editframe.pack(side=tk.LEFT, fill=tk.Y, padx=0, pady=0, expand=False)
-        self.edit_top.pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=15, expand=False)
+        self.select_button.pack(side=tk.LEFT, padx=button_padding_x, pady=button_padding_y)
         self.neuron_button.pack(side=tk.LEFT, padx=button_padding_x, pady=button_padding_y)
         self.connection_button.pack(side=tk.LEFT, padx=button_padding_x, pady=button_padding_y)
-        self.select_button.pack(side=tk.LEFT, padx=button_padding_x, pady=button_padding_y)
 
         for i in range(0, self.parameter_count):
             padding_y = 10
@@ -149,6 +168,9 @@ class Mainframe:
 
         self.show_parameters(store=False)
 
+        self.editresize.bind("<Button-1>", self.init_resize)
+        self.editresize.bind("<B1-Motion>", self.do_resize)
+
         self.editorcanvas.bind("<Motion>", self.motion_event)
 
         self.editorcanvas.bind("<Button-2>", self.init_camera)
@@ -166,6 +188,8 @@ class Mainframe:
         self.root_frame.bind("<Tab>", self.tab_event)
         self.root_frame.bind("<g>", self.toggle_grid_snap)
         self.root_frame.bind("<space>", self.reset_camera)
+
+        self.switch_tool_select()
 
     def check_parameter_uniqueness(self, parameter_name):
         if self.selected_neuron > -1:
@@ -229,19 +253,19 @@ class Mainframe:
 
     def show_entity_parameters(self):
         if self.selected_connection > -1:
-            self.general_info.config(text="Connection Selected")
+            self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
         elif self.selected_neuron > -1:
             self.edit_drop_options.append("Neuron Activation")
             self.edit_drop_options.append("Neuron Transmitter")
             self.edit_drop_options.append("Neuron Random")
-            self.general_info.config(text="Neuron Selected")
+            self.general_info.config(text=f"Neuron <{self.selected_neuron}> Selected")
         else:
             self.edit_drop_options.append("Neuron Activation")
             self.edit_drop_options.append("Neuron Transmitter")
             self.edit_drop_options.append("Neuron Random")
             self.general_info.config(text="Neuron Selected")
             self.edit_drop_options.append("Network")
-            self.general_info.config(text="Neural Network Selected")
+            self.general_info.config(text=f"Neural Network <{self.curr_network}> Selected")
 
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
@@ -347,6 +371,13 @@ class Mainframe:
         self.render_scene()
 
     def reset_camera(self, event):
+        self.editframe.config(width=int(self.root_frame.winfo_width()/4))
+        self.edit_top.config(width=self.edit_top.winfo_width())
+        self.root_frame.update()
+        self.neuron_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40)
+        self.connection_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40)
+        self.select_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40)
+        self.editresize.config(width=7)
         self.camera_x = self.editorcanvas.winfo_width() / 2
         self.camera_y = self.editorcanvas.winfo_height() / 2
         self.zoom_factor = 1.0
@@ -755,3 +786,26 @@ class Mainframe:
         self.get_cursor_position(event)
 
         self.render_scene()
+
+    def init_resize(self, event):
+        self.prev_wheel_pos_x = event.x
+        self.next_wheel_pos_x = event.x
+
+    def do_resize(self, event):
+        self.prev_wheel_pos_x = event.x
+
+        offset = self.next_wheel_pos_x - self.prev_wheel_pos_x
+        self.editresize.config(width=7)
+        self.editframe.config(width=self.editframe.winfo_width() - offset)
+        if self.editframe.winfo_width() < 100:
+            self.editframe.config(width=100)
+        self.edit_top.config(width=self.edit_top.winfo_width() - offset)
+        self.neuron_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation)-40)
+        self.connection_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation)-40)
+        self.select_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation)-40)
+        self.editresize.config(width=7)
+        self.render_scene()
+        self.root_frame.update()
+        self.editresize.config(width=7)
+
+        self.next_wheel_pos_x = event.x
