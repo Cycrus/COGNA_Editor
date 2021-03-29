@@ -32,7 +32,10 @@ class VectorUtils:
     @staticmethod
     def unit_vector(vector):
         length = math.sqrt(math.pow(vector[0], 2) + math.pow(vector[1], 2))
-        return np.array([vector[0]/length, vector[1]/length])
+        if length != 0:
+            return np.array([vector[0]/length, vector[1]/length])
+        else:
+            return np.array([0, 0])
 
     @staticmethod
     def normal_vector(vector):

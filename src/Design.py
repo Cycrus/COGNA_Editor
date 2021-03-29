@@ -2,6 +2,8 @@ default_neuron_filename = "img/default_neuron_filled.png"
 neuron_selected_filename = "img/default_neuron_filled_selected.png"
 
 textcolor = "#CCCCCC"
+error_textcolor = "#AA0000"
+warning_textcolor = "#444444"
 topmenu_backcolor = "#444444"
 top_button_textcolor = textcolor
 zoom_widget_backcolor = "#555555"
