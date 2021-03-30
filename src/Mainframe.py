@@ -244,7 +244,7 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=error_textcolor)
         else:
             try:
-                regex = re.compile("([0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
+                regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
                 param_str = regex.findall(format(entity.param.list[name], ".15f"))
                 self.parameter_textbox[param_index][0].insert("1.0", param_str[0][0])
             except TypeError:
