@@ -8,50 +8,62 @@ class Network:
 
         self.param = ParameterHandler()
 
-        self.param.list["Activation threshold"] = 1.0
-        self.param.list["Max activation"] = 50.0
-        self.param.list["Min activation"] = 0.0
-        self.param.list["Activation Backfall curvature"] = 1.0
-        self.param.list["Activation Backfall steepness"] = 0.04
-        self.param.list["Transmitter change curvature"] = 1.02
-        self.param.list["Influenced transmitter"] = 0
-        self.param.list["Influences transmitter"] = 0
-        self.param.list["Transmitter influence direction"] = 1
-        self.param.list["Random chance"] = 0
-        self.param.list["Random activation value"] = 0.0
-        self.param.list["Habituation threshold"] = 0.001
-        self.param.list["Short habituation curvature"] = 0.65
-        self.param.list["Short habituation steepness"] = 0.07
-        self.param.list["Short dehabituation curvature"] = 1.0
-        self.param.list["Short dehabituation steepness"] = 0.00000005
-        self.param.list["Long habituation curvature"] = 0.35
-        self.param.list["Long habituation steepness"] = 0.00005
-        self.param.list["Long dehabituation curvature"] = 1.0
-        self.param.list["Long dehabituation steepness"] = 0.000000000001
-        self.param.list["Sensitization threshold"] = 5.0
-        self.param.list["Short sensitization curvature"] = 0.65
-        self.param.list["Short sensitization steepness"] = 0.07
-        self.param.list["Short desensitization curvature"] = 1.0
-        self.param.list["Short desensitization steepness"] = 0.00000005
-        self.param.list["Long sensitization curvature"] = 1.02
-        self.param.list["Long sensitization steepness"] = 0.0001
-        self.param.list["Long desensitization curvature"] = 1.0
-        self.param.list["Long desensitization steepness"] = 0.000000000001
-        self.param.list["Presynaptic potential curvature"] = 0.60
-        self.param.list["Presynaptic potential steepness"] = 0.3
-        self.param.list["Presynaptic backfall curvature"] = 1.00
-        self.param.list["Presynaptic backfall steepness"] = 0.0000002
-        self.param.list["Base weight"] = 1.0
-        self.param.list["Max weight"] = 5.0
-        self.param.list["Min weight"] = 0.0
-        self.param.list["Activation type"] = 1
-        self.param.list["Activation function"] = 3
-        self.param.list["Learning type"] = 1
-        self.param.list["Transmitter type"] = 0
-        self.param.list["Transmitter Number"] = 1
-        self.param.list["Transmitter backfall curvature"] = 1.0
-        self.param.list["Transmitter backfall steepness"] = 0.0000001
-        self.param.list["Max transmitter weight"] = 5.0
-        self.param.list["Min transmitter weight"] = 0.0
+        init_param_list = [1.0, 50.0, 0.0, 1.0, 0.04,
+                           1.02, 0.02, 0, 0, 1,
+                           0, 0.0,
+                           0.01, 0.65, 0.07, 1.0, 0.00000005, 0.35, 0.00005, 1.0, 0.000000000001,
+                           5.0, 0.65, 0.07, 1.0, 0.00000005, 1.02, 0.0001, 1.0, 0.000000000001]
 
-        print(self.param.list["Min weight"])
+        self.param.list["activation_threshold"] = 1.0
+        self.param.list["max_activation"] = 50.0
+        self.param.list["min_activation"] = 0.0
+        self.param.list["activation_backfall_curvature"] = 1.0
+        self.param.list["activation_backfall_steepness"] = 0.04
+
+        self.param.list["transmitter_change_curvature"] = 1.02
+        self.param.list["transmitter_change_steepness"] = 0.02
+        self.param.list["influenced_transmitter"] = 0
+        self.param.list["influences_transmitter"] = 0
+        self.param.list["transmitter_influence_direction"] = 1
+
+        self.param.list["random_chance"] = 0
+        self.param.list["random_activation_value"] = 0.0
+
+        self.param.list["habituation_threshold"] = 0.001
+        self.param.list["short_habituation_curvature"] = 0.65
+        self.param.list["short_habituation_steepness"] = 0.07
+        self.param.list["short_dehabituation_curvature"] = 1.0
+        self.param.list["short_dehabituation_steepness"] = 0.00000005
+        self.param.list["long_habituation_curvature"] = 0.35
+        self.param.list["long_habituation_steepness"] = 0.00005
+        self.param.list["long_dehabituation_curvature"] = 1.0
+        self.param.list["long_dehabituation_steepness"] = 0.000000000001
+
+        self.param.list["sensitization_threshold"] = 5.0
+        self.param.list["short_sensitization_curvature"] = 0.65
+        self.param.list["short_sensitization_steepness"] = 0.07
+        self.param.list["short_desensitization_curvature"] = 1.0
+        self.param.list["short_desensitization_steepness"] = 0.00000005
+        self.param.list["long_sensitization_curvature"] = 1.02
+        self.param.list["long_sensitization_steepness"] = 0.0001
+        self.param.list["long_desensitization_curvature"] = 1.0
+        self.param.list["long_desensitization_steepness"] = 0.000000000001
+
+        self.param.list["presynaptic_potential_curvature"] = 0.60
+        self.param.list["presynaptic_potential_steepness"] = 0.3
+        self.param.list["presynaptic_backfall_curvature"] = 1.00
+        self.param.list["presynaptic_backfall_steepness"] = 0.0000002
+
+        self.param.list["base_weight"] = 1.0
+        self.param.list["max_weight"] = 5.0
+        self.param.list["min_weight"] = 0.0
+        self.param.list["activation_type"] = 1
+        self.param.list["activation_function"] = 3
+        self.param.list["learning_type"] = 1
+
+        self.param.list["transmitter_type"] = 0
+        self.param.list["transmitter_number"] = 1
+        self.param.list["transmitter_backfall_curvature"] = 1.0
+        self.param.list["transmitter_backfall_steepness"] = 0.0000001
+        self.param.list["max_transmitter_weight"] = 5.0
+        self.param.list["min_transmitter_weight"] = 0.0
