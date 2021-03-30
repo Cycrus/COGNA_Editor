@@ -1,5 +1,6 @@
 try:
     import tkinter as tk
+    from tkinter import messagebox
 except:
     print("[ERROR] Missing package. Install package <tkinter> first.")
 try:

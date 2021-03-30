@@ -272,6 +272,8 @@ class Mainframe:
         self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
                                    borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
                                    activebackground=mainframe_backcolor)
+        self.edit_drop_menu["menu"].config(bg=editframe_backcolor, fg=textcolor, borderwidth=1,
+                                           activebackground=mainframe_backcolor, relief=tk.RIDGE)
 
         self.general_info.pack(side=tk.LEFT)
         self.edit_drop_menu.pack(side=tk.LEFT)
