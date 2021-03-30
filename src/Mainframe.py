@@ -373,13 +373,6 @@ class Mainframe:
         self.render_scene()
 
     def reset_camera(self, event):
-        self.editframe.config(width=int(self.root_frame.winfo_width()/4))
-        self.edit_top.config(width=self.edit_top.winfo_width())
-        self.root_frame.update()
-        self.neuron_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40)
-        self.connection_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40)
-        self.select_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40)
-        self.editresize.config(width=7)
         self.camera_x = self.editorcanvas.winfo_width() / 2
         self.camera_y = self.editorcanvas.winfo_height() / 2
         self.zoom_factor = 1.0
@@ -541,6 +534,9 @@ class Mainframe:
                                       text="X", fill=mode_text_color, font="arial 15")
 
         self.render_ui_description()
+
+        if self.editframe.winfo_width() < 100:
+            self.editframe.config(width=100)
 
     def snap_cursor_to_grid(self):
         if self.tool != TOOL_SELECT:
