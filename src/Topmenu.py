@@ -54,7 +54,3 @@ class Topmenu:
                                      activebackground=mainframe_backcolor)
 
         self.topmenu.pack(side=tk.TOP, fill=tk.BOTH, padx=0, pady=0, expand=False)
-        self.button_file.pack(side=tk.LEFT, padx=top_button_padx, pady=top_button_pady)
-        self.button_edit.pack(side=tk.LEFT, padx=top_button_padx, pady=top_button_pady)
-        self.button_view.pack(side=tk.LEFT, padx=top_button_padx, pady=top_button_pady)
-        self.button_help.pack(side=tk.LEFT, padx=top_button_padx, pady=top_button_pady)
