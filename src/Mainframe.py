@@ -32,7 +32,6 @@ class Mainframe:
 
         self.root_frame = root
         self.network_manager = network_manager
-        self.curr_network = 0
         self.param_list = network_parameter
 
         root.update()
@@ -265,7 +264,7 @@ class Mainframe:
             self.edit_drop_options.append("Neuron Random")
             self.general_info.config(text="Neuron Selected")
             self.edit_drop_options.append("Network")
-            self.general_info.config(text=f"Neural Network <{self.curr_network}> Selected")
+            self.general_info.config(text=f"Neural Network <{self.network_manager.curr_network}> Selected")
 
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
@@ -312,11 +311,11 @@ class Mainframe:
         if store:
             self.store_parameters()
         if self.selected_connection > -1:
-            self.selected_entity = self.network_manager.networks[self.curr_network].connections[self.selected_connection]
+            self.selected_entity = self.network_manager.networks[self.network_manager.curr_network].connections[self.selected_connection]
         elif self.selected_neuron > -1:
-            self.selected_entity = self.network_manager.networks[self.curr_network].neurons[self.selected_neuron-1]
+            self.selected_entity = self.network_manager.networks[self.network_manager.curr_network].neurons[self.selected_neuron-1]
         else:
-            self.selected_entity = self.network_manager.networks[self.curr_network]
+            self.selected_entity = self.network_manager.networks[self.network_manager.curr_network]
 
         self.edit_drop_menu.destroy()
         self.id_info.pack_forget()
@@ -411,7 +410,7 @@ class Mainframe:
             temp_y = temp_y + self.grid_size
 
     def render_connections(self):
-        for connection_i, connection in enumerate(self.network_manager.networks[self.curr_network].connections):
+        for connection_i, connection in enumerate(self.network_manager.networks[self.network_manager.curr_network].connections):
             distance = 5
             direction_marker_length = 8
 
@@ -427,7 +426,7 @@ class Mainframe:
 
             temp_verts = connection.vertices[:]
             if not np.isnan(scaled_vert[0]) and not self.do_connection or\
-                    connection_i < len(self.network_manager.networks[self.curr_network].connections) - 1:
+                    connection_i < len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1:
                 temp_verts[len(temp_verts)-1] = scaled_vert
             try:
                 normal_vector = VectorUtils.uninormal_vector(VectorUtils.calc_vector(temp_verts[len(temp_verts)-1],
@@ -469,7 +468,7 @@ class Mainframe:
                                                   fill=connection_color, width=connection_width)
 
     def render_neurons(self):
-        for neuron in self.network_manager.networks[self.curr_network].neurons:
+        for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
             if self.selected_neuron == neuron.id:
                 self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.camera_x,
                                                                                self.zoom_factor),
@@ -521,22 +520,23 @@ class Mainframe:
                                           text="Grid Snap Active")
 
     def render_scene(self):
-        self.editorcanvas.delete("all")
+        if len(self.network_manager.networks) > 0:
+            self.editorcanvas.delete("all")
 
-        if self.grid_snap:
-            self.render_grid()
+            if self.grid_snap:
+                self.render_grid()
 
-        self.render_connections()
-        self.render_neurons()
+            self.render_connections()
+            self.render_neurons()
 
-        self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.camera_x, self.zoom_factor),
-                                      VectorUtils.project_coordinate(0, self.camera_y, self.zoom_factor),
-                                      text="X", fill=mode_text_color, font="arial 15")
+            self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.camera_x, self.zoom_factor),
+                                          VectorUtils.project_coordinate(0, self.camera_y, self.zoom_factor),
+                                          text="X", fill=mode_text_color, font="arial 15")
 
-        self.render_ui_description()
+            self.render_ui_description()
 
-        if self.editframe.winfo_width() < 100:
-            self.editframe.config(width=100)
+            if self.editframe.winfo_width() < 100:
+                self.editframe.config(width=100)
 
     def snap_cursor_to_grid(self):
         if self.tool != TOOL_SELECT:
@@ -570,29 +570,29 @@ class Mainframe:
         neuron_x = self.cursor_x
         neuron_y = self.cursor_y
 
-        self.network_manager.add_neuron(neuron_x, neuron_y, self.neuron_size)
+        self.network_manager.add_neuron(neuron_x, neuron_y, self.neuron_size, self.network_manager.curr_network)
 
     def init_connection(self, neuron):
         self.connecting_neuron = neuron
         self.do_connection = True
 
-        self.network_manager.add_connection(self.connection_source_neuron)
-        connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
-        self.network_manager.networks[self.curr_network].connections[connection_position].vertices.append(
+        self.network_manager.add_connection(self.connection_source_neuron, self.network_manager.curr_network)
+        connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
+        self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices.append(
             np.array([self.cursor_x,
                       self.cursor_y]))
 
     def draw_connection(self):
         if self.do_connection:
             self.render_scene()
-            connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
-            vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
-            self.network_manager.networks[self.curr_network].connections[connection_position].vertices[vertex_position] = [self.cursor_x,
+            connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
+            vertex_position = len(self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices) - 1
+            self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices[vertex_position] = [self.cursor_x,
                                                                                                            self.cursor_y]
 
     def discard_connection(self):
         if self.do_connection:
-            connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
+            connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
             self.network_manager.delete_connection(connection_position)
             self.do_connection = False
 
@@ -637,15 +637,15 @@ class Mainframe:
     def create_neuron_connection(self, neuron):
         if self.do_connection:
             can_connect = True
-            connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
-            for check_con in self.network_manager.networks[self.curr_network].connections:
-                if check_con.prev_neuron == self.network_manager.networks[self.curr_network].connections[connection_position].prev_neuron \
+            connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
+            for check_con in self.network_manager.networks[self.network_manager.curr_network].connections:
+                if check_con.prev_neuron == self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron \
                         and check_con.next_neuron == neuron.id:
                     can_connect = False
             if can_connect:
-                vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
-                self.network_manager.networks[self.curr_network].connections[connection_position].next_neuron = neuron.id
-                self.network_manager.networks[self.curr_network].connections[connection_position].vertices[vertex_position] = [
+                vertex_position = len(self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices) - 1
+                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_neuron = neuron.id
+                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices[vertex_position] = [
                     neuron.posx, neuron.posy]
             else:
                 self.discard_connection()
@@ -655,18 +655,18 @@ class Mainframe:
 
     def create_synaptic_connection(self, connection):
         if self.do_connection:
-            if connection.id < len(self.network_manager.networks[self.curr_network].connections) - 1:
+            if connection.id < len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1:
                 can_connect = True
-                connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
-                for check_con in self.network_manager.networks[self.curr_network].connections:
-                    if check_con.prev_neuron == self.network_manager.networks[self.curr_network].connections[connection_position].prev_neuron \
+                connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
+                for check_con in self.network_manager.networks[self.network_manager.curr_network].connections:
+                    if check_con.prev_neuron == self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron \
                             and check_con.next_connection == connection.id:
                         can_connect = False
 
                 if can_connect:
-                    vertex_position = len(self.network_manager.networks[self.curr_network].connections[connection_position].vertices) - 1
-                    self.network_manager.networks[self.curr_network].connections[connection_position].next_connection = connection.id
-                    self.network_manager.networks[self.curr_network].connections[connection_position].vertices[vertex_position] = [
+                    vertex_position = len(self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices) - 1
+                    self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_connection = connection.id
+                    self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices[vertex_position] = [
                         self.cursor_x, self.cursor_y]
                 else:
                     self.discard_connection()
@@ -675,7 +675,7 @@ class Mainframe:
     def left_click(self, event):
         neuron_collision = False
         connection_collision = False
-        for neuron in self.network_manager.networks[self.curr_network].neurons:
+        for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
             if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                 if self.tool == TOOL_CONNECTIONS:
                     if not self.do_connection:
@@ -692,7 +692,7 @@ class Mainframe:
                 neuron_collision = True
 
         if not neuron_collision:
-            for connection in self.network_manager.networks[self.curr_network].connections:
+            for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.camera_x, self.camera_y, self.zoom_factor):
                     if self.tool == TOOL_CONNECTIONS:
@@ -702,15 +702,15 @@ class Mainframe:
                 if self.tool == TOOL_NEURONS:
                     self.add_neuron()
             else:
-                connection_position = len(self.network_manager.networks[self.curr_network].connections) - 1
-                self.network_manager.networks[self.curr_network].connections[connection_position].vertices.append(
+                connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
+                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices.append(
                     np.array([self.cursor_x, self.cursor_y]))
 
             if self.tool == TOOL_SELECT:
                 self.store_parameters()
                 self.deselect_neurons()
                 self.show_parameters(store=False)
-                for connection in self.network_manager.networks[self.curr_network].connections:
+                for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                     if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                                self.camera_x, self.camera_y, self.zoom_factor):
                         self.selected_connection = connection.id
@@ -727,14 +727,14 @@ class Mainframe:
 
     def delete_neuron(self):
         if self.tool == TOOL_NEURONS:
-            for neuron in self.network_manager.networks[self.curr_network].neurons:
+            for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
                 if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.zoom_factor):
                     self.network_manager.delete_neuron(neuron.id)
             self.render_scene()
 
     def delete_connection(self):
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
-            for connection in self.network_manager.networks[self.curr_network].connections:
+            for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.camera_x, self.camera_y, self.zoom_factor):
                     self.network_manager.delete_connection(connection.id)
