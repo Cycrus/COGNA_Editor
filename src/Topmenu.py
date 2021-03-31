@@ -1,12 +1,14 @@
 from src.GlobalLibraries import *
+from src.Mainframe import *
 
 # Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
 
 
 class Topmenu:
-    def __init__(self, root, network_manager):
+    def __init__(self, root, network_manager, mainframe):
         self.root_frame = root
         self.network_manager = network_manager
+        self.mainframe = mainframe
 
         self.topmenu = tk.Frame(master=root, background=topmenu_backcolor,
                                 borderwidth=0,
@@ -22,14 +24,15 @@ class Topmenu:
         self.file = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
                             foreground=top_button_textcolor, activebackground=active_button_color,
                             activeforeground=textcolor, borderwidth=1, relief=tk.RIDGE)
-        self.file.add_command(label="New        <ctr-w>", command=self.new_command)
+        self.file.add_command(label="New        <ctr-n>", command=self.new_command)
         self.file.add_separator()
         self.file.add_command(label="Open       <ctr-o>", command=self.open_command)
         self.file.add_command(label="Import     <ctr-i>", command=self.import_command)
         self.file.add_separator()
         self.file.add_command(label="Save        <ctr-s>", command=self.save_command)
-        self.file.add_command(label="Save as   <ctr-alt-s>", command=self.save_as_command)
+        self.file.add_command(label="Save as", command=self.save_as_command)
         self.file.add_separator()
+        self.file.add_command(label="Close File  <ctr-w>", command=self.close_command)
         self.file.add_command(label="Exit", command=self.root_frame.quit)
         self.menubar.add_cascade(label="File", menu=self.file)
 
@@ -50,8 +53,8 @@ class Topmenu:
         self.view = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
                             foreground=top_button_textcolor, activebackground=active_button_color,
                             activeforeground=textcolor, borderwidth=1, relief=tk.RIDGE)
-        self.view.add_command(label="Snap to Grid    <g>")
-        self.view.add_command(label="Reset View      <space>")
+        self.view.add_command(label="Snap to Grid    <g>", command=self.grid_command)
+        self.view.add_command(label="Reset View      <space>", command=self.reset_view_command)
         self.menubar.add_cascade(label="View", menu=self.view)
 
         self.help = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
@@ -66,8 +69,27 @@ class Topmenu:
 
         self.topmenu.pack(side=tk.TOP, fill=tk.BOTH, padx=0, pady=0, expand=False)
 
-    def new_command(self):
-        print("New file")
+        self.root_frame.bind("<Control-Left>", self.prev_network)
+        self.root_frame.bind("<Control-Right>", self.next_network)
+        self.root_frame.bind("<Control-n>", self.new_command)
+        self.root_frame.bind("<Control-w>", self.close_command)
+        self.root_frame.bind("<Control-s>", self.save_command)
+
+    def prev_network(self, event=None):
+        self.network_manager.curr_network = self.network_manager.curr_network - 1
+        if self.network_manager.curr_network < 0:
+            self.network_manager.curr_network = len(self.network_manager.networks)-1
+        self.mainframe.render_scene()
+
+    def next_network(self, event=None):
+        self.network_manager.curr_network = self.network_manager.curr_network + 1
+        if self.network_manager.curr_network > len(self.network_manager.networks)-1:
+            self.network_manager.curr_network = 0
+        self.mainframe.render_scene()
+
+    def new_command(self, event=None):
+        self.network_manager.add_network()
+        self.mainframe.render_scene()
 
     def open_command(self):
         print("Open file")
@@ -76,10 +98,21 @@ class Topmenu:
         print("Import network")
 
     def save_command(self):
-        print("Save file")
+        self.network_manager.save_network(save_as=False)
 
     def save_as_command(self):
-        print("Save file as")
+        self.network_manager.save_network(save_as=True)
+
+    def close_command(self, event=None):
+        if len(self.network_manager.networks) > 0:
+            self.network_manager.clear_single_network(self.network_manager.curr_network)
+        self.mainframe.render_scene()
+
+    def grid_command(self):
+        self.mainframe.toggle_grid_snap(None)
+
+    def reset_view_command(self):
+        self.mainframe.reset_camera(None)
 
     def show_about(self):
         messagebox.showinfo('About COGNA Editor',
