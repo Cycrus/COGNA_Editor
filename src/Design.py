@@ -1,6 +1,3 @@
-default_neuron_filename = "img/default_neuron_filled.png"
-neuron_selected_filename = "img/default_neuron_filled_selected.png"
-
 textcolor = "#CCCCCC"
 error_textcolor = "#AA0000"
 warning_textcolor = "#444444"
