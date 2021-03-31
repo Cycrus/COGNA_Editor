@@ -2,6 +2,7 @@
 
 import os
 from src.UI import *
+from sys import platform
 
 if __name__ == "__main__":
     os.path.dirname(os.path.abspath(__file__))
@@ -17,7 +18,10 @@ if __name__ == "__main__":
     height = root.winfo_screenheight()
     root.title("untitled.nn")
     root.geometry(f"{width}x{height}+0+0")
-    root.attributes('-zoomed', True)
+    if platform == "linux" or platform == "linux2":
+        root.attributes("-zoomed", True)
+    elif platform == "win32":
+        root.state("zoomed")
 
     network_manager = NetworkManager()
 
