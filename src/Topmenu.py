@@ -10,15 +10,7 @@ class Topmenu:
         self.network_manager = network_manager
         self.mainframe = mainframe
 
-        self.topmenu = tk.Frame(master=root, background=topmenu_backcolor,
-                                borderwidth=0,
-                                highlightthickness=1,
-                                width=root.winfo_width(),
-                                height=topmenu_height,
-                                highlightbackground=highlight_color)
-        self.topmenu.grid_columnconfigure(0, weight=1)
-
-        self.menubar = tk.Menu(master=self.topmenu, background=topmenu_backcolor, foreground=top_button_textcolor,
+        self.menubar = tk.Menu(master=self.root_frame, background=topmenu_backcolor, foreground=top_button_textcolor,
                                activebackground=active_button_color, activeforeground=textcolor, borderwidth=0,
                                relief=tk.RIDGE)
         self.file = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
@@ -67,8 +59,6 @@ class Topmenu:
 
         self.root_frame.config(menu=self.menubar)
 
-        self.topmenu.pack(side=tk.TOP, fill=tk.BOTH, padx=0, pady=0, expand=False)
-
         self.root_frame.bind("<Control-Left>", self.prev_network)
         self.root_frame.bind("<Control-Right>", self.next_network)
         self.root_frame.bind("<Control-n>", self.new_command)
@@ -80,16 +70,25 @@ class Topmenu:
         if self.network_manager.curr_network < 0:
             self.network_manager.curr_network = len(self.network_manager.networks)-1
         self.mainframe.render_scene()
+        self.mainframe.show_parameters(store=True)
 
     def next_network(self, event=None):
         self.network_manager.curr_network = self.network_manager.curr_network + 1
         if self.network_manager.curr_network > len(self.network_manager.networks)-1:
             self.network_manager.curr_network = 0
         self.mainframe.render_scene()
+        self.mainframe.show_parameters(store=True)
+
+    def show_certain_network(self, event=None, network_id=0):
+        self.network_manager.curr_network = network_id
+        self.mainframe.render_scene()
+        self.mainframe.show_parameters(store=True)
 
     def new_command(self, event=None):
         self.network_manager.add_network()
+        self.mainframe.reset_camera()
         self.mainframe.render_scene()
+        self.mainframe.show_parameters(store=True)
 
     def open_command(self):
         print("Open file")
@@ -97,10 +96,10 @@ class Topmenu:
     def import_command(self):
         print("Import network")
 
-    def save_command(self):
+    def save_command(self, event=None):
         self.network_manager.save_network(save_as=False)
 
-    def save_as_command(self):
+    def save_as_command(self, event=None):
         self.network_manager.save_network(save_as=True)
 
     def close_command(self, event=None):

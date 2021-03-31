@@ -12,6 +12,9 @@ class NetworkManager:
         self.filename = []
         self.locations = []
         self.fixed_location = []
+        self.camera_x = []
+        self.camera_y = []
+        self.zoom_factor = []
         self.curr_network = 0
         self.add_network()
 
@@ -31,6 +34,9 @@ class NetworkManager:
         self.filename.append(temp_filename)
         self.locations.append("networks/")
         self.fixed_location.append(False)
+        self.camera_x.append(0.0)
+        self.camera_y.append(0.0)
+        self.zoom_factor.append(1.0)
 
     def add_neuron(self, posx, posy, size, network_id=0):
         self.networks[network_id].neurons.append(Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
@@ -72,6 +78,9 @@ class NetworkManager:
             self.filename.clear()
             self.locations.clear()
             self.fixed_location.clear()
+            self.camera_x.clear()
+            self.camera_y.clear()
+            self.zoom_factor.clear()
         self.networks.clear()
         self.add_network()
 
@@ -82,6 +91,9 @@ class NetworkManager:
         self.filename.pop(network_id)
         self.locations.pop(network_id)
         self.fixed_location.pop(network_id)
+        self.camera_x.pop(network_id)
+        self.camera_y.pop(network_id)
+        self.zoom_factor.pop(network_id)
         if self.curr_network == network_id:
             self.curr_network = self.curr_network - 1
         if len(self.networks) < 1:
