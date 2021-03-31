@@ -16,7 +16,8 @@ if __name__ == "__main__":
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
     root.title("untitled.nn")
-    root.geometry(f"{width}x{height}")
+    root.geometry(f"{width}x{height}+0+0")
+    root.attributes('-zoomed', True)
 
     network_manager = NetworkManager()
 
