@@ -94,8 +94,9 @@ class NetworkManager:
         self.camera_x.pop(network_id)
         self.camera_y.pop(network_id)
         self.zoom_factor.pop(network_id)
-        if self.curr_network == network_id:
-            self.curr_network = self.curr_network - 1
+        self.curr_network = self.curr_network - 1
+        if self.curr_network < 0:
+            self.curr_network = 0
         if len(self.networks) < 1:
             self.add_network()
 

@@ -730,7 +730,7 @@ class Mainframe:
         if self.tool == TOOL_NEURONS:
             for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
                 if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.network_manager.zoom_factor[self.network_manager.curr_network]):
-                    self.network_manager.delete_neuron(neuron.id)
+                    self.network_manager.delete_neuron(neuron.id, self.network_manager.curr_network)
             self.render_scene()
 
     def delete_connection(self):
@@ -738,7 +738,7 @@ class Mainframe:
             for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
-                    self.network_manager.delete_connection(connection.id)
+                    self.network_manager.delete_connection(connection.id, self.network_manager.curr_network)
             self.render_scene()
 
     def delete_entity(self, event):
