@@ -22,6 +22,8 @@ if __name__ == "__main__":
         root.attributes("-zoomed", True)
     elif platform == "win32":
         root.state("zoomed")
+    root.unbind_all("<<NextWindow>>")
+    root.unbind_all("<<PrevWindow>>")
 
     network_manager = NetworkManager()
 

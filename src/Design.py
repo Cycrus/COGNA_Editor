@@ -31,5 +31,7 @@ top_button_width = 4
 top_button_padx = 0
 top_button_pady = 2
 bottommenu_height = tabframe_height
+splash_width = 800
+splash_height = 300
 
 ui_scaling_factor = 1.0
