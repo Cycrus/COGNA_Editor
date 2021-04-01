@@ -184,6 +184,7 @@ class Mainframe:
         self.root_frame.bind("<Tab>", self.tab_event)
         self.root_frame.bind("<g>", self.toggle_grid_snap)
         self.root_frame.bind("<space>", self.reset_camera)
+        self.root_frame.bind("<Return>", self.show_parameters)
 
         self.switch_tool_select()
 
