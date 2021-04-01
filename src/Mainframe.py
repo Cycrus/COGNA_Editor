@@ -9,6 +9,11 @@ TOOL_SELECT = 2
 
 class Mainframe:
     def __init__(self, root, network_manager):
+        """
+        Constructor. Creates frames, widgets, etc.
+        :param root: The root frame/window of program.
+        :param network_manager: The object handling all currently opened networks.
+        """
         self.neuron_size = 25
 
         self.cursor_x = 0.0
@@ -189,9 +194,19 @@ class Mainframe:
         self.switch_tool_select()
 
     def pack_widgets(self):
+        """
+        Under construction: Will place all GUI widgets onto screen. Will be called in UI.py, to ensure correct
+        order of widgets.
+        """
         pass
 
     def check_parameter_uniqueness(self, parameter_name):
+        """
+        Checks if a parameter inside of a textbox is unique, or if any other entity higher in the hierarchy
+        has the same value for the parameter
+        :param parameter_name: The parameter which should be checked.
+        :return: Bool value if parameter is unique or not.
+        """
         if self.selected_neuron > -1:
             neuron_param = self.selected_entity.param.list[parameter_name]
             neuron_network = self.selected_entity.network_id
@@ -214,6 +229,9 @@ class Mainframe:
         return True
 
     def store_parameters(self):
+        """
+        Stores all parameter, which are currently opened in the GUI.
+        """
         if self.tool == TOOL_SELECT:
             for i, name in enumerate(self.param_list):
                 for param_container in self.parameter_textbox:
@@ -229,6 +247,13 @@ class Mainframe:
                             self.selected_entity.param.list[name] = None
 
     def print_parameter(self, entity, param_index, name):
+        """
+        Prints the parameter into its textbox given corresponding index value.
+        :param entity: The entity the parameter is assigned to.
+        :param param_index: The index of the parameter
+        :param name: The name of the parameter. Must be given for other functions and to check for rule exceptions
+                     in parameter GUI handling.
+        """
         if entity.param.list[name] is None:
             if isinstance(entity, Connection):
                 network_id = entity.network_id
@@ -252,6 +277,9 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=error_textcolor)
 
     def show_entity_parameters(self):
+        """
+        The function which renders the parameters to the left frame of the program.
+        """
         if self.selected_connection > -1:
             self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
         elif self.selected_neuron > -1:
@@ -309,6 +337,11 @@ class Mainframe:
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_parameters(self, event=None, store=True):
+        """
+        Initializes and prepares parameter frame for rendering new parameters.
+        :param event: Variable for use as callback function
+        :param store: Determines whether parameters should be stored before rendering new parameters.
+        """
         if store:
             self.store_parameters()
         if self.selected_connection > -1:
@@ -341,6 +374,9 @@ class Mainframe:
             self.show_entity_parameters()
 
     def switch_tool_neurons(self):
+        """
+        Function to switch tool stance to neuron editing.
+        """
         self.tool = TOOL_NEURONS
         self.selected_entity = None
         self.neuron_button.configure(background=active_button_color)
@@ -353,6 +389,9 @@ class Mainframe:
         self.render_scene()
 
     def switch_tool_connections(self):
+        """
+        Function to switch tool stance to connection editing.
+        """
         self.tool = TOOL_CONNECTIONS
         self.selected_entity = None
         self.neuron_button.configure(background=inactive_button_color)
@@ -364,6 +403,9 @@ class Mainframe:
         self.render_scene()
 
     def switch_tool_select(self):
+        """
+        Function to switch tool stance to selecting and parameter editing.
+        """
         self.tool = TOOL_SELECT
         self.neuron_button.configure(background=inactive_button_color)
         self.connection_button.configure(background=inactive_button_color)
@@ -373,12 +415,19 @@ class Mainframe:
         self.render_scene()
 
     def reset_camera(self, event=None):
+        """
+        Resets camera view and zoom.
+        :param event: Parameter for use as callback function.
+        """
         self.network_manager.camera_x[self.network_manager.curr_network] = self.editorcanvas.winfo_width() / 2
         self.network_manager.camera_y[self.network_manager.curr_network] = self.editorcanvas.winfo_height() / 2
         self.network_manager.zoom_factor[self.network_manager.curr_network] = 1.0
         self.render_scene()
 
     def render_grid(self):
+        """
+        Renders the grid onto the edit canvas, if grid snap is activated.
+        """
         temp_x = self.network_manager.camera_x[self.network_manager.curr_network] % self.grid_size
         temp_y = self.network_manager.camera_y[self.network_manager.curr_network] % self.grid_size
 
@@ -411,6 +460,9 @@ class Mainframe:
             temp_y = temp_y + self.grid_size
 
     def render_connections(self):
+        """
+        Renders all connections of the currently active network.
+        """
         for connection_i, connection in enumerate(self.network_manager.networks[self.network_manager.curr_network].connections):
             distance = 5
             direction_marker_length = 8
@@ -469,6 +521,9 @@ class Mainframe:
                                                   fill=connection_color, width=connection_width)
 
     def render_neurons(self):
+        """
+        Renders all neurons of the currently active network.
+        """
         for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
             if self.selected_neuron == neuron.id:
                 self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
@@ -489,6 +544,9 @@ class Mainframe:
                                           text=f"{neuron.id}", fill=viewframe_neurontext)
 
     def render_ui_description(self):
+        """
+        Renders text elements onto the canvas.
+        """
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 15, anchor="w",
                                       text="Mode:", fill=viewframe_textcolor)
         if self.tool == TOOL_SELECT:
@@ -521,6 +579,10 @@ class Mainframe:
                                           text="Grid Snap Active")
 
     def render_scene(self):
+        """
+        Function responsible for calling all other rendering functions and rendering the whole scene in the
+        edit canvas.
+        """
         if len(self.network_manager.networks) > 0:
             self.editorcanvas.delete("all")
 
@@ -540,6 +602,9 @@ class Mainframe:
                 self.editframe.config(width=100)
 
     def snap_cursor_to_grid(self):
+        """
+        Toggles grid snapping and visibility of grid.
+        """
         if self.tool != TOOL_SELECT:
             if self.grid_snap:
                 posx = self.cursor_x
@@ -558,16 +623,30 @@ class Mainframe:
                     self.cursor_y = posy + (self.grid_size - y_offset)
 
     def get_free_cursor(self, event):
+        """
+        Returns free cursor (not snapped to the grid) to the cursor member variables, even if grid snapping is active.
+        :param event: Parameter for use as callback function.
+        """
         self.cursor_x = VectorUtils.correct_zoom(event.x, self.network_manager.zoom_factor[self.network_manager.curr_network]) - self.network_manager.camera_x[self.network_manager.curr_network]
         self.cursor_y = VectorUtils.correct_zoom(event.y, self.network_manager.zoom_factor[self.network_manager.curr_network]) - self.network_manager.camera_y[self.network_manager.curr_network]
 
     def get_cursor_position(self, event):
+        """
+        Returns free cursor (not snapped to the grid) to the cursor member variables, even if grid snapping is active.
+        Afterwards it renders the scene and snaps cursor back to the grid.
+        Useful if a very specific action should be independent from the grid.
+        :param event:
+        :return:
+        """
         self.get_free_cursor(event)
         self.render_scene()
 
         self.snap_cursor_to_grid()
 
     def add_neuron(self):
+        """
+        Adds a neuron to the network.
+        """
         neuron_x = self.cursor_x
         neuron_y = self.cursor_y
 
