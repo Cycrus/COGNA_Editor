@@ -31,16 +31,16 @@ class Mainframe:
         self.network_manager = network_manager
         self.param_list = network_parameter
 
-        root.update()
+        self.root_frame.update()
 
-        self.editframe_width = int(root.winfo_width()/4)
+        self.editframe_width = int(self.root_frame.winfo_width()/4)
 
-        self.mainframe = tk.Frame(master=root, background=mainframe_backcolor,
+        self.mainframe = tk.Frame(master=self.root_frame, background=mainframe_backcolor,
                                   borderwidth=0,
                                   highlightthickness=1,
                                   highlightbackground=highlight_color,
-                                  height=root.winfo_height() - topmenu_height - bottommenu_height,
-                                  width=root.winfo_width())
+                                  height=self.root_frame.winfo_height() - tabframe_height - bottommenu_height-300,
+                                  width=self.root_frame.winfo_width())
         self.mainframe.grid_columnconfigure(0, weight=1)
 
         self.editframe = tk.Frame(master=self.mainframe, background=editframe_backcolor,
@@ -187,6 +187,9 @@ class Mainframe:
         self.root_frame.bind("<Return>", self.show_parameters)
 
         self.switch_tool_select()
+
+    def pack_widgets(self):
+        pass
 
     def check_parameter_uniqueness(self, parameter_name):
         if self.selected_neuron > -1:
