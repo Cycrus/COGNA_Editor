@@ -155,6 +155,7 @@ class Topmenu:
                     break
                 elif event.num == 2:
                     self.delete_network(tab[1])
+                    self.mainframe.render_scene()
                     break
 
 
@@ -175,6 +176,7 @@ class Topmenu:
         self.mark_active_tab()
 
     def show_specific_network(self, network_id):
+        print(network_id)
         self.network_manager.curr_network = network_id
         self.mainframe.render_scene()
         self.mainframe.show_parameters(store=True)
@@ -209,7 +211,6 @@ class Topmenu:
     def close_command(self, event=None):
         self.delete_network(self.network_manager.curr_network)
 
-        self.mainframe.reset_camera()
         self.mainframe.render_scene()
         self.mark_active_tab()
 
