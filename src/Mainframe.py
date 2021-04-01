@@ -81,16 +81,16 @@ class Mainframe:
         self.select_button = tk.Button(master=self.edit_top, text="S", background=inactive_button_color,
                                        fg=textcolor, command=self.switch_tool_select, image=self.pixelVirtual,
                                        activebackground=mainframe_backcolor,
-                                       width=int(self.edit_top.winfo_width() / editbutton_size_relation) - 40,
+                                       width=50,
                                        compound="c")
         self.neuron_button = tk.Button(master=self.edit_top, text="N", background=active_button_color,
                                        fg=textcolor, command=self.switch_tool_neurons, image=self.pixelVirtual,
                                        activebackground=mainframe_backcolor,
-                                       width=int(self.edit_top.winfo_width()/editbutton_size_relation)-40, compound="c")
+                                       width=50, compound="c")
         self.connection_button = tk.Button(master=self.edit_top, text="C", background=inactive_button_color,
                                            fg=textcolor, command=self.switch_tool_connections, image=self.pixelVirtual,
                                            activebackground=mainframe_backcolor,
-                                           width=int(self.edit_top.winfo_width()/editbutton_size_relation)-40, compound="c")
+                                           width=50, compound="c")
 
         self.viewframe = tk.Frame(master=self.mainframe, background=viewframe_backcolor,
                                   highlightthickness=0,
@@ -878,9 +878,6 @@ class Mainframe:
         if self.editframe.winfo_width() < 100:
             self.editframe.config(width=100)
         self.edit_top.config(width=self.edit_top.winfo_width() - offset)
-        self.neuron_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation)-40)
-        self.connection_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation)-40)
-        self.select_button.config(width=int(self.edit_top.winfo_width() / editbutton_size_relation)-40)
         self.editresize.config(width=7)
         self.render_scene()
         self.root_frame.update()
