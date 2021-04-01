@@ -10,6 +10,17 @@ class Topmenu:
         self.network_manager = network_manager
         self.mainframe = mainframe
 
+        self.tabframe = tk.Frame(master=root, background=editframe_backcolor,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 highlightbackground=highlight_color,
+                                 height=tabframe_height,
+                                 width=root.winfo_width())
+
+        self.tablist = []
+        self.tabframe.pack()
+        self.create_tab(0)
+
         self.menubar = tk.Menu(master=self.root_frame, background=topmenu_backcolor, foreground=top_button_textcolor,
                                activebackground=active_button_color, activeforeground=textcolor, borderwidth=0,
                                relief=tk.RIDGE)
@@ -65,6 +76,28 @@ class Topmenu:
         self.root_frame.bind("<Control-w>", self.close_command)
         self.root_frame.bind("<Control-s>", self.save_command)
 
+    def create_tab(self, network_id):
+        self.tablist.append([tk.Frame(master=self.tabframe, background=editframe_backcolor,
+                                      borderwidth=0,
+                                      highlightthickness=1,
+                                      highlightbackground=highlight_color,
+                                      height=tabframe_height,
+                                      width=1),
+                            network_id])
+        tabcount = len(self.tablist)
+        for tab in self.tablist:
+            tab[0].config(width=self.root_frame.winfo_width()/tabcount)
+            tab[0].grid(row=0, column=tab[1])
+            tab[0].unbind("<Button-1>")
+            tab[0].bind("<Button-1>", self.click_tab)
+
+    def click_tab(self, event=None):
+        for tab in self.tablist:
+            if event.widget == tab[0]:
+                print(tab[1])
+                self.show_specific_network(tab[1])
+                break
+
     def prev_network(self, event=None):
         self.network_manager.curr_network = self.network_manager.curr_network - 1
         if self.network_manager.curr_network < 0:
@@ -79,7 +112,8 @@ class Topmenu:
         self.mainframe.render_scene()
         self.mainframe.show_parameters(store=True)
 
-    def show_certain_network(self, event=None, network_id=0):
+    def show_specific_network(self, network_id):
+        print(network_id)
         self.network_manager.curr_network = network_id
         self.mainframe.render_scene()
         self.mainframe.show_parameters(store=True)
@@ -89,6 +123,7 @@ class Topmenu:
         self.mainframe.reset_camera()
         self.mainframe.render_scene()
         self.mainframe.show_parameters(store=True)
+        self.create_tab(self.network_manager.curr_network)
 
     def open_command(self):
         print("Open file")
@@ -105,6 +140,7 @@ class Topmenu:
     def close_command(self, event=None):
         if len(self.network_manager.networks) > 0:
             self.network_manager.clear_single_network(self.network_manager.curr_network)
+        self.mainframe.reset_camera()
         self.mainframe.render_scene()
 
     def grid_command(self):
