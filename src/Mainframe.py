@@ -79,7 +79,6 @@ class Mainframe:
         Under construction: Will place all GUI widgets onto screen. Will be called in UI.py, to ensure correct
         order of widgets.
         """
-
         self.mainframe = tk.Frame(master=self.root_frame, background=mainframe_backcolor,
                                   borderwidth=0,
                                   highlightthickness=1,
@@ -396,8 +395,7 @@ class Mainframe:
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=inactive_button_color)
         self.discard_connection()
-        self.deselect_neurons()
-        self.deselect_connections()
+        self.deselect_all()
         self.show_parameters(store=False)
         self.render_scene()
 
@@ -410,8 +408,7 @@ class Mainframe:
         self.neuron_button.configure(background=inactive_button_color)
         self.connection_button.configure(background=active_button_color)
         self.select_button.configure(background=inactive_button_color)
-        self.deselect_neurons()
-        self.deselect_connections()
+        self.deselect_all()
         self.show_parameters(store=False)
         self.render_scene()
 
@@ -424,6 +421,7 @@ class Mainframe:
         self.connection_button.configure(background=inactive_button_color)
         self.select_button.configure(background=active_button_color)
         self.discard_connection()
+        self.deselect_all()
         self.show_parameters(store=False)
         self.render_scene()
 
@@ -597,22 +595,23 @@ class Mainframe:
         edit canvas.
         """
         if len(self.network_manager.networks) > 0:
-            self.editorcanvas.delete("all")
+            if self.editorcanvas is not None:
+                self.editorcanvas.delete("all")
 
-            if self.grid_snap:
-                self.render_grid()
+                if self.grid_snap:
+                    self.render_grid()
 
-            self.render_connections()
-            self.render_neurons()
+                self.render_connections()
+                self.render_neurons()
 
-            self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          VectorUtils.project_coordinate(0, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          text="X", fill=mode_text_color, font="arial 15")
+                self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              VectorUtils.project_coordinate(0, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              text="X", fill=mode_text_color, font="arial 15")
 
-            self.render_ui_description()
+                self.render_ui_description()
 
-            if self.editframe.winfo_width() < 100:
-                self.editframe.config(width=100)
+                if self.editframe.winfo_width() < 100:
+                    self.editframe.config(width=100)
 
     def snap_cursor_to_grid(self):
         """
@@ -694,6 +693,11 @@ class Mainframe:
 
     def deselect_connections(self):
         self.selected_connection = -1
+       
+    def deselect_all(self):
+        self.deselect_neurons()
+        self.deselect_connections()
+        #self.selected_entity = None
 
     def escape_event(self, event):
         self.store_parameters()

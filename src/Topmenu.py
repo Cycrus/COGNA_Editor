@@ -162,6 +162,7 @@ class Topmenu:
 
 
     def prev_network(self, event=None):
+        self.mainframe.deselect_all()
         self.network_manager.curr_network = self.network_manager.curr_network - 1
         if self.network_manager.curr_network < 0:
             self.network_manager.curr_network = len(self.network_manager.networks)-1
@@ -170,6 +171,7 @@ class Topmenu:
         self.mark_active_tab()
 
     def next_network(self, event=None):
+        self.mainframe.deselect_all()
         self.network_manager.curr_network = self.network_manager.curr_network + 1
         if self.network_manager.curr_network > len(self.network_manager.networks)-1:
             self.network_manager.curr_network = 0
@@ -178,17 +180,20 @@ class Topmenu:
         self.mark_active_tab()
 
     def show_specific_network(self, network_id):
-        print(network_id)
+        self.mainframe.store_parameters()
+        self.mainframe.deselect_all()
         self.network_manager.curr_network = network_id
         self.mainframe.render_scene()
-        self.mainframe.show_parameters(store=True)
+        self.mainframe.show_parameters(store=False)
         self.mark_active_tab()
 
     def new_command(self, event=None):
+        self.mainframe.store_parameters()
+        self.mainframe.deselect_all()
         self.network_manager.add_network()
         self.mainframe.reset_camera()
         self.mainframe.render_scene()
-        self.mainframe.show_parameters(store=True)
+        self.mainframe.show_parameters(store=False)
         self.create_tab(self.network_manager.curr_network)
 
     def open_command(self):
@@ -211,6 +216,7 @@ class Topmenu:
             self.delete_tab(network_id)
 
     def close_command(self, event=None):
+        self.mainframe.deselect_all()
         self.delete_network(self.network_manager.curr_network)
 
         self.mainframe.render_scene()
