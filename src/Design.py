@@ -1,26 +1,18 @@
-textcolor = "#CCCCCC"
-error_textcolor = "#AA0000"
-warning_textcolor = "#444444"
-topmenu_backcolor = "#444444"
-top_button_textcolor = textcolor
-zoom_widget_backcolor = "#555555"
-highlight_color = "#222222"
-viewframe_backcolor = "#333333"
-mainframe_backcolor = "#777777"
-viewframe_textcolor = "#CCCCCC"
-viewframe_neurontext = viewframe_backcolor
-connection_color = "#1cd4d8"
-neuron_color = "#FFFFFF"
-selected_connection_color = "#CCCCCC"
-grid_color = "#444444"
+
+grey_c = "#CCCCCC"
+dark_red = "#AA0000"
+grey_4 = "#444444"
+grey_5 = "#555555"
+grey_2 = "#222222"
+grey_3 = "#333333"
+grey_7 = "#777777"
+light_blue = "#1cd4d8"
+white = "#FFFFFF"
 connection_width = 3
 selected_connection_width = connection_width+3
-editframe_backcolor = topmenu_backcolor
-mode_text_color = connection_color
 editbutton_size_relation = 3
 
-active_button_color = "#14405a"
-inactive_button_color = viewframe_backcolor
+dark_blue = "#14405a"
 button_padding_x = 5
 button_padding_y = 5
 

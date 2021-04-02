@@ -15,6 +15,7 @@ class NetworkManager:
         self.camera_x = []
         self.camera_y = []
         self.zoom_factor = []
+        self.transmitters = ["Default"]
         self.curr_network = 0
         self.add_network()
 
