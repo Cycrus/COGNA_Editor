@@ -39,12 +39,52 @@ class Mainframe:
         self.root_frame.update()
 
         self.editframe_width = int(self.root_frame.winfo_width()/4)
+        barmenu_height = self.root_frame.winfo_height() / 100
+        self.pixelVirtual = tk.PhotoImage(width=1, height=1)
+        
+        self.edit_drop_options = ["Connection Specific",
+                                  "Connection Habituation",
+                                  "Connection Sensitization",
+                                  "Connection Presynaptic",
+                                  "Neuron Activation",
+                                  "Neuron Transmitter",
+                                  "Neuron Random",
+                                  "Network"]
+        self.edit_selection = tk.StringVar()
+        self.edit_selection.set(self.edit_drop_options[0])
+        self.parameter_count = 50
+        self.parameter_frame = []
+        self.parameter_info = []
+        self.parameter_textbox = []
+        self.do_connection = False
+        self.grid_size = 50
+        self.grid_snap = True
+        
+        self.mainframe = None
+        self.editframe = None
+        self.editresize = None
+        self.edit_top = None
+        self.select_button = None
+        self.neuron_button = None
+        self.connection_button = None
+        self.viewframe = None
+        self.editorcanvas = None
+        self.edit_1 = None
+        self.general_info = None
+        self.id_info = None
+        self.edit_drop_menu = None
+
+    def pack_widgets(self):
+        """
+        Under construction: Will place all GUI widgets onto screen. Will be called in UI.py, to ensure correct
+        order of widgets.
+        """
 
         self.mainframe = tk.Frame(master=self.root_frame, background=mainframe_backcolor,
                                   borderwidth=0,
                                   highlightthickness=1,
                                   highlightbackground=highlight_color,
-                                  height=self.root_frame.winfo_height() - tabframe_height - bottommenu_height-300,
+                                  height=self.root_frame.winfo_height(),
                                   width=self.root_frame.winfo_width())
         self.mainframe.grid_columnconfigure(0, weight=1)
 
@@ -75,8 +115,6 @@ class Mainframe:
         self.edit_top.pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=15, expand=False)
 
         self.root_frame.update()
-
-        self.pixelVirtual = tk.PhotoImage(width=1, height=1)
 
         self.select_button = tk.Button(master=self.edit_top, text="S", background=inactive_button_color,
                                        fg=textcolor, command=self.switch_tool_select, image=self.pixelVirtual,
@@ -110,8 +148,7 @@ class Mainframe:
                                borderwidth=0,
                                highlightthickness=0,
                                width=self.editframe_width)
-        self.parameter_count = 50
-        self.parameter_frame = []
+        
         for i in range(0, self.parameter_count):
             self.parameter_frame.append(tk.Frame(master=self.editframe, background=editframe_backcolor,
                                         borderwidth=0,
@@ -123,24 +160,12 @@ class Mainframe:
         self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=editframe_backcolor,
                                 fg=textcolor)
 
-        self.edit_drop_options = ["Connection Specific",
-                                  "Connection Habituation",
-                                  "Connection Sensitization",
-                                  "Connection Presynaptic",
-                                  "Neuron Activation",
-                                  "Neuron Transmitter",
-                                  "Neuron Random",
-                                  "Network"]
-        self.edit_selection = tk.StringVar()
-        self.edit_selection.set(self.edit_drop_options[0])
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
         self.edit_drop_menu.config(bg=editframe_backcolor, width=self.editframe_width, fg=textcolor,
                                    borderwidth=0, highlightthickness=3, highlightbackground=highlight_color,
                                    activebackground=mainframe_backcolor)
 
-        self.parameter_info = []
-        self.parameter_textbox = []
 
         self.select_button.pack(side=tk.LEFT, padx=button_padding_x, pady=button_padding_y)
         self.neuron_button.pack(side=tk.LEFT, padx=button_padding_x, pady=button_padding_y)
@@ -156,11 +181,6 @@ class Mainframe:
 
         self.viewframe.pack(side=tk.LEFT, fill=tk.BOTH, padx=0, pady=0, expand=True)
         self.editorcanvas.pack(side=tk.RIGHT, fill=tk.BOTH, padx=0, pady=0, expand=True)
-
-        self.do_connection = False
-
-        self.grid_size = 50
-        self.grid_snap = True
 
         self.root_frame.update()
         self.network_manager.camera_x[self.network_manager.curr_network] = self.editorcanvas.winfo_width() / 2
@@ -192,13 +212,6 @@ class Mainframe:
         self.root_frame.bind("<Return>", self.show_parameters)
 
         self.switch_tool_select()
-
-    def pack_widgets(self):
-        """
-        Under construction: Will place all GUI widgets onto screen. Will be called in UI.py, to ensure correct
-        order of widgets.
-        """
-        pass
 
     def check_parameter_uniqueness(self, parameter_name):
         """

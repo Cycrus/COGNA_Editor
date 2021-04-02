@@ -12,9 +12,12 @@ if __name__ == "__main__":
         pass
 
     root = tk.Tk()
-    root.tk.call('tk', 'scaling', 2.0)
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
+    if height < 1400:
+        root.tk.call("tk", "scaling", 1.6)
+    else:
+        root.tk.call("tk", "scaling", 2.0)
     root.title("COGNA Network Editor")
     root.geometry(f"{width}x{height}+0+0")
     if platform == "linux" or platform == "linux2":

@@ -24,13 +24,11 @@ inactive_button_color = viewframe_backcolor
 button_padding_x = 5
 button_padding_y = 5
 
-tabframe_height = 40
 zoom_widget_width = 8
 zoom_widget_padx = 20
 top_button_width = 4
 top_button_padx = 0
 top_button_pady = 2
-bottommenu_height = tabframe_height
 splash_width = 800
 splash_height = 300
 

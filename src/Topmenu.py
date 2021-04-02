@@ -14,7 +14,6 @@ class Topmenu:
                                  borderwidth=0,
                                  highlightthickness=0,
                                  highlightbackground=highlight_color,
-                                 height=tabframe_height,
                                  width=root.winfo_width())
 
         self.tablist = []
@@ -96,7 +95,7 @@ class Topmenu:
                                       borderwidth=0,
                                       highlightthickness=1,
                                       highlightbackground=highlight_color,
-                                      height=tabframe_height,
+                                      height= self.root_frame.winfo_height() / 40,
                                       width=1)
         self.tablist.append([temp_frame, network_id,
                             tk.Label(master=temp_frame, background=editframe_backcolor,
