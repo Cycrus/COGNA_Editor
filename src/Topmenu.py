@@ -1,5 +1,6 @@
 from src.GlobalLibraries import *
 from src.Mainframe import *
+from src.TransmitterConfigurator import TransmitterConfigurator
 
 # Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
 
@@ -10,10 +11,10 @@ class Topmenu:
         self.network_manager = network_manager
         self.mainframe = mainframe
 
-        self.tabframe = tk.Frame(master=root, background=editframe_backcolor,
+        self.tabframe = tk.Frame(master=root, background=grey_4,
                                  borderwidth=0,
                                  highlightthickness=0,
-                                 highlightbackground=highlight_color,
+                                 highlightbackground=grey_2,
                                  width=root.winfo_width())
 
         self.tablist = []
@@ -21,12 +22,12 @@ class Topmenu:
         self.tabframe.pack()
         self.create_tab(0)
 
-        self.menubar = tk.Menu(master=self.root_frame, background=topmenu_backcolor, foreground=top_button_textcolor,
-                               activebackground=active_button_color, activeforeground=textcolor, borderwidth=0,
+        self.menubar = tk.Menu(master=self.root_frame, background=grey_4, foreground=grey_c,
+                               activebackground=dark_blue, activeforeground=grey_c, borderwidth=0,
                                relief=tk.RIDGE)
-        self.file = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
-                            foreground=top_button_textcolor, activebackground=active_button_color,
-                            activeforeground=textcolor, borderwidth=1, relief=tk.RIDGE)
+        self.file = tk.Menu(master=self.menubar, tearoff=0, background=grey_4,
+                            foreground=grey_c, activebackground=dark_blue,
+                            activeforeground=grey_c, borderwidth=1, relief=tk.RIDGE)
         self.file.add_command(label="New        <ctr-n>", command=self.new_command)
         self.file.add_separator()
         self.file.add_command(label="Open       <ctr-o>", command=self.open_command)
@@ -39,30 +40,37 @@ class Topmenu:
         self.file.add_command(label="Exit", command=self.root_frame.quit)
         self.menubar.add_cascade(label="File", menu=self.file)
 
-        self.edit = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
-                            foreground=top_button_textcolor, activebackground=active_button_color,
-                            activeforeground=textcolor, borderwidth=1, relief=tk.RIDGE)
+        self.edit = tk.Menu(master=self.menubar, tearoff=0, background=grey_4,
+                            foreground=grey_c, activebackground=dark_blue,
+                            activeforeground=grey_c, borderwidth=1, relief=tk.RIDGE)
         self.edit.add_command(label="Undo     <ctr-z>")
         self.edit.add_command(label="Redo     <ctr-y>")
         self.edit.add_separator()
         self.edit.add_command(label="Cut        <ctr-x>")
         self.edit.add_command(label="Copy      <ctr-c>")
         self.edit.add_command(label="Paste     <ctr-v>")
-        self.edit.add_separator()
-        self.edit.add_command(label="Neuron Type Config")
-        self.edit.add_command(label="Transmitter Config")
         self.menubar.add_cascade(label="Edit", menu=self.edit)
 
-        self.view = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
-                            foreground=top_button_textcolor, activebackground=active_button_color,
-                            activeforeground=textcolor, borderwidth=1, relief=tk.RIDGE)
+        self.configuration = tk.Menu(master=self.menubar, tearoff=0, background=grey_4,
+                                     foreground=grey_c, activebackground=dark_blue,
+                                     activeforeground=grey_c, borderwidth=1, relief=tk.RIDGE)
+        self.configuration.add_command(label="Neuron Type Config")
+        self.configuration.add_command(label="Transmitter Config", command=self.transmitter_config_command)
+        self.menubar.add_cascade(label="Configuration", menu=self.configuration)
+
+        self.view = tk.Menu(master=self.menubar, tearoff=0, background=grey_4,
+                            foreground=grey_c, activebackground=dark_blue,
+                            activeforeground=grey_c, borderwidth=1, relief=tk.RIDGE)
         self.view.add_command(label="Snap to Grid    <g>", command=self.grid_command)
         self.view.add_command(label="Reset View      <space>", command=self.reset_view_command)
+        self.view.add_separator()
+        self.view.add_command(label="Light Mode", command=lambda: self.toggle_mode(mode="Light"))
+        self.view.add_command(label="Dark Mode", command=lambda: self.toggle_mode(mode="Dark"))
         self.menubar.add_cascade(label="View", menu=self.view)
 
-        self.help = tk.Menu(master=self.menubar, tearoff=0, background=topmenu_backcolor,
-                            foreground=top_button_textcolor, activebackground=active_button_color,
-                            activeforeground=textcolor, borderwidth=1, relief=tk.RIDGE)
+        self.help = tk.Menu(master=self.menubar, tearoff=0, background=grey_4,
+                            foreground=grey_c, activebackground=dark_blue,
+                            activeforeground=grey_c, borderwidth=1, relief=tk.RIDGE)
         self.help.add_command(label="About COGNA Editor", command=self.show_about)
         self.help.add_command(label="Help", command=self.show_help)
         self.help.add_command(label="Controls", command=self.show_controls)
@@ -91,15 +99,15 @@ class Topmenu:
         self.splash.destroy()
 
     def create_tab(self, network_id):
-        temp_frame = tk.Frame(master=self.tabframe, background=editframe_backcolor,
-                                      borderwidth=0,
-                                      highlightthickness=1,
-                                      highlightbackground=highlight_color,
-                                      height= self.root_frame.winfo_height() / 40,
-                                      width=1)
+        temp_frame = tk.Frame(master=self.tabframe, background=grey_4,
+                              borderwidth=0,
+                              highlightthickness=1,
+                              highlightbackground=grey_2,
+                              height= self.root_frame.winfo_height() / 40,
+                              width=1)
         self.tablist.append([temp_frame, network_id,
-                            tk.Label(master=temp_frame, background=editframe_backcolor,
-                                     text=self.network_manager.filename[network_id], fg=connection_color)])
+                             tk.Label(master=temp_frame, background=grey_4,
+                                      text=self.network_manager.filename[network_id], fg=light_blue)])
 
         for idx, tab in enumerate(self.tablist):
             tab[0].config(width=self.root_frame.winfo_width()/len(self.tablist))
@@ -137,11 +145,11 @@ class Topmenu:
     def mark_active_tab(self):
         for tab in self.tablist:
             if tab[1] == self.network_manager.curr_network:
-                tab[0].config(background=active_button_color)
-                tab[2].config(background=active_button_color, fg=textcolor)
+                tab[0].config(background=dark_blue)
+                tab[2].config(background=dark_blue, fg=grey_c)
             else:
-                tab[0].config(background=editframe_backcolor)
-                tab[2].config(background=editframe_backcolor, fg=textcolor)
+                tab[0].config(background=grey_4)
+                tab[2].config(background=grey_4, fg=grey_c)
             tab[2].config(text=self.network_manager.filename[tab[1]])
 
     def resize_window(self, event):
@@ -159,7 +167,6 @@ class Topmenu:
                     self.delete_network(tab[1])
                     self.mainframe.render_scene()
                     break
-
 
     def prev_network(self, event=None):
         self.mainframe.deselect_all()
@@ -222,11 +229,23 @@ class Topmenu:
         self.mainframe.render_scene()
         self.mark_active_tab()
 
+    def transmitter_config_command(self):
+        transmitter_configurator = TransmitterConfigurator(self.root_frame,
+                                                           self.network_manager.transmitters,
+                                                           self.network_manager)
+
     def grid_command(self):
         self.mainframe.toggle_grid_snap(None)
 
     def reset_view_command(self):
         self.mainframe.reset_camera(None)
+
+    def toggle_mode(self, mode):
+        global dark_blue
+        if mode == "Light":
+            print("Light Mode")
+        elif mode == "Dark":
+            print("Dark Mode")
 
     def show_about(self):
         messagebox.showinfo('About COGNA Editor',
