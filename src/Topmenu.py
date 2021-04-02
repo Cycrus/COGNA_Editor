@@ -79,7 +79,10 @@ class Topmenu:
         self.root_frame.bind("<Control-s>", self.save_command)
         self.root_frame.bind("<Configure>", self.resize_window)
         self.root_frame.bind("<Control-Tab>", self.next_network)
-        self.root_frame.bind("<Control-ISO_Left_Tab>", self.prev_network)
+        if platform == "linux" or platform == "linux2":
+            self.root_frame.bind("<Control-ISO_Left_Tab>", self.prev_network)
+        elif platform == "win32":
+            self.root_frame.bind("<Control-Shift-Tab>", self.prev_network)
 
         splash_x = self.root_frame.winfo_width() // 2 - splash_width // 2
         splash_y = self.root_frame.winfo_height() // 2 - splash_height // 2

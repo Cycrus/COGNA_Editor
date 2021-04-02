@@ -1,3 +1,4 @@
+from sys import platform
 try:
     import tkinter as tk
     from tkinter import messagebox

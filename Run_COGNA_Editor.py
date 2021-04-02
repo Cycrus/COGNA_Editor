@@ -2,7 +2,6 @@
 
 import os
 from src.UI import *
-from sys import platform
 
 if __name__ == "__main__":
     os.path.dirname(os.path.abspath(__file__))
@@ -16,7 +15,7 @@ if __name__ == "__main__":
     root.tk.call('tk', 'scaling', 2.0)
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
-    root.title("untitled.nn")
+    root.title("COGNA Network Editor")
     root.geometry(f"{width}x{height}+0+0")
     if platform == "linux" or platform == "linux2":
         root.attributes("-zoomed", True)
