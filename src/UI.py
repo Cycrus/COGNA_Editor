@@ -11,4 +11,3 @@ class UI:
         self.mainframe.pack_widgets()
         self.bottommenu = Bottommenu(root)
 
-
