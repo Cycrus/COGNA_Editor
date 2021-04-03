@@ -887,17 +887,13 @@ class Mainframe:
         self.next_wheel_pos_x = event.x
 
     def do_resize(self, event):
-        self.prev_wheel_pos_x = event.x
-
-        offset = self.next_wheel_pos_x - self.prev_wheel_pos_x
+        offset = self.editframe.winfo_width() + event.x
         self.editresize.config(width=7)
-        self.editframe.config(width=self.editframe.winfo_width() - offset)
+        self.editframe.config(width=offset)
         if self.editframe.winfo_width() < 100:
             self.editframe.config(width=100)
-        self.edit_top.config(width=self.edit_top.winfo_width() - offset)
+        self.edit_top.config(width=offset)
         self.editresize.config(width=7)
         self.render_scene()
         self.root_frame.update()
         self.editresize.config(width=7)
-
-        self.next_wheel_pos_x = event.x
