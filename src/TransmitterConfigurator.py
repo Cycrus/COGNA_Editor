@@ -109,7 +109,6 @@ class TransmitterConfigurator:
     def delete_transmitter(self, trans_index):
         self.store_transmitter()
         self.transmitter_list.pop(trans_index)
-        self.store_transmitter()
         self.render_editor()
 
     def close_window(self, save=False):
