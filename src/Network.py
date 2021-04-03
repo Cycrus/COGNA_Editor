@@ -15,6 +15,7 @@ class Network:
                            5.0, 0.65, 0.07, 1.0, 0.00000005, 1.02, 0.0001, 1.0, 0.000000000001]
 
         self.param.list["activation_threshold"] = 1.0
+        self.param.list["used_transmitter"] = "Default"
         self.param.list["max_activation"] = 50.0
         self.param.list["min_activation"] = 0.0
         self.param.list["activation_backfall_curvature"] = 1.0

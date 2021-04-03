@@ -8,6 +8,7 @@ grey_3 = "#333333"
 grey_7 = "#777777"
 light_blue = "#1cd4d8"
 white = "#FFFFFF"
+black = "#000000"
 connection_width = 3
 selected_connection_width = connection_width+3
 editbutton_size_relation = 3

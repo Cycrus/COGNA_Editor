@@ -27,7 +27,8 @@ class TransmitterConfigurator:
                                     height=self.transmitter_frame.winfo_height() // 7,
                                     width=self.transmitter_frame.winfo_width())
         self.label_frame.pack(side=tk.TOP, fill=tk.X)
-        self.label = tk.Label(master=self.label_frame, background=dark_blue, text="Neurotransmitter Configuration")
+        self.label = tk.Label(master=self.label_frame, background=dark_blue, text="Neurotransmitter Configuration",
+                              fg=grey_c)
         self.label.pack()
         self.transmitter_frame.update()
 
@@ -76,8 +77,12 @@ class TransmitterConfigurator:
         self.edit_widgets.clear()
 
         for idx, tran in enumerate(self.transmitter_list):
+            if idx > 0:
+                textcol = black
+            else:
+                textcol = grey_4
             temp_textbox = tk.Text(master=self.edit_frames[idx], height=1, width=15,
-                                   bg=grey_7, borderwidth=0,
+                                   bg=grey_7, borderwidth=0, fg=textcol,
                                    highlightthickness=2, highlightbackground=grey_2)
             temp_textbox.insert("1.0", tran)
             temp_button = tk.Button(master=self.edit_frames[idx], text="Delete", background=grey_3,
@@ -98,7 +103,11 @@ class TransmitterConfigurator:
 
     def store_transmitter(self):
         for idx, tran in enumerate(self.transmitter_list):
-            self.transmitter_list[idx] = self.edit_widgets[idx][0].get("1.0", "end").replace("\n", "")
+            if idx > 0:
+                temp_tran = self.edit_widgets[idx][0].get("1.0", "end").replace("\n", "").replace(" ", "")
+            else:
+                temp_tran = "Default"
+            self.transmitter_list[idx] = temp_tran
         self.render_editor()
 
     def add_transmitter(self):
@@ -117,7 +126,12 @@ class TransmitterConfigurator:
             temp_list = []
             for idx, trans in enumerate(self.transmitter_list):
                 if trans:
-                    temp_list.append(trans)
+                    can_save = True
+                    for test_tran in range(0, idx):
+                        if trans == self.transmitter_list[test_tran]:
+                            can_save = False
+                    if can_save:
+                        temp_list.append(trans)
             self.network_manager.transmitters = temp_list
 
         for idx, frame in enumerate(self.edit_frames):

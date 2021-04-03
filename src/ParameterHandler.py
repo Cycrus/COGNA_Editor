@@ -1,11 +1,12 @@
 neuron_activation_parameter = ("activation_threshold", #numeric
+                               "used_transmitter", #String<Possible transmitter:?>
                                "max_activation", #numeric
                                "min_activation", #numeric
                                "activation_backfall_curvature", #numeric
                                "activation_backfall_steepness") #numeric
 
 neuron_transmitter_parameter = ("influences_transmitter", #int<No:0, Yes:1>
-                                "influenced_transmitter", #int<Possible transmitters:?>
+                                "influenced_transmitter", #String<Possible transmitters:?>
                                 "transmitter_change_curvature", #numeric
                                 "transmitter_change_steepness", #numeric
                                 "transmitter_influence_direction") #int<Positive influence:1, Negative influence:-1>
