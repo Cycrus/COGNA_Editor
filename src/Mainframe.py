@@ -247,7 +247,7 @@ class Mainframe:
             for i, name in enumerate(self.param_list):
                 for param_container in self.parameter_textbox:
                     if param_container[1] == name:
-                        temp_param = param_container[0].get("1.0", "end")
+                        temp_param = param_container[0].get()
                         try:
                             self.selected_entity.param.list[name] = float(temp_param)
                         except ValueError:
@@ -276,15 +276,15 @@ class Mainframe:
                 self.print_parameter(self.network_manager.networks[network_id], param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4)
             else:
-                self.parameter_textbox[param_index][0].insert("1.0", "Missing...")
+                self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red)
         else:
             try:
                 regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
                 param_str = regex.findall(format(entity.param.list[name], ".15f"))
-                self.parameter_textbox[param_index][0].insert("1.0", param_str[0][0])
+                self.parameter_textbox[param_index][0].insert(tk.END, param_str[0][0])
             except TypeError:
-                self.parameter_textbox[param_index][0].insert("1.0", "Missing...")
+                self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red)
 
     def show_entity_parameters(self):
@@ -335,7 +335,7 @@ class Mainframe:
             self.param_list = network_parameter
 
         for i, name in enumerate(self.param_list):
-            self.parameter_textbox.append([tk.Text(master=self.parameter_frame[i+3], height=1, width=10,
+            self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=10,
                                                    bg=design.grey_7, borderwidth=0,
                                                    highlightthickness=2, highlightbackground=design.grey_2),
                                            name])

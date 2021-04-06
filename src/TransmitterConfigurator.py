@@ -6,6 +6,7 @@ class TransmitterConfigurator:
     def __init__(self, root, network_manager):
         self.root_frame = root
         self.transmitter_list = network_manager.transmitters
+        print(self.transmitter_list)
         self.network_manager = network_manager
         self.frame_number = 30
 
@@ -30,7 +31,7 @@ class TransmitterConfigurator:
         self.label_frame.pack(side=tk.TOP, fill=tk.X)
         self.label = tk.Label(master=self.label_frame, background=design.dark_blue, text="Neurotransmitter Configuration",
                               fg=design.grey_c)
-        self.label.pack()
+        self.label.pack(pady=5)
         self.transmitter_frame.update()
 
         self.editor = tk.Frame(master=self.transmitter_frame, background=design.grey_4,
@@ -54,17 +55,12 @@ class TransmitterConfigurator:
                                      highlightthickness=0,
                                      height=self.transmitter_frame.winfo_height() // 8,
                                      width=self.transmitter_frame.winfo_width())
-        self.button_space.pack(side=tk.TOP, fill=tk.X)
+        self.button_space.pack(side=tk.BOTTOM, fill=tk.X, pady=20)
 
-        self.save_button = tk.Button(master=self.button_space, text="Save", background=design.grey_3,
+        self.save_button = tk.Button(master=self.button_space, text="Save & Close", background=design.grey_3,
                                      fg=design.grey_c, activebackground=design.grey_7,
                                      command=lambda: self.close_window(save=True))
-        self.save_button.pack(side=tk.LEFT, padx=self.transmitter_frame.winfo_width()/7)
-
-        self.close_button = tk.Button(master=self.button_space, text="Close", background=design.grey_3,
-                                      fg=design.grey_c, activebackground=design.grey_7,
-                                      command=lambda: self.close_window(save=False))
-        self.close_button.pack(side=tk.RIGHT, padx=self.transmitter_frame.winfo_width()/7)
+        self.save_button.pack(side=tk.BOTTOM, padx=self.transmitter_frame.winfo_width()/7, pady=5)
 
     def __del__(self):
         self.close_window()
@@ -82,10 +78,10 @@ class TransmitterConfigurator:
                 textcol = design.black
             else:
                 textcol = design.grey_4
-            temp_textbox = tk.Text(master=self.edit_frames[idx], height=1, width=15,
-                                   bg=design.grey_7, borderwidth=0, fg=textcol,
-                                   highlightthickness=2, highlightbackground=design.grey_2)
-            temp_textbox.insert("1.0", tran)
+            temp_textbox = tk.Entry(master=self.edit_frames[idx], width=15,
+                                    bg=design.grey_7, borderwidth=0, fg=textcol,
+                                    highlightthickness=2, highlightbackground=design.grey_2)
+            temp_textbox.insert(tk.END, tran)
             temp_button = tk.Button(master=self.edit_frames[idx], text="Delete", background=design.grey_3,
                                     fg=design.grey_c, activebackground=design.grey_7,
                                     command=lambda i=idx: self.delete_transmitter(trans_index=i))
@@ -106,7 +102,7 @@ class TransmitterConfigurator:
     def store_transmitter(self):
         for idx, tran in enumerate(self.transmitter_list):
             if idx > 0:
-                temp_tran = self.edit_widgets[idx][0].get("1.0", "end").replace("\n", "").replace(" ", "")
+                temp_tran = self.edit_widgets[idx][0].get().replace("\n", "").replace(" ", "")
             else:
                 temp_tran = "Default"
             self.transmitter_list[idx] = temp_tran
