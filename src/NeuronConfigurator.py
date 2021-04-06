@@ -47,7 +47,7 @@ class NeuronConfigurator:
                                         height=self.editor.winfo_height(),
                                         width=self.top_frame.winfo_width()/2)
         self.parameter_frame.pack(side=tk.LEFT, fill=tk.BOTH)
-        
+
         self.placeholder1 = tk.Label(master=self.parameter_frame, text="Placeholder")
         self.placeholder1.pack(side=tk.TOP, pady=40)
 

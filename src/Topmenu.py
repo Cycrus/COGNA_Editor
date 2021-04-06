@@ -250,9 +250,17 @@ class Topmenu:
         if mode == "Light":
             print("Light Mode")
             design.dark_blue = "#FFFFFF"
+            design.grey_3 = "#FFFFFF"
         elif mode == "Dark":
             print("Dark Mode")
             design.dark_blue = "#14405a"
+            design.grey_3 = "#333333"
+
+        self.root_frame.update()
+        self.mainframe.editorcanvas.config(background=design.grey_3)
+        self.root_frame.update()
+        self.mainframe.render_scene()
+        self.root_frame.update()
 
     def show_about(self):
         messagebox.showinfo('About COGNA Editor',
