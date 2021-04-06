@@ -79,15 +79,15 @@ class Mainframe:
         Under construction: Will place all GUI widgets onto screen. Will be called in UI.py, to ensure correct
         order of widgets.
         """
-        self.mainframe = tk.Frame(master=self.root_frame, background=design.grey_7,
+        self.mainframe = tk.Frame(master=self.root_frame, background=design.grey_7[design.theme],
                                   borderwidth=0,
                                   highlightthickness=1,
-                                  highlightbackground=design.grey_2,
+                                  highlightbackground=design.grey_2[design.theme],
                                   height=self.root_frame.winfo_height(),
                                   width=self.root_frame.winfo_width())
         self.mainframe.grid_columnconfigure(0, weight=1)
 
-        self.editframe = tk.Frame(master=self.mainframe, background=design.grey_4,
+        self.editframe = tk.Frame(master=self.mainframe, background=design.grey_4[design.theme],
                                   borderwidth=2,
                                   highlightthickness=0,
                                   height=self.mainframe.winfo_height(),
@@ -95,7 +95,7 @@ class Mainframe:
                                   relief=tk.FLAT)
         self.editframe.pack_propagate(0)
 
-        self.editresize = tk.Frame(master=self.editframe, background="#222222",
+        self.editresize = tk.Frame(master=self.editframe, background=design.grey_2[design.theme],
                                    borderwidth=1,
                                    highlightthickness=0,
                                    height=self.mainframe.winfo_height(),
@@ -104,7 +104,7 @@ class Mainframe:
                                    cursor="sb_h_double_arrow")
         self.editresize.pack(side=tk.RIGHT, fill=tk.BOTH, padx=0, pady=0, expand=True)
 
-        self.edit_top = tk.Frame(master=self.editframe, background=design.grey_4,
+        self.edit_top = tk.Frame(master=self.editframe, background=design.grey_4[design.theme],
                                  borderwidth=0,
                                  highlightthickness=0,
                                  width=self.editframe_width)
@@ -115,55 +115,54 @@ class Mainframe:
 
         self.root_frame.update()
 
-        self.select_button = tk.Button(master=self.edit_top, text="S", background=design.grey_3,
-                                       fg=design.grey_c, command=self.switch_tool_select, image=self.pixelVirtual,
-                                       activebackground=design.grey_7,
-                                       width=50,
-                                       compound="c")
-        self.neuron_button = tk.Button(master=self.edit_top, text="N", background=design.dark_blue,
-                                       fg=design.grey_c, command=self.switch_tool_neurons, image=self.pixelVirtual,
-                                       activebackground=design.grey_7,
-                                       width=50, compound="c")
-        self.connection_button = tk.Button(master=self.edit_top, text="C", background=design.grey_3,
-                                           fg=design.grey_c, command=self.switch_tool_connections, image=self.pixelVirtual,
-                                           activebackground=design.grey_7,
-                                           width=50, compound="c")
+        self.select_button = tk.Button(master=self.edit_top, text="S", background=design.grey_3[design.theme],
+                                       fg=design.grey_c[design.theme], command=self.switch_tool_select, image=self.pixelVirtual,
+                                       activebackground=design.grey_7[design.theme],
+                                       width=50, relief=tk.FLAT, compound="c")
+        self.neuron_button = tk.Button(master=self.edit_top, text="N", background=design.dark_blue[design.theme],
+                                       fg=design.grey_c[design.theme], command=self.switch_tool_neurons, image=self.pixelVirtual,
+                                       activebackground=design.grey_7[design.theme],
+                                       width=50, relief=tk.FLAT, compound="c")
+        self.connection_button = tk.Button(master=self.edit_top, text="C", background=design.grey_3[design.theme],
+                                           fg=design.grey_c[design.theme], command=self.switch_tool_connections, image=self.pixelVirtual,
+                                           activebackground=design.grey_7[design.theme],
+                                           width=50, relief=tk.FLAT, compound="c")
 
-        self.viewframe = tk.Frame(master=self.mainframe, background=design.grey_3,
+        self.viewframe = tk.Frame(master=self.mainframe, background=design.grey_3[design.theme],
                                   highlightthickness=0,
                                   borderwidth=2,
                                   height=self.editframe.winfo_height(),
                                   width=self.mainframe.winfo_width() - self.editframe.winfo_width())
         self.viewframe.grid_columnconfigure(0, weight=1)
 
-        self.editorcanvas = tk.Canvas(master=self.viewframe, background=design.grey_3,
+        self.editorcanvas = tk.Canvas(master=self.viewframe, background=design.grey_3[design.theme],
                                       highlightthickness=0,
                                       borderwidth=0,
                                       height=self.viewframe.winfo_height(),
                                       width=self.viewframe.winfo_width(),
                                       cursor="crosshair")
 
-        self.edit_1 = tk.Frame(master=self.editframe, background=design.grey_4,
+        self.edit_1 = tk.Frame(master=self.editframe, background=design.grey_4[design.theme],
                                borderwidth=0,
                                highlightthickness=0,
                                width=self.editframe_width)
         
         for i in range(0, self.parameter_count):
-            self.parameter_frame.append(tk.Frame(master=self.editframe, background=design.grey_4,
+            self.parameter_frame.append(tk.Frame(master=self.editframe, background=design.grey_4[design.theme],
                                                  borderwidth=0,
                                                  highlightthickness=0,
                                                  width=self.editframe_width))
 
-        self.general_info = tk.Label(master=self.parameter_frame[0], text="No Entity Selected", bg=design.grey_4,
-                                     fg=design.light_blue)
-        self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=design.grey_4,
-                                fg=design.grey_c)
+        self.general_info = tk.Label(master=self.parameter_frame[0], text="No Entity Selected", bg=design.grey_4[design.theme],
+                                     fg=design.light_blue[design.theme])
+        self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=design.grey_4[design.theme],
+                                fg=design.grey_c[design.theme])
 
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
-        self.edit_drop_menu.config(bg=design.grey_4, width=self.editframe_width, fg=design.grey_c,
-                                   borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2,
-                                   activebackground=design.grey_7)
+        self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
+                                   borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
+                                   activebackground=design.grey_7[design.theme])
 
         self.select_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
         self.neuron_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
@@ -270,14 +269,14 @@ class Mainframe:
                 network_id = entity.network_id
                 neuron_id = entity.prev_neuron-1
                 self.print_parameter(self.network_manager.networks[network_id].neurons[neuron_id], param_index, name)
-                self.parameter_textbox[param_index][0].config(fg=design.grey_4)
+                self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             elif isinstance(entity, Neuron):
                 network_id = entity.network_id
                 self.print_parameter(self.network_manager.networks[network_id], param_index, name)
-                self.parameter_textbox[param_index][0].config(fg=design.grey_4)
+                self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             else:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
-                self.parameter_textbox[param_index][0].config(fg=design.dark_red)
+                self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
         else:
             try:
                 regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
@@ -285,7 +284,7 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].insert(tk.END, param_str[0][0])
             except TypeError:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
-                self.parameter_textbox[param_index][0].config(fg=design.dark_red)
+                self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
 
     def show_entity_parameters(self):
         """
@@ -308,11 +307,11 @@ class Mainframe:
 
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
-        self.edit_drop_menu.config(bg=design.grey_4, width=self.editframe_width, fg=design.grey_c,
-                                   borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2,
-                                   activebackground=design.grey_7)
-        self.edit_drop_menu["menu"].config(bg=design.grey_4, fg=design.grey_c, borderwidth=1,
-                                           activebackground=design.grey_7, relief=tk.RIDGE)
+        self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
+                                   borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
+                                   activebackground=design.grey_7[design.theme])
+        self.edit_drop_menu["menu"].config(bg=design.grey_4[design.theme], fg=design.grey_c[design.theme], borderwidth=1,
+                                           activebackground=design.grey_7[design.theme], relief=tk.RIDGE)
 
         self.general_info.pack(side=tk.LEFT)
         self.edit_drop_menu.pack(side=tk.LEFT)
@@ -336,15 +335,15 @@ class Mainframe:
 
         for i, name in enumerate(self.param_list):
             self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=10,
-                                                   bg=design.grey_7, borderwidth=0,
-                                                   highlightthickness=2, highlightbackground=design.grey_2),
+                                                   bg=design.grey_7[design.theme], borderwidth=0,
+                                                   highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
                                            name])
 
             self.print_parameter(self.selected_entity, i, name)
             self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
-                                                bg=design.grey_4, fg=design.grey_c))
+                                                bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
             self.parameter_info[i].pack(side=tk.LEFT)
 
     def show_parameters(self, event=None, store=True):
@@ -390,9 +389,9 @@ class Mainframe:
         """
         self.tool = TOOL_NEURONS
         self.selected_entity = None
-        self.neuron_button.configure(background=design.dark_blue)
-        self.connection_button.configure(background=design.grey_3)
-        self.select_button.configure(background=design.grey_3)
+        self.neuron_button.configure(background=design.dark_blue[design.theme])
+        self.connection_button.configure(background=design.grey_3[design.theme])
+        self.select_button.configure(background=design.grey_3[design.theme])
         self.discard_connection()
         self.deselect_all()
         self.show_parameters(store=False)
@@ -404,9 +403,9 @@ class Mainframe:
         """
         self.tool = TOOL_CONNECTIONS
         self.selected_entity = None
-        self.neuron_button.configure(background=design.grey_3)
-        self.connection_button.configure(background=design.dark_blue)
-        self.select_button.configure(background=design.grey_3)
+        self.neuron_button.configure(background=design.grey_3[design.theme])
+        self.connection_button.configure(background=design.dark_blue[design.theme])
+        self.select_button.configure(background=design.grey_3[design.theme])
         self.deselect_all()
         self.show_parameters(store=False)
         self.render_scene()
@@ -416,9 +415,9 @@ class Mainframe:
         Function to switch tool stance to selecting and parameter editing.
         """
         self.tool = TOOL_SELECT
-        self.neuron_button.configure(background=design.grey_3)
-        self.connection_button.configure(background=design.grey_3)
-        self.select_button.configure(background=design.dark_blue)
+        self.neuron_button.configure(background=design.grey_3[design.theme])
+        self.connection_button.configure(background=design.grey_3[design.theme])
+        self.select_button.configure(background=design.dark_blue[design.theme])
         self.discard_connection()
         self.deselect_all()
         self.show_parameters(store=False)
@@ -460,13 +459,13 @@ class Mainframe:
         while temp_x < VectorUtils.correct_zoom(self.editorcanvas.winfo_width()+temp_camera_x, self.network_manager.zoom_factor[self.network_manager.curr_network]):
             self.editorcanvas.create_line(temp_x * self.network_manager.zoom_factor[self.network_manager.curr_network], 0,
                                           temp_x * self.network_manager.zoom_factor[self.network_manager.curr_network], corrected_y,
-                                          fill=design.grey_4, width=2)
+                                          fill=design.grey_4[design.theme], width=2)
             temp_x = temp_x + self.grid_size
 
         while temp_y < VectorUtils.correct_zoom(self.editorcanvas.winfo_height()+temp_camera_y, self.network_manager.zoom_factor[self.network_manager.curr_network]):
             self.editorcanvas.create_line(0, temp_y * self.network_manager.zoom_factor[self.network_manager.curr_network],
                                           corrected_x, temp_y * self.network_manager.zoom_factor[self.network_manager.curr_network],
-                                          fill=design.grey_4, width=2)
+                                          fill=design.grey_4[design.theme], width=2)
             temp_y = temp_y + self.grid_size
 
     def render_connections(self):
@@ -504,7 +503,7 @@ class Mainframe:
                                                                              self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(direction_marker_b[1],
                                                                              self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                              fill=design.light_blue, width=design.connection_width)
+                                              fill=design.light_blue[design.theme], width=design.connection_width)
             except IndexError:
                 pass
 
@@ -518,7 +517,7 @@ class Mainframe:
                                                                                  self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                                   VectorUtils.project_coordinate(temp_verts[vert + 1][1],
                                                                                  self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  fill=design.grey_c, width=design.selected_connection_width)
+                                                  fill=design.grey_c[design.theme], width=design.selected_connection_width)
                 else:
                     self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
                                                                                  self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
@@ -528,7 +527,7 @@ class Mainframe:
                                                                                  self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                                   VectorUtils.project_coordinate(temp_verts[vert + 1][1],
                                                                                  self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  fill=design.light_blue, width=design.connection_width)
+                                                  fill=design.light_blue[design.theme], width=design.connection_width)
 
     def render_neurons(self):
         """
@@ -540,52 +539,52 @@ class Mainframe:
                                                                                self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                                 VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
                                                                                self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white,
-                                                outline=design.light_blue,
+                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white[design.theme],
+                                                outline=design.light_blue[design.theme],
                                                 width=5 * self.network_manager.zoom_factor[self.network_manager.curr_network])
             else:
                 self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
                                                                                self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                                 VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
                                                                                self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white)
+                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white[design.theme])
             self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                           VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          text=f"{neuron.id}", fill=design.grey_3)
+                                          text=f"{neuron.id}", fill=design.grey_3[design.theme])
 
     def render_ui_description(self):
         """
         Renders text elements onto the canvas.
         """
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 15, anchor="w",
-                                      text="Mode:", fill=design.grey_c)
+                                      text="Mode:", fill=design.grey_c[design.theme])
         if self.tool == TOOL_SELECT:
             self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
-                                          text="SELECTING", fill=design.light_blue)
+                                          text="SELECTING", fill=design.light_blue[design.theme])
         elif self.tool == TOOL_NEURONS:
             self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
-                                          text="NEURON EDITING", fill=design.light_blue)
+                                          text="NEURON EDITING", fill=design.light_blue[design.theme])
         elif self.tool == TOOL_CONNECTIONS:
             self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
-                                          text="CONNECTION EDITING", fill=design.light_blue)
+                                          text="CONNECTION EDITING", fill=design.light_blue[design.theme])
 
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 90, anchor="w",
-                                      text=f"Camera X: {int(self.network_manager.camera_x[self.network_manager.curr_network])}", fill=design.grey_c)
+                                      text=f"Camera X: {int(self.network_manager.camera_x[self.network_manager.curr_network])}", fill=design.grey_c[design.theme])
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 60, anchor="w",
-                                      text=f"Camera Y: {int(self.network_manager.camera_y[self.network_manager.curr_network])}", fill=design.grey_c)
+                                      text=f"Camera Y: {int(self.network_manager.camera_y[self.network_manager.curr_network])}", fill=design.grey_c[design.theme])
 
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 175, anchor="w",
-                                      text=f"Cursor X: {int(self.cursor_x)}", fill=design.grey_c)
+                                      text=f"Cursor X: {int(self.cursor_x)}", fill=design.grey_c[design.theme])
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 145, anchor="w",
-                                      text=f"Cursor Y: {int(self.cursor_y)}", fill=design.grey_c)
+                                      text=f"Cursor Y: {int(self.cursor_y)}", fill=design.grey_c[design.theme])
 
         self.editorcanvas.create_text(self.editorcanvas.winfo_width() - 5, self.editorcanvas.winfo_height() - 15,
                                       anchor="e",
-                                      text=f"Zoom: {round(self.network_manager.zoom_factor[self.network_manager.curr_network] * 100, 0)}%", fill=design.grey_c)
+                                      text=f"Zoom: {round(self.network_manager.zoom_factor[self.network_manager.curr_network] * 100, 0)}%", fill=design.grey_c[design.theme])
 
         if self.grid_snap:
             self.editorcanvas.create_text(self.editorcanvas.winfo_width() - 5, self.editorcanvas.winfo_height() - 60,
-                                          anchor="e", fill=design.light_blue,
+                                          anchor="e", fill=design.light_blue[design.theme],
                                           text="Grid Snap Active")
 
     def render_scene(self):
@@ -605,7 +604,7 @@ class Mainframe:
 
                 self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(0, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                              text="X", fill=design.light_blue, font="arial 15")
+                                              text="X", fill=design.light_blue[design.theme], font="arial 15")
 
                 self.render_ui_description()
 
@@ -696,7 +695,6 @@ class Mainframe:
     def deselect_all(self):
         self.deselect_neurons()
         self.deselect_connections()
-        #self.selected_entity = None
 
     def escape_event(self, event):
         self.store_parameters()

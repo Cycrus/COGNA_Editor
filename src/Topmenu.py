@@ -12,10 +12,10 @@ class Topmenu:
         self.network_manager = network_manager
         self.mainframe = mainframe
 
-        self.tabframe = tk.Frame(master=root, background=design.grey_4,
+        self.tabframe = tk.Frame(master=root, background=design.grey_4[design.theme],
                                  borderwidth=0,
                                  highlightthickness=0,
-                                 highlightbackground=design.grey_2,
+                                 highlightbackground=design.grey_2[design.theme],
                                  width=root.winfo_width())
 
         self.tablist = []
@@ -23,12 +23,12 @@ class Topmenu:
         self.tabframe.pack()
         self.create_tab(0)
 
-        self.menubar = tk.Menu(master=self.root_frame, background=design.grey_4, foreground=design.grey_c,
-                               activebackground=design.dark_blue, activeforeground=design.grey_c, borderwidth=0,
+        self.menubar = tk.Menu(master=self.root_frame, background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                               activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme], borderwidth=0,
                                relief=tk.RIDGE)
-        self.file = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4,
-                            foreground=design.grey_c, activebackground=design.dark_blue,
-                            activeforeground=design.grey_c, borderwidth=1, relief=tk.RIDGE)
+        self.file = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
+                            foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
+                            activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.file.add_command(label="New        <ctr-n>", command=self.new_command)
         self.file.add_separator()
         self.file.add_command(label="Open       <ctr-o>", command=self.open_command)
@@ -41,9 +41,9 @@ class Topmenu:
         self.file.add_command(label="Exit", command=self.root_frame.quit)
         self.menubar.add_cascade(label="File", menu=self.file)
 
-        self.edit = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4,
-                            foreground=design.grey_c, activebackground=design.dark_blue,
-                            activeforeground=design.grey_c, borderwidth=1, relief=tk.RIDGE)
+        self.edit = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
+                            foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
+                            activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.edit.add_command(label="Undo     <ctr-z>")
         self.edit.add_command(label="Redo     <ctr-y>")
         self.edit.add_separator()
@@ -52,17 +52,17 @@ class Topmenu:
         self.edit.add_command(label="Paste     <ctr-v>")
         self.menubar.add_cascade(label="Edit", menu=self.edit)
 
-        self.configuration = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4,
-                                     foreground=design.grey_c, activebackground=design.dark_blue,
-                                     activeforeground=design.grey_c, borderwidth=1, relief=tk.RIDGE)
+        self.configuration = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
+                                     foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
+                                     activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.configuration.add_command(label="Global Configurations")
         self.configuration.add_command(label="Neuron Type Config", command=self.neuron_config_command)
         self.configuration.add_command(label="Transmitter Config", command=self.transmitter_config_command)
         self.menubar.add_cascade(label="Configuration", menu=self.configuration)
 
-        self.view = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4,
-                            foreground=design.grey_c, activebackground=design.dark_blue,
-                            activeforeground=design.grey_c, borderwidth=1, relief=tk.RIDGE)
+        self.view = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
+                            foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
+                            activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.view.add_command(label="Snap to Grid    <g>", command=self.grid_command)
         self.view.add_command(label="Reset View      <space>", command=self.reset_view_command)
         self.view.add_separator()
@@ -70,9 +70,9 @@ class Topmenu:
         self.view.add_command(label="Dark Mode", command=lambda: self.toggle_mode(mode="Dark"))
         self.menubar.add_cascade(label="View", menu=self.view)
 
-        self.help = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4,
-                            foreground=design.grey_c, activebackground=design.dark_blue,
-                            activeforeground=design.grey_c, borderwidth=1, relief=tk.RIDGE)
+        self.help = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
+                            foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
+                            activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.help.add_command(label="About COGNA Editor", command=self.show_about)
         self.help.add_command(label="Help", command=self.show_help)
         self.help.add_command(label="Controls", command=self.show_controls)
@@ -101,15 +101,15 @@ class Topmenu:
         self.splash.destroy()
 
     def create_tab(self, network_id):
-        temp_frame = tk.Frame(master=self.tabframe, background=design.grey_4,
+        temp_frame = tk.Frame(master=self.tabframe, background=design.grey_4[design.theme],
                               borderwidth=0,
                               highlightthickness=1,
-                              highlightbackground=design.grey_2,
+                              highlightbackground=design.grey_2[design.theme],
                               height= self.root_frame.winfo_height() / 40,
                               width=1)
         self.tablist.append([temp_frame, network_id,
-                             tk.Label(master=temp_frame, background=design.grey_4,
-                                      text=self.network_manager.filename[network_id], fg=design.light_blue)])
+                             tk.Label(master=temp_frame, background=design.grey_4[design.theme],
+                                      text=self.network_manager.filename[network_id], fg=design.light_blue[design.theme])])
 
         for idx, tab in enumerate(self.tablist):
             tab[0].config(width=self.root_frame.winfo_width()/len(self.tablist))
@@ -147,11 +147,11 @@ class Topmenu:
     def mark_active_tab(self):
         for tab in self.tablist:
             if tab[1] == self.network_manager.curr_network:
-                tab[0].config(background=design.dark_blue)
-                tab[2].config(background=design.dark_blue, fg=design.grey_c)
+                tab[0].config(background=design.dark_blue[design.theme])
+                tab[2].config(background=design.dark_blue[design.theme], fg=design.grey_c[design.theme])
             else:
-                tab[0].config(background=design.grey_4)
-                tab[2].config(background=design.grey_4, fg=design.grey_c)
+                tab[0].config(background=design.grey_4[design.theme])
+                tab[2].config(background=design.grey_4[design.theme], fg=design.grey_c[design.theme])
             tab[2].config(text=self.network_manager.filename[tab[1]])
 
     def resize_window(self, event):
@@ -249,15 +249,49 @@ class Topmenu:
     def toggle_mode(self, mode):
         if mode == "Light":
             print("Light Mode")
-            design.dark_blue = "#FFFFFF"
-            design.grey_3 = "#FFFFFF"
+            design.theme = 1
         elif mode == "Dark":
             print("Dark Mode")
-            design.dark_blue = "#14405a"
-            design.grey_3 = "#333333"
+            design.theme = 0
 
         self.root_frame.update()
-        self.mainframe.editorcanvas.config(background=design.grey_3)
+        self.tabframe.config(background=design.grey_4[design.theme], highlightbackground=design.grey_2[design.theme])
+        self.menubar.config(background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                            activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme])
+        self.file.config(background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                         activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme])
+        self.edit.config(background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                         activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme])
+        self.view.config(background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                         activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme])
+        self.help.config(background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                         activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme])
+        self.configuration.config(background=design.grey_4[design.theme], foreground=design.grey_c[design.theme],
+                                  activebackground=design.dark_blue[design.theme], activeforeground=design.grey_c[design.theme])
+        for tab in self.tablist:
+            tab[0].config(background=design.grey_4[design.theme],
+                          highlightbackground=design.grey_2[design.theme])
+            tab[2].config(background=design.grey_4[design.theme],
+                          fg=design.light_blue[design.theme])
+
+        self.mainframe.editorcanvas.config(background=design.grey_3[design.theme])
+        self.mainframe.mainframe.config(background=design.grey_7[design.theme])
+        self.mainframe.editframe.config(background=design.grey_4[design.theme])
+        self.mainframe.editresize.config(background=design.grey_2[design.theme])
+        self.mainframe.edit_top.config(background=design.grey_4[design.theme])
+        self.mainframe.select_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
+                                            activebackground=design.grey_7[design.theme])
+        self.mainframe.neuron_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
+                                            activebackground=design.grey_7[design.theme])
+        self.mainframe.connection_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
+                                                activebackground=design.grey_7[design.theme])
+        self.mainframe.viewframe.config(background=design.grey_3[design.theme])
+        self.mainframe.edit_1.config(background=design.grey_4[design.theme])
+        for frame in self.mainframe.parameter_frame:
+            frame.config(background=design.grey_4[design.theme])
+        self.mainframe.general_info.config(bg=design.grey_4[design.theme], fg=design.light_blue[design.theme])
+        self.mainframe.id_info.config(bg=design.grey_4[design.theme], fg=design.grey_c[design.theme])
+        self.mainframe.show_parameters(store=False)
         self.root_frame.update()
         self.mainframe.render_scene()
         self.root_frame.update()

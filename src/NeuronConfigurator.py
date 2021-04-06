@@ -17,31 +17,31 @@ class NeuronConfigurator:
         self.top_frame.grab_set()
         self.top_frame.geometry(f"{self.width}x{self.height}+{self.pos_x}+{self.pos_y}")
         self.top_frame.overrideredirect(True)
-        self.top_frame.configure(background=design.grey_4, highlightthickness=4,
-                                 highlightbackground=design.grey_2)
+        self.top_frame.configure(background=design.grey_4[design.theme], highlightthickness=4,
+                                 highlightbackground=design.grey_2[design.theme])
         self.top_frame.update()
 
-        self.label_frame = tk.Frame(master=self.top_frame, background=design.dark_blue,
+        self.label_frame = tk.Frame(master=self.top_frame, background=design.dark_blue[design.theme],
                                     borderwidth=0,
                                     highlightthickness=2,
-                                    highlightbackground=design.grey_2,
+                                    highlightbackground=design.grey_2[design.theme],
                                     height=self.top_frame.winfo_height() // 7,
                                     width=self.top_frame.winfo_width())
         self.label_frame.pack(side=tk.TOP, fill=tk.BOTH)
-        self.label = tk.Label(master=self.label_frame, background=design.dark_blue,
+        self.label = tk.Label(master=self.label_frame, background=design.dark_blue[design.theme],
                               text="Neuron Type Configuration",
-                              fg=design.grey_c)
+                              fg=design.grey_c[design.theme])
         self.label.pack(pady=5)
         self.top_frame.update()
 
-        self.editor = tk.Frame(master=self.top_frame, background=design.grey_4,
+        self.editor = tk.Frame(master=self.top_frame, background=design.grey_4[design.theme],
                                borderwidth=0,
                                highlightthickness=0,
                                height=self.top_frame.winfo_height() - (self.label_frame.winfo_height() * 2),
                                width=self.top_frame.winfo_width())
         self.editor.pack(side=tk.TOP, fill=tk.BOTH)
 
-        self.parameter_frame = tk.Frame(master=self.editor, background=design.dark_blue,
+        self.parameter_frame = tk.Frame(master=self.editor, background=design.dark_blue[design.theme],
                                         borderwidth=0,
                                         highlightthickness=0,
                                         height=self.editor.winfo_height(),
@@ -51,7 +51,7 @@ class NeuronConfigurator:
         self.placeholder1 = tk.Label(master=self.parameter_frame, text="Placeholder")
         self.placeholder1.pack(side=tk.TOP, pady=40)
 
-        self.neuron_frame = tk.Frame(master=self.editor, background=design.dark_red,
+        self.neuron_frame = tk.Frame(master=self.editor, background=design.dark_red[design.theme],
                                      borderwidth=0,
                                      highlightthickness=0,
                                      height=self.editor.winfo_height(),
@@ -61,14 +61,14 @@ class NeuronConfigurator:
         self.placeholder2 = tk.Label(master=self.neuron_frame, text="Placeholder")
         self.placeholder2.pack(side=tk.TOP, pady=40)
 
-        self.button_frame = tk.Frame(master=self.top_frame, background=design.grey_4,
+        self.button_frame = tk.Frame(master=self.top_frame, background=design.grey_4[design.theme],
                                      borderwidth=0,
                                      highlightthickness=0,
                                      height=self.top_frame.winfo_height() // 7,
                                      width=self.top_frame.winfo_width())
         self.button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=20)
-        self.close_button = tk.Button(master=self.button_frame, text="Save & Close", background=design.grey_3,
-                                      fg=design.grey_c, activebackground=design.grey_7,
+        self.close_button = tk.Button(master=self.button_frame, text="Save & Close", background=design.grey_3[design.theme],
+                                      fg=design.grey_c[design.theme], activebackground=design.grey_7[design.theme],
                                       command=self.close_window)
         self.close_button.pack(side=tk.TOP, padx=self.top_frame.winfo_width()/7, pady=5)
 
