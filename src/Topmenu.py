@@ -201,7 +201,7 @@ class Topmenu:
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.mainframe.deselect_all()
-        self.network_manager.add_network()
+        self.network_manager.add_network(self.network_manager.networks[0].param)
         self.mainframe.reset_camera()
         self.mainframe.render_scene()
         self.mainframe.show_parameters(store=False)
@@ -225,6 +225,7 @@ class Topmenu:
         if len(self.network_manager.networks) > 0:
             self.network_manager.clear_single_network(network_id)
             self.delete_tab(network_id)
+        self.mainframe.show_parameters(store=False)
 
     def close_command(self, event=None):
         self.mainframe.deselect_all()

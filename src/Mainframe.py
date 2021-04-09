@@ -1,4 +1,3 @@
-import re
 from src.GlobalLibraries import *
 from src.VectorUtils import VectorUtils
 
@@ -247,19 +246,18 @@ class Mainframe:
                 if param_container[1] == name:
                     temp_param = param_container[0].get()
                     try:
-                        entity.param.list[name] = float(temp_param)
+                        if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
+                                name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
+                                name == "influences_transmitter" or name == "influenced_transmitter":
+                            entity.param.list[name] = temp_param
+                        else:
+                            entity.param.list[name] = float(temp_param)
                     except ValueError:
                         entity.param.list[name] = None
 
                     is_unique = self.check_parameter_uniqueness(name)
                     if not is_unique:
                         entity.param.list[name] = None
-
-    def correct_parameter_print(self, entity, name):
-        regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
-        param_str = regex.findall(format(entity.param.list[name], ".15f"))
-
-        return(param_str[0][0])
 
     def print_parameter(self, entity, param_index, name):
         """
@@ -284,7 +282,7 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
         else:
             try:
-                param_str = self.correct_parameter_print(entity, name)
+                param_str = ParameterHandler.correct_parameter_print(entity.param, name)
                 self.parameter_textbox[param_index][0].insert(tk.END, param_str)
             except TypeError:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
@@ -307,7 +305,7 @@ class Mainframe:
             self.edit_drop_options.append("Neuron Random")
             self.general_info.config(text="Neuron Selected")
             self.edit_drop_options.append("Network")
-            self.general_info.config(text=f"Neural Network <{self.network_manager.curr_network}> Selected")
+            self.general_info.config(text=f"'Default' Neuron Type Selected")
 
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
                                             command=self.show_parameters)
@@ -338,7 +336,7 @@ class Mainframe:
             self.param_list = network_parameter
 
         for i, name in enumerate(self.param_list):
-            self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=10,
+            self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=20,
                                                    bg=design.grey_7[design.theme], borderwidth=0,
                                                    highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
                                            name])

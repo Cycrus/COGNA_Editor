@@ -10,6 +10,8 @@ try:
 except:
     print("[ERROR] Missing package. Install package <pillow> first.")
 import math
+import re
+import copy
 from src.NetworkManager import *
 from src.Design import *
 

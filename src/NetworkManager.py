@@ -19,6 +19,7 @@ class NetworkManager:
         self.neuron_types = [["Default", ParameterHandler()]]
         self.curr_network = 0
         self.add_network()
+        self.neuron_types[0][1] = self.networks[0].param
 
     def network_default_name(self, name_nr):
         name = "network-" + str(name_nr) + ".json"
@@ -29,8 +30,8 @@ class NetworkManager:
                 break
         return name
 
-    def add_network(self):
-        self.networks.append(Network())
+    def add_network(self, params=None):
+        self.networks.append(Network(params))
         self.curr_network = len(self.networks)-1
         temp_filename = self.network_default_name(1)
         self.filename.append(temp_filename)
