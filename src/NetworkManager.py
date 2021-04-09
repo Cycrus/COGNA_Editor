@@ -52,8 +52,9 @@ class NetworkManager:
         for connection in self.networks[network_id].connections:
             if connection.prev_neuron > id-1:
                 connection.prev_neuron = connection.prev_neuron - 1
-            if connection.next_neuron > id-1:
-                connection.next_neuron = connection.next_neuron - 1
+            if connection.next_neuron is not None:
+                if connection.next_neuron > id-1:
+                    connection.next_neuron = connection.next_neuron - 1
 
         self.networks[network_id].neurons.pop(id - 1)
         for neuron in reversed(self.networks[network_id].neurons):
@@ -65,7 +66,7 @@ class NetworkManager:
                                                                 source_neuron, network_id))
 
     def delete_connection(self, id, network_id=0):
-        for connection in self.networks[network_id].connections:
+        for connection in reversed(self.networks[network_id].connections):
             if connection.next_connection == id:
                 self.delete_connection(connection.id, network_id)
         self.networks[network_id].connections.pop(id)
