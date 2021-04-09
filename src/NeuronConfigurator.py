@@ -30,8 +30,7 @@ class NeuronConfigurator:
                                    "Connection Presynaptic",
                                    "Neuron Activation",
                                    "Neuron Transmitter",
-                                   "Neuron Random",
-                                   "Network"]
+                                   "Neuron Random"]
         self.param_selection = tk.StringVar()
         self.param_selection.set(self.param_drop_options[0])
 
@@ -68,13 +67,15 @@ class NeuronConfigurator:
                                               borderwidth=0, highlightthickness=0))
             self.param_frames[idx].pack(side=tk.TOP)
 
-        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[0], self.param_selection, *self.param_drop_options,
-                                            command=self.render_parameter)
-        self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.parameter_frame.winfo_width(),
-                                   fg=design.grey_c[design.theme],
-                                   borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
-                                   activebackground=design.grey_7[design.theme])
-        self.edit_drop_menu.pack(side=tk.TOP, pady=20)
+        self.top_frame.update()
+
+        self.param_drop_menu = tk.OptionMenu(self.param_frames[0], self.param_selection, *self.param_drop_options,
+                                             command=self.render_parameter)
+        self.param_drop_menu.config(bg=design.grey_4[design.theme], width=50,
+                                    fg=design.grey_c[design.theme],
+                                    borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
+                                    activebackground=design.grey_7[design.theme])
+        self.param_drop_menu.pack(side=tk.TOP, pady=20)
 
         self.neuron_frame = tk.Frame(master=self.editor, background=design.grey_4[design.theme],
                                      borderwidth=0,
@@ -120,17 +121,17 @@ class NeuronConfigurator:
                 background_col = design.dark_blue[design.theme]
             else:
                 background_col = design.grey_3[design.theme]
-            temp_n_button = tk.Button(master=self.nbutton_frames[idx+1], text=neuron[0],
+            temp_n_button = tk.Button(master=self.nbutton_frames[idx], text=neuron[0],
                                       background=background_col, fg=design.grey_c[design.theme],
                                       activebackground=design.grey_7[design.theme],
                                       command=lambda i=neuron: self.switch_neuron(n=i))
-            temp_del_button = tk.Button(master=self.nbutton_frames[idx+1], text="Delete",
+            temp_del_button = tk.Button(master=self.nbutton_frames[idx], text="Delete",
                                         background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
                                         activebackground=design.grey_7[design.theme],
                                         command=lambda i=neuron: self.del_neuron(n=i))
             self.neuron_buttons.append([temp_n_button, temp_del_button])
 
-        add_button = tk.Button(master=self.nbutton_frames[len(self.neuron_list)+1], text="Add Neuron Type",
+        add_button = tk.Button(master=self.nbutton_frames[len(self.neuron_list)], text="Add Neuron Type",
                                background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
                                activebackground=design.grey_7[design.theme],
                                command=self.add_neuron_window)
@@ -142,7 +143,7 @@ class NeuronConfigurator:
             if button[1] is not None and idx != 0:
                 button[1].pack(side=tk.RIGHT, pady=20, padx=20)
 
-    def render_parameter(self):
+    def render_parameter(self, event=None):
         print("rendered parameter")
 
     def switch_neuron(self, n):
