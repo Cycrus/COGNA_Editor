@@ -33,6 +33,9 @@ class NeuronConfigurator:
                                    "Neuron Random"]
         self.param_selection = tk.StringVar()
         self.param_selection.set(self.param_drop_options[0])
+        self.param_list = connection_special_parameter
+        self.param_textbox = []
+        self.param_info = []
 
         self.label_frame = tk.Frame(master=self.top_frame, background=design.dark_blue[design.theme],
                                     borderwidth=0,
@@ -65,7 +68,7 @@ class NeuronConfigurator:
         for idx in range(0, self.frame_number):
             self.param_frames.append(tk.Frame(master=self.parameter_frame, background=design.grey_4[design.theme],
                                               borderwidth=0, highlightthickness=0))
-            self.param_frames[idx].pack(side=tk.TOP)
+            self.param_frames[idx].pack(side=tk.TOP, anchor="w")
 
         self.top_frame.update()
 
@@ -88,7 +91,7 @@ class NeuronConfigurator:
         for idx in range(0, self.frame_number):
             self.nbutton_frames.append(tk.Frame(master=self.neuron_frame, background=design.grey_4[design.theme],
                                                 borderwidth=0, highlightthickness=0))
-            self.nbutton_frames[idx].pack(side=tk.TOP)
+            self.nbutton_frames[idx].pack(side=tk.TOP, anchor="w")
         self.neuron_buttons = []
 
         self.button_frame = tk.Frame(master=self.top_frame, background=design.grey_4[design.theme],
@@ -143,12 +146,55 @@ class NeuronConfigurator:
             if button[1] is not None and idx != 0:
                 button[1].pack(side=tk.RIGHT, pady=20, padx=20)
 
+    def print_parameter(self, entity, param_index, param_name):
+        param_string = ParameterHandler.correct_parameter_print(entity, param_name)
+        self.param_textbox[param_index][0].insert(tk.END, param_string)
+
     def render_parameter(self, event=None):
-        print("rendered parameter")
+        curr_neuron_entity = None
+        for idx, neuron in enumerate(self.neuron_list):
+            if self.curr_neuron == neuron[0]:
+                curr_neuron_entity = neuron[1]
+
+        for i in range(0, len(self.param_info)):
+            self.param_info[i].destroy()
+        self.param_info.clear()
+        for i in range(0, len(self.param_textbox)):
+            self.param_textbox[i][0].destroy()
+        self.param_textbox.clear()
+
+        if self.param_selection.get() == self.param_drop_options[0]:
+            self.param_list = connection_special_parameter
+        elif self.param_selection.get() == self.param_drop_options[1]:
+            self.param_list = connection_habituation_parameter
+        elif self.param_selection.get() == self.param_drop_options[2]:
+            self.param_list = connection_sensitization_parameter
+        elif self.param_selection.get() == self.param_drop_options[3]:
+            self.param_list = connection_presynaptic_parameter
+        elif self.param_selection.get() == self.param_drop_options[4]:
+            self.param_list = neuron_activation_parameter
+        elif self.param_selection.get() == self.param_drop_options[5]:
+            self.param_list = neuron_transmitter_parameter
+        elif self.param_selection.get() == self.param_drop_options[6]:
+            self.param_list = neuron_random_parameter
+
+        for i, name in enumerate(self.param_list):
+            self.param_textbox.append([tk.Entry(master=self.param_frames[i+1], width=20,
+                                                bg=design.grey_7[design.theme], borderwidth=0,
+                                                highlightthickness=2,
+                                                highlightbackground=design.grey_2[design.theme]),
+                                       name])
+
+            self.print_parameter(curr_neuron_entity, i, name)
+            self.param_textbox[i][0].pack(side=tk.LEFT, padx=20, pady=10)
+            self.param_info.append(tk.Label(master=self.param_frames[i+1], text=name,
+                                            bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
+            self.param_info[i].pack(side=tk.LEFT, padx=20, pady=10)
 
     def switch_neuron(self, n):
         self.curr_neuron = n[0]
         self.render_buttons()
+        self.render_parameter()
 
     def del_neuron(self, n):
         for idx, neuron in enumerate(self.neuron_list):
@@ -174,7 +220,7 @@ class NeuronConfigurator:
                     if name == check_name[0]:
                         can_add = False
                 if can_add:
-                    self.neuron_list.append([name, ParameterHandler()])
+                    self.neuron_list.append([name, copy.deepcopy(self.neuron_list[0][1])])
 
             add_frame.destroy()
             self.render_buttons()
