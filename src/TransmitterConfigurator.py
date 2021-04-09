@@ -6,14 +6,13 @@ class TransmitterConfigurator:
     def __init__(self, root, network_manager):
         self.root_frame = root
         self.transmitter_list = network_manager.transmitters
-        print(self.transmitter_list)
         self.network_manager = network_manager
         self.frame_number = 30
 
         self.width = self.root_frame.winfo_screenwidth() // 3
         self.height = self.root_frame.winfo_screenheight() // 2
-        self.pos_x = self.root_frame.winfo_width() // 2 - self.width // 2 + self.root_frame.winfo_x()
-        self.pos_y = self.root_frame.winfo_height() // 2 - self.height // 2 + self.root_frame.winfo_y()
+        self.pos_x = self.root_frame.winfo_screenwidth() // 2 - self.width // 2
+        self.pos_y = self.root_frame.winfo_screenheight() // 2 - self.height // 2
         self.transmitter_frame = tk.Toplevel()
         self.transmitter_frame.grab_set()
         self.transmitter_frame.geometry(f"{self.width}x{self.height}+{self.pos_x}+{self.pos_y}")

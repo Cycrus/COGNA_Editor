@@ -238,23 +238,28 @@ class Mainframe:
 
         return True
 
-    def store_parameters(self):
+    def store_parameters(self, entity, parameter_names):
         """
         Stores all parameter, which are currently opened in the GUI.
         """
-        if self.tool == TOOL_SELECT:
-            for i, name in enumerate(self.param_list):
-                for param_container in self.parameter_textbox:
-                    if param_container[1] == name:
-                        temp_param = param_container[0].get()
-                        try:
-                            self.selected_entity.param.list[name] = float(temp_param)
-                        except ValueError:
-                            self.selected_entity.param.list[name] = None
+        for i, name in enumerate(parameter_names):
+            for param_container in self.parameter_textbox:
+                if param_container[1] == name:
+                    temp_param = param_container[0].get()
+                    try:
+                        entity.param.list[name] = float(temp_param)
+                    except ValueError:
+                        entity.param.list[name] = None
 
-                        is_unique = self.check_parameter_uniqueness(name)
-                        if not is_unique:
-                            self.selected_entity.param.list[name] = None
+                    is_unique = self.check_parameter_uniqueness(name)
+                    if not is_unique:
+                        entity.param.list[name] = None
+
+    def correct_parameter_print(self, entity, name):
+        regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
+        param_str = regex.findall(format(entity.param.list[name], ".15f"))
+
+        return(param_str[0][0])
 
     def print_parameter(self, entity, param_index, name):
         """
@@ -279,9 +284,8 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
         else:
             try:
-                regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
-                param_str = regex.findall(format(entity.param.list[name], ".15f"))
-                self.parameter_textbox[param_index][0].insert(tk.END, param_str[0][0])
+                param_str = self.correct_parameter_print(entity, name)
+                self.parameter_textbox[param_index][0].insert(tk.END, param_str)
             except TypeError:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
@@ -353,7 +357,7 @@ class Mainframe:
         :param store: Determines whether parameters should be stored before rendering new parameters.
         """
         if store:
-            self.store_parameters()
+            self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
         if self.selected_connection > -1:
             self.selected_entity = self.network_manager.networks[self.network_manager.curr_network].connections[self.selected_connection]
         elif self.selected_neuron > -1:
@@ -697,7 +701,7 @@ class Mainframe:
         self.deselect_connections()
 
     def escape_event(self, event):
-        self.store_parameters()
+        self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
         self.discard_connection()
         self.deselect_neurons()
         self.deselect_connections()
@@ -778,7 +782,7 @@ class Mainframe:
                     if not self.do_connection:
                         self.connection_source_neuron = None
                 elif self.tool == TOOL_SELECT:
-                    self.store_parameters()
+                    self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
                     self.deselect_connections()
                     self.selected_neuron = neuron.id
                     self.show_parameters(store=False)
@@ -801,7 +805,7 @@ class Mainframe:
                     np.array([self.cursor_x, self.cursor_y]))
 
             if self.tool == TOOL_SELECT:
-                self.store_parameters()
+                self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
                 self.deselect_neurons()
                 self.show_parameters(store=False)
                 for connection in self.network_manager.networks[self.network_manager.curr_network].connections:

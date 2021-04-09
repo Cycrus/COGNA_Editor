@@ -189,7 +189,8 @@ class Topmenu:
         self.mark_active_tab()
 
     def show_specific_network(self, network_id):
-        self.mainframe.store_parameters()
+        self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
+                                        parameter_names=self.mainframe.param_list)
         self.mainframe.deselect_all()
         self.network_manager.curr_network = network_id
         self.mainframe.render_scene()
@@ -197,7 +198,8 @@ class Topmenu:
         self.mark_active_tab()
 
     def new_command(self, event=None):
-        self.mainframe.store_parameters()
+        self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
+                                        parameter_names=self.mainframe.param_list)
         self.mainframe.deselect_all()
         self.network_manager.add_network()
         self.mainframe.reset_camera()
