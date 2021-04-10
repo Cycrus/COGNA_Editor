@@ -236,12 +236,12 @@ class Topmenu:
 
     def neuron_config_command(self):
         neuron_configurator = NeuronConfigurator(self.root_frame,
+                                                 self.mainframe,
                                                  self.network_manager)
 
     def transmitter_config_command(self):
         transmitter_configurator = TransmitterConfigurator(self.root_frame,
                                                            self.network_manager)
-        del transmitter_configurator
 
     def grid_command(self):
         self.mainframe.toggle_grid_snap(None)

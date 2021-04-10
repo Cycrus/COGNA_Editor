@@ -16,7 +16,7 @@ class NetworkManager:
         self.camera_y = []
         self.zoom_factor = []
         self.transmitters = ["Default"]
-        self.neuron_types = [["Default", ParameterHandler()]]
+        self.neuron_types = [["Default", None]]
         self.curr_network = 0
         self.add_network()
         self.neuron_types[0][1] = self.networks[0].param

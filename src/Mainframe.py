@@ -248,7 +248,7 @@ class Mainframe:
                     try:
                         if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
                                 name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
-                                name == "influences_transmitter" or name == "influenced_transmitter":
+                                name == "influences_transmitter" or name == "influenced_transmitter" or name == "neuron_type":
                             entity.param.list[name] = temp_param
                         else:
                             entity.param.list[name] = float(temp_param)
@@ -319,21 +319,27 @@ class Mainframe:
         self.edit_drop_menu.pack(side=tk.LEFT)
 
         if self.edit_selection.get() == self.edit_drop_options[0]:
-            self.param_list = connection_special_parameter
+            self.param_list = copy.copy(connection_special_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[1]:
-            self.param_list = connection_habituation_parameter
+            self.param_list = copy.copy(connection_habituation_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[2]:
-            self.param_list = connection_sensitization_parameter
+            self.param_list = copy.copy(connection_sensitization_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[3]:
-            self.param_list = connection_presynaptic_parameter
+            self.param_list = copy.copy(connection_presynaptic_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[4]:
-            self.param_list = neuron_activation_parameter
+            self.param_list = copy.copy(neuron_activation_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[5]:
-            self.param_list = neuron_transmitter_parameter
+            self.param_list = copy.copy(neuron_transmitter_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[6]:
-            self.param_list = neuron_random_parameter
+            self.param_list = copy.copy(neuron_random_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[7]:
-            self.param_list = network_parameter
+            self.param_list = copy.copy(network_parameter)
+
+        if self.selected_neuron < 0 and self.selected_connection < 0:
+            try:
+                self.param_list.remove("neuron_type")
+            except ValueError:
+                pass
 
         for i, name in enumerate(self.param_list):
             self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=20,
