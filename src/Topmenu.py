@@ -251,10 +251,8 @@ class Topmenu:
 
     def toggle_mode(self, mode):
         if mode == "Light":
-            print("Light Mode")
             design.theme = 1
         elif mode == "Dark":
-            print("Dark Mode")
             design.theme = 0
 
         self.root_frame.update()

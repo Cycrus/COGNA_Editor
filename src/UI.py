@@ -9,5 +9,5 @@ class UI:
         self.mainframe = Mainframe(root, network_manager)
         self.topmenu = Topmenu(root, network_manager, self.mainframe)
         self.mainframe.pack_widgets()
-        self.bottommenu = Bottommenu(root)
+        #self.bottommenu = Bottommenu(root)
 

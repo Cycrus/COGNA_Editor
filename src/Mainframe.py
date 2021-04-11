@@ -561,7 +561,7 @@ class Mainframe:
                                                 self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white[design.theme])
             self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                           VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          text=f"{neuron.id}", fill=design.grey_3[design.theme])
+                                          text=f"{neuron.id}", fill=design.grey_1[design.theme])
 
     def render_ui_description(self):
         """
