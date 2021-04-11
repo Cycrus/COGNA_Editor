@@ -9,7 +9,7 @@ class TransmitterConfigurator:
         self.network_manager = network_manager
         self.frame_number = 30
 
-        self.width = self.root_frame.winfo_screenwidth() // 3
+        self.width = self.root_frame.winfo_screenwidth() // 6
         self.height = self.root_frame.winfo_screenheight() // 2
         self.pos_x = self.root_frame.winfo_screenwidth() // 2 - self.width // 2
         self.pos_y = self.root_frame.winfo_screenheight() // 2 - self.height // 2
@@ -44,7 +44,7 @@ class TransmitterConfigurator:
         for idx in range(0, self.frame_number):
             self.edit_frames.append(tk.Frame(master=self.editor, background=design.grey_4[design.theme], borderwidth=0,
                                     highlightthickness=0))
-            self.edit_frames[idx].pack(side=tk.TOP)
+            self.edit_frames[idx].pack(side=tk.TOP, anchor="w")
         self.edit_widgets = []
 
         self.render_editor()

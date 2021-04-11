@@ -11,6 +11,7 @@ class Network:
         if default_params is not None:
             self.param = default_params
         else:
+            self.param.list["neuron_type"] = "Default"
             self.param.list["activation_threshold"] = 1.0
             self.param.list["used_transmitter"] = "Default"
             self.param.list["max_activation"] = 50.0

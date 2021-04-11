@@ -246,9 +246,7 @@ class Mainframe:
                 if param_container[1] == name:
                     temp_param = param_container[0].get()
                     try:
-                        if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
-                                name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
-                                name == "influences_transmitter" or name == "influenced_transmitter":
+                        if ParameterHandler.is_menu(name):
                             entity.param.list[name] = temp_param
                         else:
                             entity.param.list[name] = float(temp_param)
@@ -275,7 +273,12 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             elif isinstance(entity, Neuron):
                 network_id = entity.network_id
+                #neuron_type = self.network_manager.neuron_types[0][1]
+                #for n_type in self.network_manager.neuron_types:
+                #    if n_type[0] == entity.param.list["neuron_type"]:
+                #        neuron_type = n_type[1]
                 self.print_parameter(self.network_manager.networks[network_id], param_index, name)
+                #self.print_parameter(neuron_type, param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             else:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
@@ -319,21 +322,27 @@ class Mainframe:
         self.edit_drop_menu.pack(side=tk.LEFT)
 
         if self.edit_selection.get() == self.edit_drop_options[0]:
-            self.param_list = connection_special_parameter
+            self.param_list = copy.copy(connection_special_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[1]:
-            self.param_list = connection_habituation_parameter
+            self.param_list = copy.copy(connection_habituation_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[2]:
-            self.param_list = connection_sensitization_parameter
+            self.param_list = copy.copy(connection_sensitization_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[3]:
-            self.param_list = connection_presynaptic_parameter
+            self.param_list = copy.copy(connection_presynaptic_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[4]:
-            self.param_list = neuron_activation_parameter
+            self.param_list = copy.copy(neuron_activation_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[5]:
-            self.param_list = neuron_transmitter_parameter
+            self.param_list = copy.copy(neuron_transmitter_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[6]:
-            self.param_list = neuron_random_parameter
+            self.param_list = copy.copy(neuron_random_parameter)
         elif self.edit_selection.get() == self.edit_drop_options[7]:
-            self.param_list = network_parameter
+            self.param_list = copy.copy(network_parameter)
+
+        if self.selected_neuron < 0 and self.selected_connection < 0:
+            try:
+                self.param_list.remove("neuron_type")
+            except ValueError:
+                pass
 
         for i, name in enumerate(self.param_list):
             self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=20,
@@ -552,7 +561,7 @@ class Mainframe:
                                                 self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white[design.theme])
             self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                           VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          text=f"{neuron.id}", fill=design.grey_3[design.theme])
+                                          text=f"{neuron.id}", fill=design.grey_1[design.theme])
 
     def render_ui_description(self):
         """

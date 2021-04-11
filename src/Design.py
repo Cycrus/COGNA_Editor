@@ -11,11 +11,12 @@ class Design:
         self.grey_5 = ["#555555", "#aaaaaa"]
         self.grey_2 = ["#222222", "#dddddd"]
         self.grey_3 = ["#333333", "#cccccc"]
-        self.grey_7 = ["#777777", "#888888"]
-        self.light_blue = ["#1cd4d8", "#126365"]
+        self.grey_1 = ["#111111", "#222222"]
+        self.grey_7 = ["#777777", "#cccccc"]
+        self.light_blue = ["#1cd4d8", "#107F81"]
         self.dark_blue = ["#14405a", "#278fcd"]
-        self.white = ["#FFFFFF", "#000000"]
-        self.black = ["#000000", "#FFFFFF"]
+        self.white = ["#FFFFFF", "#FFFFFF"]
+        self.black = ["#000000", "#000000"]
         self.connection_width = 3
         self.selected_connection_width = self.connection_width+3
         self.editbutton_size_relation = 3
