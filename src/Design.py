@@ -15,7 +15,7 @@ class Design:
         self.light_blue = ["#1cd4d8", "#126365"]
         self.dark_blue = ["#14405a", "#278fcd"]
         self.white = ["#FFFFFF", "#000000"]
-        self.black = ["#000000", "#FFFFFF"]
+        self.black = ["#000000", "#000000"]
         self.connection_width = 3
         self.selected_connection_width = self.connection_width+3
         self.editbutton_size_relation = 3

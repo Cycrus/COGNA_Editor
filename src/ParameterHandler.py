@@ -50,11 +50,16 @@ connection_special_parameter = ["base_weight", #numeric
                                 "learning_type", #String<None:1, Habituation:2, Sensitization:3, Habisens:4>
                                 "transmitter_type"] #String<Possible transmitters:?>
 
-network_parameter = ["transmitter_number",
-                     "transmitter_backfall_curvature",
+network_parameter = ["transmitter_backfall_curvature",
                      "transmitter_backfall_steepness",
                      "max_transmitter_weight",
                      "min_transmitter_weight"]
+
+influences_transmitter_options = ["No", "Yes"]
+transmitter_influence_direction_options = ["Positive Influence", "Negative Influence"]
+activation_type_options = ["Excitatory", "Inhibitory", "Nondirectional"]
+activation_function_options = ["Relu", "Linear", "Sigmoid"]
+learning_type_options = ["None", "Habituation", "Sensitization", "HabiSens"]
 
 class ParameterHandler:
     def __init__(self):
@@ -77,10 +82,16 @@ class ParameterHandler:
             self.list[name] = None
 
     @staticmethod
-    def correct_parameter_print(entity, name):
+    def is_menu(name):
         if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
                 name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
                 name == "influences_transmitter" or name == "influenced_transmitter" or name == "neuron_type":
+            return True
+        return False
+
+    @staticmethod
+    def correct_parameter_print(entity, name):
+        if ParameterHandler.is_menu(name):
             string_value = entity.list[name]
         else:
             regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)

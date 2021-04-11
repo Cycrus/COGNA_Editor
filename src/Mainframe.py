@@ -246,9 +246,7 @@ class Mainframe:
                 if param_container[1] == name:
                     temp_param = param_container[0].get()
                     try:
-                        if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
-                                name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
-                                name == "influences_transmitter" or name == "influenced_transmitter" or name == "neuron_type":
+                        if ParameterHandler.is_menu(name):
                             entity.param.list[name] = temp_param
                         else:
                             entity.param.list[name] = float(temp_param)
@@ -275,7 +273,12 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             elif isinstance(entity, Neuron):
                 network_id = entity.network_id
+                #neuron_type = self.network_manager.neuron_types[0][1]
+                #for n_type in self.network_manager.neuron_types:
+                #    if n_type[0] == entity.param.list["neuron_type"]:
+                #        neuron_type = n_type[1]
                 self.print_parameter(self.network_manager.networks[network_id], param_index, name)
+                #self.print_parameter(neuron_type, param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             else:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")

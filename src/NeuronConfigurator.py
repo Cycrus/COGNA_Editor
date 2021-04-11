@@ -164,16 +164,16 @@ class NeuronConfigurator:
 
         return curr_neuron_entity
 
-    def store_parameter(self, event=None):
+    def store_option_parameter(self, option, name):
+        curr_neuron_entity = self.get_current_neuron_entity()
+        curr_neuron_entity.list[name] = option
+
+    def store_parameter(self):
         curr_neuron_entity = self.get_current_neuron_entity()
 
         for idx, container in enumerate(self.param_textbox):
-            temp_param = container[0].get()
-            if container[1] == "transmitter_type" or container[1] == "used_transmitter" or container[1] == "learning_type" or \
-                    container[1] == "activation_function" or container[1] == "activation_type" or container[1] == "transmitter_influence_direction" or \
-                    container[1] == "influences_transmitter" or container[1] == "influenced_transmitter" or container[1] == "neuron_type":
-                curr_neuron_entity.list[container[1]] = temp_param
-            else:
+            if not ParameterHandler.is_menu(container[1]):
+                temp_param = container[0].get()
                 try:
                     curr_neuron_entity.list[container[1]] = float(temp_param)
                 except ValueError:
@@ -213,14 +213,54 @@ class NeuronConfigurator:
             pass
 
         for i, name in enumerate(self.param_list):
-            self.param_textbox.append([tk.Entry(master=self.param_frames[i+1], width=20,
-                                                bg=design.grey_7[design.theme], borderwidth=0,
-                                                highlightthickness=2,
-                                                highlightbackground=design.grey_2[design.theme]),
-                                       name])
+            if ParameterHandler.is_menu(name):
+                var = tk.StringVar()
+                var.set(curr_neuron_entity.list[name])
+                menu = ["~Placeholder~",
+                        "This",
+                        "Should",
+                        "Not",
+                        "Be",
+                        "Here"]
+                if name == "influences_transmitter":
+                    menu = influences_transmitter_options
+                elif name == "influenced_transmitter":
+                    menu = influences_transmitter_options
+                elif name == "transmitter_influence_direction":
+                    menu = transmitter_influence_direction_options
+                elif name == "activation_type":
+                    menu = activation_type_options
+                elif name == "activation_function":
+                    menu = activation_function_options
+                elif name == "learning_type":
+                    menu = learning_type_options
+                elif name == "transmitter_type":
+                    menu = self.network_manager.transmitters
+                elif name == "used_transmitter":
+                    menu = self.network_manager.transmitters
+                self.param_textbox.append([tk.OptionMenu(self.param_frames[i + 1],
+                                                         var,
+                                                         *menu,
+                                                         command=lambda option, n=name: self.store_option_parameter(option=option,
+                                                                                                                    name=n)),
+                                           name])
 
-            self.print_parameter(curr_neuron_entity, i, name)
+                self.param_textbox[i][0].config(bg=design.grey_7[design.theme], width=15,
+                                                fg=design.black[design.theme],
+                                                borderwidth=0, highlightthickness=3,
+                                                highlightbackground=design.grey_2[design.theme],
+                                                activebackground=design.grey_7[design.theme])
+            else:
+                self.param_textbox.append([tk.Entry(master=self.param_frames[i + 1], width=20,
+                                                    fg=design.black[design.theme],
+                                                    bg=design.grey_7[design.theme], borderwidth=0,
+                                                    highlightthickness=2,
+                                                    highlightbackground=design.grey_2[design.theme]),
+                                           name])
+
+                self.print_parameter(curr_neuron_entity, i, name)
             self.param_textbox[i][0].pack(side=tk.LEFT, padx=20, pady=10)
+
             self.param_info.append(tk.Label(master=self.param_frames[i+1], text=name,
                                             bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
             self.param_info[i].pack(side=tk.LEFT, padx=20, pady=10)
