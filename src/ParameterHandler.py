@@ -90,6 +90,41 @@ class ParameterHandler:
         return False
 
     @staticmethod
+    def get_option_menu_list(name, network_manager):
+        menu = ["~Placeholder~",
+                "This",
+                "Should",
+                "Not",
+                "Be",
+                "Here"]
+        if name == "influences_transmitter":
+            menu = influences_transmitter_options
+        elif name == "influenced_transmitter":
+            menu = influences_transmitter_options
+        elif name == "transmitter_influence_direction":
+            menu = transmitter_influence_direction_options
+        elif name == "activation_type":
+            menu = activation_type_options
+        elif name == "activation_function":
+            menu = activation_function_options
+        elif name == "learning_type":
+            menu = learning_type_options
+        elif name == "transmitter_type":
+            menu = network_manager.transmitters
+        elif name == "used_transmitter":
+            menu = network_manager.transmitters
+
+        return menu
+
+    @staticmethod
+    def get_base_neuron(neuron_type_list, entity_param):
+        neuron_type = neuron_type_list[0][1]
+        for n_type in neuron_type_list:
+            if n_type[0] == entity_param.list["neuron_type"]:
+                neuron_type = n_type[1]
+        return neuron_type
+
+    @staticmethod
     def correct_parameter_print(entity, name):
         if ParameterHandler.is_menu(name):
             string_value = entity.list[name]

@@ -218,19 +218,18 @@ class Mainframe:
         """
         if self.selected_neuron > -1:
             neuron_param = self.selected_entity.param.list[parameter_name]
-            neuron_network = self.selected_entity.network_id
-            network_param = self.network_manager.networks[neuron_network].param.list[parameter_name]
-            if neuron_param == network_param:
+            base_param = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, self.selected_entity.param).list[parameter_name]
+            if neuron_param == base_param:
                 return False
         elif self.selected_connection > -1:
             connection_param = self.selected_entity.param.list[parameter_name]
             connection_network = self.selected_entity.network_id
             prev_neuron = self.selected_entity.prev_neuron
             neuron_param = self.network_manager.networks[connection_network].neurons[prev_neuron-1].param.list[parameter_name]
-            network_param = self.network_manager.networks[connection_network].param.list[parameter_name]
-            if connection_param == neuron_param:
+            base_param = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, self.selected_entity.param).list[parameter_name]
+            if neuron_param is None and connection_param == base_param:
                 return False
-            elif neuron_param is None and connection_param == network_param:
+            elif connection_param == neuron_param:
                 return False
         else:
             return True
@@ -257,7 +256,7 @@ class Mainframe:
                     if not is_unique:
                         entity.param.list[name] = None
 
-    def print_parameter(self, entity, param_index, name):
+    def print_parameter(self, entity, entity_param, param_index, name):
         """
         Prints the parameter into its textbox given corresponding index value.
         :param entity: The entity the parameter is assigned to.
@@ -265,27 +264,24 @@ class Mainframe:
         :param name: The name of the parameter. Must be given for other functions and to check for rule exceptions
                      in parameter GUI handling.
         """
-        if entity.param.list[name] is None:
+        if entity_param.list[name] is None:
             if isinstance(entity, Connection):
                 network_id = entity.network_id
                 neuron_id = entity.prev_neuron-1
-                self.print_parameter(self.network_manager.networks[network_id].neurons[neuron_id], param_index, name)
+                self.print_parameter(self.network_manager.networks[network_id].neurons[neuron_id],
+                                     self.network_manager.networks[network_id].neurons[neuron_id].param,
+                                     param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             elif isinstance(entity, Neuron):
-                network_id = entity.network_id
-                #neuron_type = self.network_manager.neuron_types[0][1]
-                #for n_type in self.network_manager.neuron_types:
-                #    if n_type[0] == entity.param.list["neuron_type"]:
-                #        neuron_type = n_type[1]
-                self.print_parameter(self.network_manager.networks[network_id], param_index, name)
-                #self.print_parameter(neuron_type, param_index, name)
+                neuron_type = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, entity_param)
+                self.print_parameter(None, neuron_type, param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             else:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
         else:
             try:
-                param_str = ParameterHandler.correct_parameter_print(entity.param, name)
+                param_str = ParameterHandler.correct_parameter_print(entity_param, name)
                 self.parameter_textbox[param_index][0].insert(tk.END, param_str)
             except TypeError:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
@@ -350,7 +346,7 @@ class Mainframe:
                                                    highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
                                            name])
 
-            self.print_parameter(self.selected_entity, i, name)
+            self.print_parameter(self.selected_entity, self.selected_entity.param, i, name)
             self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
