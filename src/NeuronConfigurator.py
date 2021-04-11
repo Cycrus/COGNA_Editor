@@ -216,28 +216,8 @@ class NeuronConfigurator:
             if ParameterHandler.is_menu(name):
                 var = tk.StringVar()
                 var.set(curr_neuron_entity.list[name])
-                menu = ["~Placeholder~",
-                        "This",
-                        "Should",
-                        "Not",
-                        "Be",
-                        "Here"]
-                if name == "influences_transmitter":
-                    menu = influences_transmitter_options
-                elif name == "influenced_transmitter":
-                    menu = influences_transmitter_options
-                elif name == "transmitter_influence_direction":
-                    menu = transmitter_influence_direction_options
-                elif name == "activation_type":
-                    menu = activation_type_options
-                elif name == "activation_function":
-                    menu = activation_function_options
-                elif name == "learning_type":
-                    menu = learning_type_options
-                elif name == "transmitter_type":
-                    menu = self.network_manager.transmitters
-                elif name == "used_transmitter":
-                    menu = self.network_manager.transmitters
+                menu = ParameterHandler.get_option_menu_list(name, self.network_manager)
+
                 self.param_textbox.append([tk.OptionMenu(self.param_frames[i + 1],
                                                          var,
                                                          *menu,
