@@ -24,16 +24,7 @@ class NeuronConfigurator:
                                  highlightbackground=design.grey_2[design.theme])
         self.top_frame.update()
 
-        self.param_drop_options = ["Connection Specific",
-                                   "Connection Habituation",
-                                   "Connection Sensitization",
-                                   "Connection Presynaptic",
-                                   "Neuron Activation",
-                                   "Neuron Transmitter",
-                                   "Neuron Random"]
         self.param_selection = tk.StringVar()
-        self.param_selection.set(self.param_drop_options[0])
-        self.param_list = connection_special_parameter
         self.param_textbox = []
         self.param_info = []
 
@@ -72,7 +63,8 @@ class NeuronConfigurator:
 
         self.top_frame.update()
 
-        self.param_drop_menu = tk.OptionMenu(self.param_frames[0], self.param_selection, *self.param_drop_options,
+        self.param_drop_menu = tk.OptionMenu(self.param_frames[0], self.param_selection,
+                                             *ParameterHandler.param_drop_options_neuron,
                                              command=self.render_parameter)
         self.param_drop_menu.config(bg=design.grey_4[design.theme], width=50,
                                     fg=design.grey_c[design.theme],
@@ -192,25 +184,7 @@ class NeuronConfigurator:
             self.param_textbox[i][0].destroy()
         self.param_textbox.clear()
 
-        if self.param_selection.get() == self.param_drop_options[0]:
-            self.param_list = copy.copy(connection_special_parameter)
-        elif self.param_selection.get() == self.param_drop_options[1]:
-            self.param_list = copy.copy(connection_habituation_parameter)
-        elif self.param_selection.get() == self.param_drop_options[2]:
-            self.param_list = copy.copy(connection_sensitization_parameter)
-        elif self.param_selection.get() == self.param_drop_options[3]:
-            self.param_list = copy.copy(connection_presynaptic_parameter)
-        elif self.param_selection.get() == self.param_drop_options[4]:
-            self.param_list = copy.copy(neuron_activation_parameter)
-        elif self.param_selection.get() == self.param_drop_options[5]:
-            self.param_list = copy.copy(neuron_transmitter_parameter)
-        elif self.param_selection.get() == self.param_drop_options[6]:
-            self.param_list = copy.copy(neuron_random_parameter)
-
-        try:
-            self.param_list.remove("neuron_type")
-        except ValueError:
-            pass
+        self.param_list = ParameterHandler.get_paramter_list(self.param_selection, "NeuronType")
 
         for i, name in enumerate(self.param_list):
             if ParameterHandler.is_menu(name):

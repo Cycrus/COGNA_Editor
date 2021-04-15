@@ -61,7 +61,29 @@ activation_type_options = ["Excitatory", "Inhibitory", "Nondirectional"]
 activation_function_options = ["Relu", "Linear", "Sigmoid"]
 learning_type_options = ["None", "Habituation", "Sensitization", "HabiSens"]
 
+
 class ParameterHandler:
+    param_drop_options_all = ["Connection Specific",
+                              "Connection Habituation",
+                              "Connection Sensitization",
+                              "Connection Presynaptic",
+                              "Neuron Activation",
+                              "Neuron Transmitter",
+                              "Neuron Random",
+                              "Network"]
+    param_drop_options_connection = ["Connection Specific",
+                                     "Connection Habituation",
+                                     "Connection Sensitization",
+                                     "Connection Presynaptic"]
+    param_drop_options_neuron = ["Neuron Activation",
+                                 "Neuron Transmitter",
+                                 "Neuron Random",
+                                 "Connection Specific",
+                                 "Connection Habituation",
+                                 "Connection Sensitization",
+                                 "Connection Presynaptic"]
+    param_drop_options_network = ["Network"]
+
     def __init__(self):
         self.list = {}
         for idx, name in enumerate(connection_special_parameter):
@@ -81,6 +103,59 @@ class ParameterHandler:
         for idx, name in enumerate(network_parameter):
             self.list[name] = None
 
+    def fill_in_params(self):
+        self.list["neuron_type"] = "Default"
+        self.list["activation_threshold"] = 1.0
+        self.list["used_transmitter"] = "Default"
+        self.list["max_activation"] = 50.0
+        self.list["min_activation"] = 0.0
+        self.list["activation_backfall_curvature"] = 1.0
+        self.list["activation_backfall_steepness"] = 0.04
+
+        self.list["transmitter_change_curvature"] = 1.02
+        self.list["transmitter_change_steepness"] = 0.02
+        self.list["influenced_transmitter"] = "None"
+        self.list["influences_transmitter"] = "No"
+        self.list["transmitter_influence_direction"] = "Positive Influence"
+
+        self.list["random_chance"] = 0
+        self.list["random_activation_value"] = 0.0
+
+        self.list["habituation_threshold"] = 0.001
+        self.list["short_habituation_curvature"] = 0.65
+        self.list["short_habituation_steepness"] = 0.07
+        self.list["short_dehabituation_curvature"] = 1.0
+        self.list["short_dehabituation_steepness"] = 0.00000005
+        self.list["long_habituation_curvature"] = 0.35
+        self.list["long_habituation_steepness"] = 0.00005
+        self.list["long_dehabituation_curvature"] = 1.0
+        self.list["long_dehabituation_steepness"] = 0.000000000001
+
+        self.list["sensitization_threshold"] = 5.0
+        self.list["short_sensitization_curvature"] = 0.65
+        self.list["short_sensitization_steepness"] = 0.07
+        self.list["short_desensitization_curvature"] = 1.0
+        self.list["short_desensitization_steepness"] = 0.00000005
+        self.list["long_sensitization_curvature"] = 1.02
+        self.list["long_sensitization_steepness"] = 0.0001
+        self.list["long_desensitization_curvature"] = 1.0
+        self.list["long_desensitization_steepness"] = 0.000000000001
+
+        self.list["presynaptic_potential_curvature"] = 0.60
+        self.list["presynaptic_potential_steepness"] = 0.3
+        self.list["presynaptic_backfall_curvature"] = 1.00
+        self.list["presynaptic_backfall_steepness"] = 0.0000002
+
+        self.list["base_weight"] = 1.0
+        self.list["max_weight"] = 5.0
+        self.list["min_weight"] = 0.0
+        self.list["activation_type"] = "Excitatory"
+        self.list["activation_function"] = "Relu"
+        self.list["learning_type"] = "None"
+
+        self.list["transmitter_type"] = "Default"
+        self.list["transmitter_number"] = 1
+
     @staticmethod
     def is_menu(name):
         if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
@@ -91,12 +166,7 @@ class ParameterHandler:
 
     @staticmethod
     def get_option_menu_list(name, network_manager):
-        menu = ["~Placeholder~",
-                "This",
-                "Should",
-                "Not",
-                "Be",
-                "Here"]
+        menu = None
         if name == "influences_transmitter":
             menu = influences_transmitter_options
         elif name == "influenced_transmitter":
@@ -115,6 +185,81 @@ class ParameterHandler:
             menu = network_manager.transmitters
 
         return menu
+
+    @staticmethod
+    def get_paramter_list(parameter_selector, type):
+        param_list = None
+
+        if type == "Connection":
+            param_drop_options = ParameterHandler.param_drop_options_connection
+            if parameter_selector.get() == param_drop_options[0]:
+                param_list = copy.copy(connection_special_parameter)
+            elif parameter_selector.get() == param_drop_options[1]:
+                param_list = copy.copy(connection_habituation_parameter)
+            elif parameter_selector.get() == param_drop_options[2]:
+                param_list = copy.copy(connection_sensitization_parameter)
+            elif parameter_selector.get() == param_drop_options[3]:
+                param_list = copy.copy(connection_presynaptic_parameter)
+            else:
+                parameter_selector.set(param_drop_options[0])
+                param_list = copy.copy(connection_special_parameter)
+
+        elif type == "Neuron" or type == "NeuronType":
+            param_drop_options = ParameterHandler.param_drop_options_neuron
+            if parameter_selector.get() == param_drop_options[0]:
+                param_list = copy.copy(neuron_activation_parameter)
+            elif parameter_selector.get() == param_drop_options[1]:
+                param_list = copy.copy(neuron_transmitter_parameter)
+            elif parameter_selector.get() == param_drop_options[2]:
+                param_list = copy.copy(neuron_random_parameter)
+            elif parameter_selector.get() == param_drop_options[3]:
+                param_list = copy.copy(connection_special_parameter)
+            elif parameter_selector.get() == param_drop_options[4]:
+                param_list = copy.copy(connection_habituation_parameter)
+            elif parameter_selector.get() == param_drop_options[5]:
+                param_list = copy.copy(connection_sensitization_parameter)
+            elif parameter_selector.get() == param_drop_options[6]:
+                param_list = copy.copy(connection_presynaptic_parameter)
+            else:
+                parameter_selector.set(param_drop_options[0])
+                param_list = copy.copy(neuron_activation_parameter)
+            if type == "NeuronType":
+                try:
+                    param_list.remove("neuron_type")
+                except ValueError:
+                    pass
+
+        elif type == "Network":
+            param_drop_options = ParameterHandler.param_drop_options_network
+            if parameter_selector.get() == param_drop_options[0]:
+                param_list = copy.copy(network_parameter)
+            else:
+                parameter_selector.set(param_drop_options[0])
+                param_list = copy.copy(network_parameter)
+
+        """
+        if parameter_selector.get() == param_drop_options[0]:
+            param_list = copy.copy(connection_special_parameter)
+        elif parameter_selector.get() == param_drop_options[1]:
+            param_list = copy.copy(connection_habituation_parameter)
+        elif parameter_selector.get() == param_drop_options[2]:
+            param_list = copy.copy(connection_sensitization_parameter)
+        elif parameter_selector.get() == param_drop_options[3]:
+            param_list = copy.copy(connection_presynaptic_parameter)
+        elif parameter_selector.get() == param_drop_options[4]:
+            param_list = copy.copy(neuron_activation_parameter)
+        elif parameter_selector.get() == param_drop_options[5]:
+            param_list = copy.copy(neuron_transmitter_parameter)
+        elif parameter_selector.get() == param_drop_options[6]:
+            param_list = copy.copy(neuron_random_parameter)
+        elif parameter_selector.get() == param_drop_options[7]:
+            param_list = copy.copy(network_parameter)
+        else:
+            parameter_selector.set(ParameterHandler.param_drop_options[0])
+            param_list = copy.copy(connection_special_parameter)
+        """
+
+        return param_list
 
     @staticmethod
     def get_base_neuron(neuron_type_list, entity_param):
