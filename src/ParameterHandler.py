@@ -183,6 +183,11 @@ class ParameterHandler:
             menu = network_manager.transmitters
         elif name == "used_transmitter":
             menu = network_manager.transmitters
+        elif menu == "neuron_type":
+            neuron_type_list = []
+            for neuron in network_manager.neuron_types:
+                neuron_type_list.append(neuron[0])
+            menu = neuron_type_list
 
         return menu
 
@@ -236,28 +241,6 @@ class ParameterHandler:
             else:
                 parameter_selector.set(param_drop_options[0])
                 param_list = copy.copy(network_parameter)
-
-        """
-        if parameter_selector.get() == param_drop_options[0]:
-            param_list = copy.copy(connection_special_parameter)
-        elif parameter_selector.get() == param_drop_options[1]:
-            param_list = copy.copy(connection_habituation_parameter)
-        elif parameter_selector.get() == param_drop_options[2]:
-            param_list = copy.copy(connection_sensitization_parameter)
-        elif parameter_selector.get() == param_drop_options[3]:
-            param_list = copy.copy(connection_presynaptic_parameter)
-        elif parameter_selector.get() == param_drop_options[4]:
-            param_list = copy.copy(neuron_activation_parameter)
-        elif parameter_selector.get() == param_drop_options[5]:
-            param_list = copy.copy(neuron_transmitter_parameter)
-        elif parameter_selector.get() == param_drop_options[6]:
-            param_list = copy.copy(neuron_random_parameter)
-        elif parameter_selector.get() == param_drop_options[7]:
-            param_list = copy.copy(network_parameter)
-        else:
-            parameter_selector.set(ParameterHandler.param_drop_options[0])
-            param_list = copy.copy(connection_special_parameter)
-        """
 
         return param_list
 

@@ -228,25 +228,33 @@ class Mainframe:
 
         return True
 
+    def check_and_save_parameters(self, entity, container, parameter_name):
+        temp_param = container[0].get()
+        try:
+            if ParameterHandler.is_menu(parameter_name):
+                entity.param.list[parameter_name] = temp_param
+            else:
+                entity.param.list[parameter_name] = float(temp_param)
+        except ValueError:
+            entity.param.list[parameter_name] = None
+
+        is_unique = self.check_parameter_uniqueness(parameter_name)
+        if not is_unique:
+            entity.param.list[parameter_name] = None
+
     def store_parameters(self, entity, parameter_names):
         """
         Stores all parameter, which are currently opened in the GUI.
         """
         for i, name in enumerate(parameter_names):
             for param_container in self.parameter_textbox:
-                if param_container[1] == name:
-                    temp_param = param_container[0].get()
-                    try:
-                        if ParameterHandler.is_menu(name):
-                            entity.param.list[name] = temp_param
-                        else:
-                            entity.param.list[name] = float(temp_param)
-                    except ValueError:
-                        entity.param.list[name] = None
+                if param_container[1] == name and param_container[1] != "neuron_type":
+                    self.check_and_save_parameters(entity, param_container, name)
 
-                    is_unique = self.check_parameter_uniqueness(name)
-                    if not is_unique:
-                        entity.param.list[name] = None
+        if isinstance(entity, Neuron):
+            for param_container in self.parameter_textbox:
+                if param_container[1] == "neuron_type":
+                    self.check_and_save_parameters(entity, param_container, "neuron_type")
 
     def print_parameter(self, entity, entity_param, param_index, name):
         """
