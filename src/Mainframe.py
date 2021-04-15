@@ -40,17 +40,8 @@ class Mainframe:
         self.editframe_width = int(self.root_frame.winfo_width()/4)
         barmenu_height = self.root_frame.winfo_height() / 100
         self.pixelVirtual = tk.PhotoImage(width=1, height=1)
-        
-        self.edit_drop_options = ["Connection Specific",
-                                  "Connection Habituation",
-                                  "Connection Sensitization",
-                                  "Connection Presynaptic",
-                                  "Neuron Activation",
-                                  "Neuron Transmitter",
-                                  "Neuron Random",
-                                  "Network"]
+
         self.edit_selection = tk.StringVar()
-        self.edit_selection.set(self.edit_drop_options[0])
         self.parameter_count = 50
         self.parameter_frame = []
         self.parameter_info = []
@@ -157,7 +148,8 @@ class Mainframe:
         self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=design.grey_4[design.theme],
                                 fg=design.grey_c[design.theme])
 
-        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
+        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                            *ParameterHandler.param_drop_options_all,
                                             command=self.show_parameters)
         self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
                                    borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
@@ -236,25 +228,33 @@ class Mainframe:
 
         return True
 
+    def check_and_save_parameters(self, entity, container, parameter_name):
+        temp_param = container[0].get()
+        try:
+            if ParameterHandler.is_menu(parameter_name):
+                entity.param.list[parameter_name] = temp_param
+            else:
+                entity.param.list[parameter_name] = float(temp_param)
+        except ValueError:
+            entity.param.list[parameter_name] = None
+
+        is_unique = self.check_parameter_uniqueness(parameter_name)
+        if not is_unique:
+            entity.param.list[parameter_name] = None
+
     def store_parameters(self, entity, parameter_names):
         """
         Stores all parameter, which are currently opened in the GUI.
         """
         for i, name in enumerate(parameter_names):
             for param_container in self.parameter_textbox:
-                if param_container[1] == name:
-                    temp_param = param_container[0].get()
-                    try:
-                        if ParameterHandler.is_menu(name):
-                            entity.param.list[name] = temp_param
-                        else:
-                            entity.param.list[name] = float(temp_param)
-                    except ValueError:
-                        entity.param.list[name] = None
+                if param_container[1] == name and param_container[1] != "neuron_type":
+                    self.check_and_save_parameters(entity, param_container, name)
 
-                    is_unique = self.check_parameter_uniqueness(name)
-                    if not is_unique:
-                        entity.param.list[name] = None
+        if isinstance(entity, Neuron):
+            for param_container in self.parameter_textbox:
+                if param_container[1] == "neuron_type":
+                    self.check_and_save_parameters(entity, param_container, "neuron_type")
 
     def print_parameter(self, entity, entity_param, param_index, name):
         """
@@ -293,21 +293,23 @@ class Mainframe:
         """
         if self.selected_connection > -1:
             self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
+            self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Connection")
+            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                                *ParameterHandler.param_drop_options_connection,
+                                                command=self.show_parameters)
         elif self.selected_neuron > -1:
-            self.edit_drop_options.append("Neuron Activation")
-            self.edit_drop_options.append("Neuron Transmitter")
-            self.edit_drop_options.append("Neuron Random")
             self.general_info.config(text=f"Neuron <{self.selected_neuron}> Selected")
+            self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Neuron")
+            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                                *ParameterHandler.param_drop_options_neuron,
+                                                command=self.show_parameters)
         else:
-            self.edit_drop_options.append("Neuron Activation")
-            self.edit_drop_options.append("Neuron Transmitter")
-            self.edit_drop_options.append("Neuron Random")
-            self.general_info.config(text="Neuron Selected")
-            self.edit_drop_options.append("Network")
-            self.general_info.config(text=f"'Default' Neuron Type Selected")
+            self.general_info.config(text=f"Network <{self.network_manager.curr_network}> Selected")
+            self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Network")
+            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                                *ParameterHandler.param_drop_options_network,
+                                                command=self.show_parameters)
 
-        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection, *self.edit_drop_options,
-                                            command=self.show_parameters)
         self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
                                    borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
                                    activebackground=design.grey_7[design.theme])
@@ -316,23 +318,6 @@ class Mainframe:
 
         self.general_info.pack(side=tk.LEFT)
         self.edit_drop_menu.pack(side=tk.LEFT)
-
-        if self.edit_selection.get() == self.edit_drop_options[0]:
-            self.param_list = copy.copy(connection_special_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[1]:
-            self.param_list = copy.copy(connection_habituation_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[2]:
-            self.param_list = copy.copy(connection_sensitization_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[3]:
-            self.param_list = copy.copy(connection_presynaptic_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[4]:
-            self.param_list = copy.copy(neuron_activation_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[5]:
-            self.param_list = copy.copy(neuron_transmitter_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[6]:
-            self.param_list = copy.copy(neuron_random_parameter)
-        elif self.edit_selection.get() == self.edit_drop_options[7]:
-            self.param_list = copy.copy(network_parameter)
 
         if self.selected_neuron < 0 and self.selected_connection < 0:
             try:
@@ -376,16 +361,7 @@ class Mainframe:
         for i in range(0, len(self.parameter_textbox)):
             self.parameter_textbox[i][0].destroy()
         self.parameter_textbox.clear()
-        self.edit_drop_options.clear()
         self.general_info.forget()
-
-        self.edit_drop_options = ["Connection Specific",
-                                  "Connection Habituation",
-                                  "Connection Sensitization",
-                                  "Connection Presynaptic"]
-
-        if not event:
-            self.edit_selection.set(self.edit_drop_options[0])
 
         if self.tool == TOOL_SELECT:
             self.show_entity_parameters()
@@ -785,6 +761,7 @@ class Mainframe:
                     if not self.do_connection:
                         self.connection_source_neuron = None
                 elif self.tool == TOOL_SELECT:
+                    self.edit_selection.set(None)
                     self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
                     self.deselect_connections()
                     self.selected_neuron = neuron.id
