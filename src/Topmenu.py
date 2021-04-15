@@ -29,15 +29,19 @@ class Topmenu:
         self.file = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
                             foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
                             activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
-        self.file.add_command(label="New        <ctr-n>", command=self.new_command)
+
+        self.file.add_command(label="New Project")
+        self.file.add_command(label="Save Project")
+        self.file.add_command(label="Load Project")
         self.file.add_separator()
-        self.file.add_command(label="Open       <ctr-o>", command=self.open_command)
-        self.file.add_command(label="Import     <ctr-i>", command=self.import_command)
+        self.file.add_command(label="New Network    <ctr-n>", command=self.new_command)
+        self.file.add_command(label="Open Network   <ctr-o>", command=self.open_command)
+        self.file.add_command(label="Import Network <ctr-i>", command=self.import_command)
         self.file.add_separator()
-        self.file.add_command(label="Save        <ctr-s>", command=self.save_command)
-        self.file.add_command(label="Save as", command=self.save_as_command)
+        self.file.add_command(label="Save Network     <ctr-s>", command=self.save_command)
+        self.file.add_command(label="Save Network as", command=self.save_as_command)
         self.file.add_separator()
-        self.file.add_command(label="Close File  <ctr-w>", command=self.close_command)
+        self.file.add_command(label="Close Network     <ctr-w>", command=self.close_command)
         self.file.add_command(label="Exit", command=self.root_frame.quit)
         self.menubar.add_cascade(label="File", menu=self.file)
 
@@ -58,6 +62,7 @@ class Topmenu:
         self.configuration.add_command(label="Global Configurations")
         self.configuration.add_command(label="Neuron Type Config", command=self.neuron_config_command)
         self.configuration.add_command(label="Transmitter Config", command=self.transmitter_config_command)
+        self.configuration.add_command(label="Plasticity Rules")
         self.menubar.add_cascade(label="Configuration", menu=self.configuration)
 
         self.view = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
@@ -201,7 +206,7 @@ class Topmenu:
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.mainframe.deselect_all()
-        self.network_manager.add_network(self.network_manager.networks[0].param)
+        self.network_manager.add_network()
         self.mainframe.reset_camera()
         self.mainframe.render_scene()
         self.mainframe.show_parameters(store=False)
