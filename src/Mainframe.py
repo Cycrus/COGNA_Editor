@@ -217,8 +217,9 @@ class Mainframe:
             connection_param = self.selected_entity.param.list[parameter_name]
             connection_network = self.selected_entity.network_id
             prev_neuron = self.selected_entity.prev_neuron
-            neuron_param = self.network_manager.networks[connection_network].neurons[prev_neuron-1].param.list[parameter_name]
-            base_param = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, self.selected_entity.param).list[parameter_name]
+            prev_neuron_entity = self.network_manager.networks[connection_network].neurons[prev_neuron-1]
+            neuron_param = prev_neuron_entity.param.list[parameter_name]
+            base_param = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, prev_neuron_entity.param).list[parameter_name]
             if neuron_param is None and connection_param == base_param:
                 return False
             elif connection_param == neuron_param:
