@@ -1,6 +1,7 @@
 from sys import platform
 import math
 import re
+import os
 import copy
 import tkinter as tk
 from tkinter import messagebox
