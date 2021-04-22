@@ -256,8 +256,11 @@ class NeuronConfigurator:
             add_frame.grab_release()
             add_frame.destroy()
             self.render_buttons()
+            self.top_frame.grab_set()
+            self.top_frame.update_idletasks()
             self.render_parameter(store=False)
 
+        self.top_frame.grab_release()
         add_width = int(self.top_frame.winfo_width() / 3)
         add_height = int(self.top_frame.winfo_height() / 8)
         add_pos_x = self.root_frame.winfo_screenwidth() // 2 - add_width // 2
@@ -265,6 +268,7 @@ class NeuronConfigurator:
         add_frame = tk.Toplevel()
         add_frame.geometry(f"{add_width}x{add_height}+{add_pos_x}+{add_pos_y}")
         add_frame.overrideredirect(True)
+        add_frame.update_idletasks()
         add_frame.configure(background=design.grey_4[design.theme], highlightthickness=4,
                             highlightbackground=design.grey_2[design.theme])
         add_frame.update()

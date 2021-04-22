@@ -29,8 +29,8 @@ class Design:
         self.top_button_width = 4
         self.top_button_padx = 0
         self.top_button_pady = 2
-        self.splash_width = 800
-        self.splash_height = 300
+        self.splash_width = 1200
+        self.splash_height = 500
 
         self.ui_scaling_factor = 1.0
 

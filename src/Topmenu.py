@@ -2,6 +2,7 @@ from src.GlobalLibraries import *
 from src.Mainframe import *
 from src.TransmitterConfigurator import TransmitterConfigurator
 from src.NeuronConfigurator import NeuronConfigurator
+from src.SpashScreen import SplashScreen
 
 # Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
 
@@ -98,12 +99,11 @@ class Topmenu:
         elif platform == "win32":
             self.root_frame.bind("<Control-Shift-Tab>", self.prev_network)
 
-        splash_x = self.root_frame.winfo_width() // 2 - design.splash_width // 2
-        splash_y = self.root_frame.winfo_height() // 2 - design.splash_height // 2
-        self.splash = tk.Toplevel()
-        self.splash.geometry(f"{design.splash_width}x{design.splash_height}+{splash_x}+{splash_y}")
-        self.splash.overrideredirect(True)
-        self.splash.destroy()
+        self.create_spashscreen()
+
+    def create_spashscreen(self):
+        #splash_screen = SplashScreen(self.network_manager, self.root_frame)
+        pass
 
     def create_tab(self, network_id):
         temp_frame = tk.Frame(master=self.tabframe, background=design.grey_4[design.theme],

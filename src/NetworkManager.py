@@ -1,7 +1,9 @@
 from src.Network import *
 from src.Neuron import *
 from src.Connection import *
+from src.ParameterHandler import ParameterHandler
 from src.GlobalLibraries import *
+import os
 
 null_neuron_correcter = 1
 
@@ -15,15 +17,32 @@ class NetworkManager:
         self.camera_x = []
         self.camera_y = []
         self.zoom_factor = []
+
+        self.project_path = None
         self.transmitters = ["Default"]
+
         default_neuron_params = ParameterHandler()
         default_neuron_params.fill_in_params()
         self.neuron_types = [["Default", default_neuron_params]]
         self.curr_network = 0
         self.add_network()
 
+        self.project_path = self.new_project("TestProject")
+
+    def new_project(self, project_name):
+        new_path = os.getcwd() + os.sep + project_name
+        try:
+            os.mkdir(new_path)
+        except:
+            pass
+        try:
+            os.mkdir(new_path + os.sep + "networks")
+        except:
+            pass
+        return new_path
+
     def network_default_name(self, name_nr):
-        name = "network-" + str(name_nr) + ".json"
+        name = "network-" + str(name_nr) + ".cogna"
         for file in self.filename:
             if name == file:
                 name_nr = name_nr+1
@@ -120,7 +139,7 @@ class NetworkManager:
         if save_as:
             file = filedialog.asksaveasfile(initialdir=self.locations[self.curr_network], title="test",
                                             initialfile=self.filename[self.curr_network],
-                                            filetypes=(("json files", "*.json"),("all files", "*")))
+                                            filetypes=(("cogna files", "*.cogna"),("all files", "*")))
         if file:
             self.convert_network_to_json(self.curr_network)
             name_split = file.name.split("/")
