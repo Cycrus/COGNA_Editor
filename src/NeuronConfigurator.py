@@ -288,5 +288,6 @@ class NeuronConfigurator:
         if save:
             self.store_parameter()
         self.top_frame.grab_release()
+        self.network_manager.save_neuron_types()
         self.top_frame.destroy()
         self.mainframe.show_parameters(store=False)

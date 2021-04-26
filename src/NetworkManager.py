@@ -18,28 +18,65 @@ class NetworkManager:
         self.camera_y = []
         self.zoom_factor = []
 
-        self.project_path = None
-        self.transmitters = ["Default"]
+        self.transmitters = None
+        self.neuron_types = None
 
-        default_neuron_params = ParameterHandler()
-        default_neuron_params.fill_in_params()
-        self.neuron_types = [["Default", default_neuron_params]]
+        self.project_path = None
+        self.project_name = None
+        self.new_project("Hello World")
+
         self.curr_network = 0
         self.add_network()
 
-        self.project_path = self.new_project("TestProject")
-
     def new_project(self, project_name):
+        default_neuron_params = ParameterHandler()
+        default_neuron_params.fill_in_params()
+
+        self.transmitters = ["Default"]
+        self.neuron_types = [["Default", default_neuron_params]]
+
         new_path = os.getcwd() + os.sep + project_name
+        self.project_path = new_path
+        self.project_name = project_name
         try:
             os.mkdir(new_path)
         except:
             pass
         try:
-            os.mkdir(new_path + os.sep + "networks")
+            os.mkdir(self.project_path + os.sep + "networks")
         except:
             pass
-        return new_path
+        self.save_meta_info()
+        self.save_transmitters()
+        self.save_neuron_types()
+
+    def save_meta_info(self):
+        with open(self.project_path + os.sep + "meta.info", "w") as file:
+            file.write("Valid COGNA Project\n")
+            file.write(self.project_name)
+
+    def save_transmitters(self):
+        dict_obj = {"transmitters": self.transmitters}
+        json_obj = json.dumps(dict_obj, indent=4)
+        with open(self.project_path + os.sep + "transmitters.config", "w") as file:
+            file.write(json_obj)
+
+    def entity_to_json(self, entity_param_list):
+        pass
+
+    def save_neuron_types(self):
+        dict_obj = {}
+        for neuron in self.neuron_types:
+            dict_obj[neuron[0]] = {}
+            for param in neuron[1].list:
+                if neuron[1].list[param] is not None:
+                    try:
+                        dict_obj[neuron[0]][param] = "{:f}".format(neuron[1].list[param])
+                    except:
+                        dict_obj[neuron[0]][param] = neuron[1].list[param]
+        json_obj = json.dumps(dict_obj, indent=4)
+        with open(self.project_path + os.sep + "neuron_type.config", "w") as file:
+            file.write(json_obj)
 
     def network_default_name(self, name_nr):
         name = "network-" + str(name_nr) + ".cogna"
@@ -55,7 +92,7 @@ class NetworkManager:
         self.curr_network = len(self.networks)-1
         temp_filename = self.network_default_name(1)
         self.filename.append(temp_filename)
-        self.locations.append("networks/")
+        self.locations.append(self.project_path + os.sep + "networks" + os.sep)
         self.fixed_location.append(False)
         self.camera_x.append(0.0)
         self.camera_y.append(0.0)
