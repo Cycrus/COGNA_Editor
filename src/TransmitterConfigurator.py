@@ -136,4 +136,5 @@ class TransmitterConfigurator:
 
         self.edit_widgets.clear()
         self.transmitter_frame.grab_release()
+        self.network_manager.save_transmitters()
         self.transmitter_frame.destroy()
