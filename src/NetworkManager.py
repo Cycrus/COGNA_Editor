@@ -23,7 +23,7 @@ class NetworkManager:
 
         self.project_path = None
         self.project_name = None
-        self.new_project("Hello World")
+        self.new_project("DefaultProject")
 
         self.curr_network = 0
         self.add_network()

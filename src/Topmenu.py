@@ -3,6 +3,7 @@ from src.Mainframe import *
 from src.TransmitterConfigurator import TransmitterConfigurator
 from src.NeuronConfigurator import NeuronConfigurator
 from src.SpashScreen import SplashScreen
+from src.NewProject import NewProject
 
 # Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
 
@@ -31,7 +32,7 @@ class Topmenu:
                             foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
                             activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
 
-        self.file.add_command(label="New Project")
+        self.file.add_command(label="New Project", command=self.new_project_command)
         self.file.add_command(label="Save Project")
         self.file.add_command(label="Load Project")
         self.file.add_separator()
@@ -202,6 +203,10 @@ class Topmenu:
         self.mainframe.show_parameters(store=False)
         self.mark_active_tab()
 
+    def new_project_command(self, event=None):
+        new_project_frame = NewProject(self.root_frame, self.network_manager)
+        self.close_all_command()
+
     def new_command(self, event=None):
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
@@ -236,6 +241,13 @@ class Topmenu:
         self.mainframe.deselect_all()
         self.delete_network(self.network_manager.curr_network)
 
+        self.mainframe.render_scene()
+        self.mark_active_tab()
+
+    def close_all_command(self, event=None):
+        for tab in reversed(self.tablist):
+            print(tab[1])
+            self.delete_network(self.network_manager.curr_network)
         self.mainframe.render_scene()
         self.mark_active_tab()
 
