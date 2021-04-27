@@ -6,11 +6,6 @@ from src.UI import *
 if __name__ == "__main__":
     os.path.dirname(os.path.abspath(__file__))
 
-    try:
-        os.mkdir("networks")
-    except:
-        pass
-
     root = tk.Tk()
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()

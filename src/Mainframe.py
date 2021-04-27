@@ -328,8 +328,8 @@ class Mainframe:
 
         for i, name in enumerate(self.param_list):
             self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=20,
-                                                   bg=design.grey_7[design.theme], borderwidth=0,
-                                                   highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
+                                                    bg=design.grey_7[design.theme], borderwidth=0,
+                                                    highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
                                            name])
 
             self.print_parameter(self.selected_entity, self.selected_entity.param, i, name)
