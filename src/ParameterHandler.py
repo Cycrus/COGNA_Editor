@@ -154,7 +154,17 @@ class ParameterHandler:
         self.list["learning_type"] = "None"
 
         self.list["transmitter_type"] = "Default"
-        self.list["transmitter_number"] = 1
+
+    def load_by_dict(self, loading_dict):
+        keylist = loading_dict.keys()
+        for idx, key in enumerate(keylist):
+            if key in self.list:
+                try:
+                    self.list[key] = float(loading_dict[key])
+                except ValueError:
+                    self.list[key] = loading_dict[key]
+            else:
+                print(key)
 
     @staticmethod
     def is_menu(name):
