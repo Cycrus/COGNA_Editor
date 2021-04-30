@@ -34,14 +34,13 @@ class Topmenu:
 
         self.file.add_command(label="New Project", command=self.new_project_command)
         self.file.add_command(label="Save Project")
-        self.file.add_command(label="Load Project")
+        self.file.add_command(label="Open Project", command=self.open_project_command)
         self.file.add_separator()
         self.file.add_command(label="New Network    <ctr-n>", command=self.new_command)
-        self.file.add_command(label="Open Network   <ctr-o>", command=self.open_command)
-        self.file.add_command(label="Import Network <ctr-i>", command=self.import_command)
-        self.file.add_separator()
         self.file.add_command(label="Save Network     <ctr-s>", command=self.save_command)
         self.file.add_command(label="Save Network as", command=self.save_as_command)
+        self.file.add_command(label="Open Network   <ctr-o>", command=self.open_command)
+        self.file.add_command(label="Import Network <ctr-i>", command=self.import_command)
         self.file.add_separator()
         self.file.add_command(label="Close Network     <ctr-w>", command=self.close_command)
         self.file.add_command(label="Exit", command=self.root_frame.quit)
@@ -106,6 +105,10 @@ class Topmenu:
         #splash_screen = SplashScreen(self.network_manager, self.root_frame)
         pass
 
+    def create_tab_text(self, network_id):
+        return self.network_manager.project_name + " || " + \
+               self.network_manager.filename[network_id]
+
     def create_tab(self, network_id):
         temp_frame = tk.Frame(master=self.tabframe, background=design.grey_4[design.theme],
                               borderwidth=0,
@@ -113,9 +116,10 @@ class Topmenu:
                               highlightbackground=design.grey_2[design.theme],
                               height= self.root_frame.winfo_height() / 40,
                               width=1)
+        tab_text = self.create_tab_text(network_id)
         self.tablist.append([temp_frame, network_id,
                              tk.Label(master=temp_frame, background=design.grey_4[design.theme],
-                                      text=self.network_manager.filename[network_id], fg=design.light_blue[design.theme])])
+                                      text=tab_text, fg=design.light_blue[design.theme])])
 
         for idx, tab in enumerate(self.tablist):
             tab[0].config(width=self.root_frame.winfo_width()/len(self.tablist))
@@ -158,7 +162,8 @@ class Topmenu:
             else:
                 tab[0].config(background=design.grey_4[design.theme])
                 tab[2].config(background=design.grey_4[design.theme], fg=design.grey_c[design.theme])
-            tab[2].config(text=self.network_manager.filename[tab[1]])
+            tab_text = self.create_tab_text(tab[1])
+            tab[2].config(text=tab_text)
 
     def resize_window(self, event):
         for tab in self.tablist:
@@ -205,6 +210,31 @@ class Topmenu:
 
     def new_project_command(self, event=None):
         new_project_frame = NewProject(self.root_frame, self.network_manager)
+        self.close_all_command()
+
+    def open_project_command(self, event=None):
+        file = filedialog.askopenfile(initialdir=os.getcwd() + os.sep + "Projects", title="Open Project",
+                                      filetypes=(("project files", "*.project"),))
+        if not "Valid COGNA Project" in file.read():
+            messagebox.showerror("Project Error", f"{file.name.split(os.sep)[-1]} Not a valid COGNA project.")
+            return
+        if not file:
+            return
+
+        splitfile = file.name.split(os.sep)
+        path = ""
+        for idx, token in enumerate(splitfile):
+            if idx < len(splitfile) - 1:
+                path = path + token + os.sep
+
+        project_files = os.listdir(path)
+        necessary_files = ["transmitters.config", "networks", "neuron_type.config"]
+        for file_idx in necessary_files:
+            if file_idx not in project_files:
+                messagebox.showerror("Project Error", f"Invalid COGNA project. {file_idx} missing in project structure.")
+                return
+
+        self.network_manager.open_project(path)
         self.close_all_command()
 
     def new_command(self, event=None):

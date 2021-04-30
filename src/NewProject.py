@@ -54,15 +54,22 @@ class NewProject:
                                        command=lambda: self.close_window(save=True))
         self.create_button.pack(side=tk.RIGHT, pady=20, padx=20)
 
+    def project_is_unique(self, project_name):
+        existing_projects = os.listdir(os.getcwd() + os.sep + "Projects")
+        return not project_name in existing_projects
+
     def close_window(self, save=False):
         can_close = True
         if save:
             project_name = self.name_entry.get()
-            if project_name:
+            if not project_name:
+                can_close = False
+            elif not self.project_is_unique(project_name):
+                can_close = False
+                print("lol")
+            else:
                 self.network_manager.new_project(project_name)
                 self.network_manager.clear_all_networks()
-            else:
-                can_close = False
 
         if can_close:
             self.topframe.grab_release()

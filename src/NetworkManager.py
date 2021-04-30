@@ -23,7 +23,10 @@ class NetworkManager:
 
         self.project_path = None
         self.project_name = None
-        self.new_project("DefaultProject")
+        try:
+            self.open_project(os.getcwd() + os.sep + "Projects" + os.sep + "DefaultProject")
+        except:
+            self.new_project("DefaultProject")
 
         self.curr_network = 0
         self.add_network()
@@ -32,10 +35,15 @@ class NetworkManager:
         default_neuron_params = ParameterHandler()
         default_neuron_params.fill_in_params()
 
+        try:
+            os.mkdir(os.getcwd() + os.sep + "Projects")
+        except:
+            pass
+
         self.transmitters = ["Default"]
         self.neuron_types = [["Default", default_neuron_params]]
 
-        new_path = os.getcwd() + os.sep + project_name
+        new_path = os.getcwd() + os.sep + "Projects" + os.sep + project_name
         self.project_path = new_path
         self.project_name = project_name
         try:
@@ -50,8 +58,14 @@ class NetworkManager:
         self.save_transmitters()
         self.save_neuron_types()
 
+    def open_project(self, path):
+        self.project_name = path.split(os.sep)[-2]
+        self.project_path = path
+        self.load_transmitters(path)
+        self.load_neuron_types(path)
+
     def save_meta_info(self):
-        with open(self.project_path + os.sep + "meta.info", "w") as file:
+        with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
             file.write("Valid COGNA Project\n")
             file.write(self.project_name)
 
@@ -61,8 +75,10 @@ class NetworkManager:
         with open(self.project_path + os.sep + "transmitters.config", "w") as file:
             file.write(json_obj)
 
-    def entity_to_json(self, entity_param_list):
-        pass
+    def load_transmitters(self, project_path):
+        with open(project_path + os.sep + "transmitters.config", "r") as file:
+            transmitter_dict = json.loads(file.read())
+            self.transmitters = transmitter_dict["transmitters"]
 
     def save_neuron_types(self):
         dict_obj = {}
@@ -77,6 +93,15 @@ class NetworkManager:
         json_obj = json.dumps(dict_obj, indent=4)
         with open(self.project_path + os.sep + "neuron_type.config", "w") as file:
             file.write(json_obj)
+
+    def load_neuron_types(self, project_path):
+        with open(project_path + os.sep + "neuron_type.config", "r") as file:
+            neuron_dict = json.loads(file.read())
+            self.neuron_types.clear()
+            for idx, neuron in enumerate(neuron_dict.keys()):
+                neuron_params = ParameterHandler()
+                neuron_params.load_by_dict(neuron_dict[neuron])
+                self.neuron_types.append([neuron, neuron_params])
 
     def network_default_name(self, name_nr):
         name = "network-" + str(name_nr) + ".cogna"
@@ -174,9 +199,9 @@ class NetworkManager:
                 file = open(self.locations[self.curr_network] + self.filename[self.curr_network], "w")
 
         if save_as:
-            file = filedialog.asksaveasfile(initialdir=self.locations[self.curr_network], title="test",
+            file = filedialog.asksaveasfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
                                             initialfile=self.filename[self.curr_network],
-                                            filetypes=(("cogna files", "*.cogna"),("all files", "*")))
+                                            filetypes=(("cogna files", "*.cogna"), ("all files", "*")))
         if file:
             self.convert_network_to_json(self.curr_network)
             name_split = file.name.split("/")
