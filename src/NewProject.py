@@ -74,5 +74,5 @@ class NewProject:
         if can_close:
             self.topframe.grab_release()
             self.network_manager.save_transmitters()
-            self.mainframe.show_parameters(store=False)
+            self.mainframe.show_editmenu(store=False)
             self.topframe.destroy()

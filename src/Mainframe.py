@@ -5,6 +5,7 @@ from src.VectorUtils import VectorUtils
 TOOL_NEURONS = 0
 TOOL_CONNECTIONS = 1
 TOOL_SELECT = 2
+TOOL_IMPORT = 3
 
 
 class Mainframe:
@@ -38,8 +39,7 @@ class Mainframe:
 
         self.root_frame.update()
 
-        self.editframe_width = int(self.root_frame.winfo_width()/4)
-        barmenu_height = self.root_frame.winfo_height() / 100
+        self.editframe_width = int(self.root_frame.winfo_width()/3)
         self.pixelVirtual = tk.PhotoImage(width=1, height=1)
 
         self.edit_selection = tk.StringVar()
@@ -50,6 +50,8 @@ class Mainframe:
         self.do_connection = False
         self.grid_size = 50
         self.grid_snap = True
+
+        self.network_option = tk.StringVar()
         
         self.mainframe = None
         self.editframe = None
@@ -59,6 +61,7 @@ class Mainframe:
         self.select_button = None
         self.neuron_button = None
         self.connection_button = None
+        self.import_button = None
         self.viewframe = None
         self.editorcanvas = None
         self.edit_1 = None
@@ -119,6 +122,10 @@ class Mainframe:
                                            fg=design.grey_c[design.theme], command=self.switch_tool_connections, image=self.pixelVirtual,
                                            activebackground=design.grey_7[design.theme],
                                            width=50, relief=tk.FLAT, compound="c")
+        self.import_button = tk.Button(master=self.edit_top, text="I", background=design.grey_3[design.theme],
+                                       fg=design.grey_c[design.theme], command=self.switch_tool_import, image=self.pixelVirtual,
+                                       activebackground=design.grey_7[design.theme],
+                                       width=50, relief=tk.FLAT, compound="c")
 
         self.viewframe = tk.Frame(master=self.mainframe, background=design.grey_3[design.theme],
                                   highlightthickness=0,
@@ -155,7 +162,7 @@ class Mainframe:
 
         self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                             *ParameterHandler.param_drop_options_all,
-                                            command=self.show_parameters)
+                                            command=self.show_editmenu)
         self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
                                    borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
                                    activebackground=design.grey_7[design.theme])
@@ -163,6 +170,7 @@ class Mainframe:
         self.select_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
         self.neuron_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
         self.connection_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
+        self.import_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
 
         for i in range(0, self.parameter_count):
             padding_y = 10
@@ -181,7 +189,7 @@ class Mainframe:
         self.network_manager.camera_y[self.network_manager.curr_network] = self.editorcanvas.winfo_height() / 2
         self.render_scene()
 
-        self.show_parameters(store=False)
+        self.show_editmenu(store=False)
 
         self.editresize.bind("<Button-1>", self.init_resize)
         self.editresize.bind("<B1-Motion>", self.do_resize)
@@ -203,7 +211,7 @@ class Mainframe:
         self.root_frame.bind("<Tab>", self.tab_event)
         self.root_frame.bind("<g>", self.toggle_grid_snap)
         self.root_frame.bind("<space>", self.reset_camera)
-        self.root_frame.bind("<Return>", self.show_parameters)
+        self.root_frame.bind("<Return>", self.show_editmenu)
 
         self.switch_tool_select()
 
@@ -298,25 +306,24 @@ class Mainframe:
         """
         The function which renders the parameters to the left frame of the program.
         """
-        self.project_name_label.config(text=self.network_manager.project_name)
         if self.selected_connection > -1:
             self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Connection")
             self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
                                                 *ParameterHandler.param_drop_options_connection,
-                                                command=self.show_parameters)
+                                                command=self.show_editmenu)
         elif self.selected_neuron > -1:
             self.general_info.config(text=f"Neuron <{self.selected_neuron}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Neuron")
             self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
                                                 *ParameterHandler.param_drop_options_neuron,
-                                                command=self.show_parameters)
+                                                command=self.show_editmenu)
         else:
             self.general_info.config(text=f"Network <{self.network_manager.curr_network}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Network")
             self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
                                                 *ParameterHandler.param_drop_options_network,
-                                                command=self.show_parameters)
+                                                command=self.show_editmenu)
 
         self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
                                    borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
@@ -346,12 +353,32 @@ class Mainframe:
                                                 bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
             self.parameter_info[i].pack(side=tk.LEFT)
 
-    def show_parameters(self, event=None, store=True):
+    def get_network_list(self):
+        return os.listdir(self.network_manager.project_path + os.sep + "networks")
+
+    def show_import_menu(self):
+        network_list = self.get_network_list()
+        self.network_option.set(network_list[0])
+
+        self.parameter_textbox.append([tk.OptionMenu(self.parameter_frame[1], self.network_option, *network_list)])
+        self.parameter_textbox[0][0].config(bg=design.grey_7[design.theme], width=15,
+                                            fg=design.black[design.theme],
+                                            borderwidth=0, highlightthickness=3,
+                                            highlightbackground=design.grey_2[design.theme],
+                                            activebackground=design.grey_7[design.theme])
+        self.parameter_textbox[0][0].pack(side=tk.LEFT, padx=20)
+        self.parameter_info.append(tk.Label(master=self.parameter_frame[1], text="Imported Network",
+                                            bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
+        self.parameter_info[0].pack(side=tk.LEFT)
+
+    def show_editmenu(self, event=None, store=True):
         """
         Initializes and prepares parameter frame for rendering new parameters.
         :param event: Variable for use as callback function
         :param store: Determines whether parameters should be stored before rendering new parameters.
         """
+        self.project_name_label.config(text=self.network_manager.project_name)
+
         if store:
             self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
         if self.selected_connection > -1:
@@ -373,6 +400,8 @@ class Mainframe:
 
         if self.tool == TOOL_SELECT:
             self.show_entity_parameters()
+        elif self.tool == TOOL_IMPORT:
+            self.show_import_menu()
 
     def switch_tool_neurons(self):
         """
@@ -383,9 +412,10 @@ class Mainframe:
         self.neuron_button.configure(background=design.dark_blue[design.theme])
         self.connection_button.configure(background=design.grey_3[design.theme])
         self.select_button.configure(background=design.grey_3[design.theme])
+        self.import_button.configure(background=design.grey_3[design.theme])
         self.discard_connection()
         self.deselect_all()
-        self.show_parameters(store=False)
+        self.show_editmenu(store=False)
         self.render_scene()
 
     def switch_tool_connections(self):
@@ -397,8 +427,9 @@ class Mainframe:
         self.neuron_button.configure(background=design.grey_3[design.theme])
         self.connection_button.configure(background=design.dark_blue[design.theme])
         self.select_button.configure(background=design.grey_3[design.theme])
+        self.import_button.configure(background=design.grey_3[design.theme])
         self.deselect_all()
-        self.show_parameters(store=False)
+        self.show_editmenu(store=False)
         self.render_scene()
 
     def switch_tool_select(self):
@@ -409,9 +440,24 @@ class Mainframe:
         self.neuron_button.configure(background=design.grey_3[design.theme])
         self.connection_button.configure(background=design.grey_3[design.theme])
         self.select_button.configure(background=design.dark_blue[design.theme])
+        self.import_button.configure(background=design.grey_3[design.theme])
         self.discard_connection()
         self.deselect_all()
-        self.show_parameters(store=False)
+        self.show_editmenu(store=False)
+        self.render_scene()
+
+    def switch_tool_import(self):
+        """
+        Function to switch tool stance to importing other networks.
+        """
+        self.tool = TOOL_IMPORT
+        self.neuron_button.configure(background=design.grey_3[design.theme])
+        self.connection_button.configure(background=design.grey_3[design.theme])
+        self.select_button.configure(background=design.grey_3[design.theme])
+        self.import_button.configure(background=design.dark_blue[design.theme])
+        self.discard_connection()
+        self.deselect_all()
+        self.show_editmenu(store=False)
         self.render_scene()
 
     def reset_camera(self, event=None):
@@ -558,6 +604,9 @@ class Mainframe:
         elif self.tool == TOOL_CONNECTIONS:
             self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
                                           text="CONNECTION EDITING", fill=design.light_blue[design.theme])
+        elif self.tool == TOOL_IMPORT:
+            self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
+                                          text="IMPORTING NETWORK", fill=design.light_blue[design.theme])
 
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 90, anchor="w",
                                       text=f"Camera X: {int(self.network_manager.camera_x[self.network_manager.curr_network])}", fill=design.grey_c[design.theme])
@@ -705,12 +754,14 @@ class Mainframe:
 
     def tab_event(self, event):
         self.escape_event(event)
-        if self.tool == TOOL_NEURONS:
+        if self.tool == TOOL_SELECT:
+            self.switch_tool_neurons()
+        elif self.tool == TOOL_NEURONS:
             self.switch_tool_connections()
         elif self.tool == TOOL_CONNECTIONS:
+            self.switch_tool_import()
+        elif self.tool == TOOL_IMPORT:
             self.switch_tool_select()
-        elif self.tool == TOOL_SELECT:
-            self.switch_tool_neurons()
 
     def toggle_grid_snap(self, event):
         if self.grid_snap:
@@ -773,7 +824,7 @@ class Mainframe:
                     self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
                     self.deselect_connections()
                     self.selected_neuron = neuron.id
-                    self.show_parameters(store=False)
+                    self.show_editmenu(store=False)
 
                 neuron_collision = True
 
@@ -795,7 +846,7 @@ class Mainframe:
             if self.tool == TOOL_SELECT:
                 self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
                 self.deselect_neurons()
-                self.show_parameters(store=False)
+                self.show_editmenu(store=False)
                 for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                     if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                                self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
@@ -803,7 +854,7 @@ class Mainframe:
                         connection_collision = True
                 if not connection_collision:
                     self.deselect_connections()
-                self.show_parameters(store=False)
+                self.show_editmenu(store=False)
 
         self.render_scene()
 

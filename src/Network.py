@@ -15,3 +15,5 @@ class Network:
             self.param.list["transmitter_backfall_steepness"] = 0.0000001
             self.param.list["max_transmitter_weight"] = 5.0
             self.param.list["min_transmitter_weight"] = 0.0
+            self.param.list["input_nodes"] = 0
+            self.param.list["output_nodes"] = 0
