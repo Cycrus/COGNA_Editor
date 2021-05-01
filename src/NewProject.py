@@ -3,9 +3,10 @@ from src.NetworkManager import NetworkManager
 
 
 class NewProject:
-    def __init__(self, root, network_manager):
+    def __init__(self, root, network_manager, mainframe):
         self.root_frame = root
         self.network_manager = network_manager
+        self.mainframe = mainframe
 
         self.width = self.root_frame.winfo_screenwidth() // 4
         self.height = self.root_frame.winfo_screenheight() // 8
@@ -73,4 +74,5 @@ class NewProject:
         if can_close:
             self.topframe.grab_release()
             self.network_manager.save_transmitters()
+            self.mainframe.show_parameters(store=False)
             self.topframe.destroy()

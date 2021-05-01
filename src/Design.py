@@ -34,5 +34,7 @@ class Design:
 
         self.ui_scaling_factor = 1.0
 
+        self.neuron_size = 25
+
 
 design = Design()

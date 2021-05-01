@@ -14,7 +14,7 @@ class Mainframe:
         :param root: The root frame/window of program.
         :param network_manager: The object handling all currently opened networks.
         """
-        self.neuron_size = 25
+        self.neuron_size = design.neuron_size
 
         self.cursor_x = 0.0
         self.cursor_y = 0.0
