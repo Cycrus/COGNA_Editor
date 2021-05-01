@@ -145,7 +145,7 @@ class NeuronConfigurator:
             self.param_textbox[param_index][0].insert(tk.END, "Invalid")
             self.param_textbox[param_index][0].config(fg=design.dark_red[design.theme])
         else:
-            param_string = ParameterHandler.correct_parameter_print(entity, param_name)
+            param_string = ParameterHandler.deny_scientific_notation(entity.list[param_name])
             self.param_textbox[param_index][0].insert(tk.END, param_string)
 
     def get_current_neuron_entity(self):

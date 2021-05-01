@@ -106,7 +106,7 @@ class Topmenu:
         pass
 
     def create_tab_text(self, network_id):
-        return self.network_manager.project_name + " || " + \
+        return self.network_manager.project_name + " : " + \
                self.network_manager.filename[network_id]
 
     def create_tab(self, network_id):

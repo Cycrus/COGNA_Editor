@@ -263,12 +263,12 @@ class ParameterHandler:
         return neuron_type
 
     @staticmethod
-    def correct_parameter_print(entity, name):
-        if ParameterHandler.is_menu(name):
-            string_value = entity.list[name]
-        else:
+    def deny_scientific_notation(param):
+        try:
             regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
-            param_str = regex.findall(format(entity.list[name], ".15f"))
+            param_str = regex.findall(format(param, ".15f"))
             string_value = param_str[0][0]
+        except ValueError:
+            return param
 
         return string_value

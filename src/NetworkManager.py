@@ -59,12 +59,12 @@ class NetworkManager:
         self.save_neuron_types()
 
     def open_project(self, path):
-        self.project_name = path.split(os.sep)[-2]
+        if path[-1] == os.sep:
+            path = path[:len(path)-1]
+        self.project_name = path.split(os.sep)[-1]
         self.project_path = path
         self.load_transmitters(path)
         self.load_neuron_types(path)
-        if self.project_path[-1] == os.sep:
-            self.project_path = self.project_path[:len(self.project_path)-1]
 
     def save_meta_info(self):
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
@@ -188,15 +188,52 @@ class NetworkManager:
         if len(self.networks) < 1:
             self.add_network()
 
-    def store_network_in_json(self, network_id):
-        neuron_dict = {}
-        neuron_dict["neurons"] = []
+    def convert_parameter_to_dict(self, target_dict, parameter):
+        for idx, param in enumerate(parameter):
+            if parameter[param] is not None:
+                target_dict[param] = ParameterHandler.deny_scientific_notation(parameter[param])
 
+    def store_network_param_in_dict(self, network_id):
+        temp_dict = {}
+        self.convert_parameter_to_dict(temp_dict, self.networks[network_id].param.list)
+        return temp_dict
+
+    def store_neurons_in_dict(self, target_dict, network_id):
         for neuron in self.networks[network_id].neurons:
-            neuron_dict["neurons"].append(neuron.posx)
+            temp_dict = {}
+            temp_dict["id"] = neuron.id
+            temp_dict["posx"] = neuron.posx
+            temp_dict["posy"] = neuron.posy
+            self.convert_parameter_to_dict(temp_dict, neuron.param.list)
+            target_dict["neurons"].append(temp_dict)
 
-        neuron_json = json.dumps(neuron_dict, indent=4)
-        return neuron_json
+    def store_connections_in_dict(self, target_dict, network_id):
+        for connection in self.networks[network_id].connections:
+            temp_dict = {}
+            temp_dict["id"] = connection.id
+            temp_dict["vertices"] = []
+            temp_dict["prev_neuron"] = connection.prev_neuron
+            for vert in connection.vertices:
+                temp_dict["vertices"].append([vert[0], vert[1]])
+            if connection.next_neuron is not None:
+                temp_dict["next_neuron"] = connection.next_neuron
+            if connection.next_connection is not None:
+                temp_dict["next_connection"] = connection.next_connection
+            self.convert_parameter_to_dict(temp_dict, connection.param.list)
+            target_dict["connections"].append(temp_dict)
+
+    def store_network_in_json(self, network_id):
+        network_dict = {}
+        network_dict["network"] = self.store_network_param_in_dict(network_id)
+
+        network_dict["neurons"] = []
+        self.store_neurons_in_dict(network_dict, network_id)
+
+        network_dict["connections"] = []
+        self.store_connections_in_dict(network_dict, network_id)
+
+        network_json = json.dumps(network_dict, indent=4)
+        return network_json
 
     def read_network_from_json(self, file_path):
         print(f"Reading network from json file {file_path}.")
