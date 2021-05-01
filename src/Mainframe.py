@@ -55,6 +55,7 @@ class Mainframe:
         self.editframe = None
         self.editresize = None
         self.edit_top = None
+        self.project_name_label = None
         self.select_button = None
         self.neuron_button = None
         self.connection_button = None
@@ -144,12 +145,15 @@ class Mainframe:
                                                  highlightthickness=0,
                                                  width=self.editframe_width))
 
-        self.general_info = tk.Label(master=self.parameter_frame[0], text="No Entity Selected", bg=design.grey_4[design.theme],
+        self.project_name_label = tk.Label(master=self.parameter_frame[0], text=self.network_manager.project_name,
+                                           bg=design.grey_4[design.theme], fg=design.light_blue[design.theme])
+
+        self.general_info = tk.Label(master=self.parameter_frame[1], text="No Entity Selected", bg=design.grey_4[design.theme],
                                      fg=design.light_blue[design.theme])
-        self.id_info = tk.Label(master=self.parameter_frame[1], text="", bg=design.grey_4[design.theme],
+        self.id_info = tk.Label(master=self.parameter_frame[2], text="", bg=design.grey_4[design.theme],
                                 fg=design.grey_c[design.theme])
 
-        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+        self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                             *ParameterHandler.param_drop_options_all,
                                             command=self.show_parameters)
         self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
@@ -166,6 +170,7 @@ class Mainframe:
                 padding_y = 40
             self.parameter_frame[i].pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=padding_y, expand=False)
 
+        self.project_name_label.pack(side=tk.LEFT)
         self.edit_1.pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=20, expand=False)
 
         self.viewframe.pack(side=tk.LEFT, fill=tk.BOTH, padx=0, pady=0, expand=True)
@@ -283,7 +288,7 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
         else:
             try:
-                param_str = ParameterHandler.correct_parameter_print(entity_param, name)
+                param_str = ParameterHandler.deny_scientific_notation(entity_param.list[name])
                 self.parameter_textbox[param_index][0].insert(tk.END, param_str)
             except TypeError:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
@@ -293,6 +298,7 @@ class Mainframe:
         """
         The function which renders the parameters to the left frame of the program.
         """
+        self.project_name_label.config(text=self.network_manager.project_name)
         if self.selected_connection > -1:
             self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Connection")
@@ -328,7 +334,7 @@ class Mainframe:
                 pass
 
         for i, name in enumerate(self.param_list):
-            self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+3], width=20,
+            self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+4], width=20,
                                                     bg=design.grey_7[design.theme], borderwidth=0,
                                                     highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
                                            name])
@@ -336,7 +342,7 @@ class Mainframe:
             self.print_parameter(self.selected_entity, self.selected_entity.param, i, name)
             self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
-            self.parameter_info.append(tk.Label(master=self.parameter_frame[i+3], text=name,
+            self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,
                                                 bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
             self.parameter_info[i].pack(side=tk.LEFT)
 

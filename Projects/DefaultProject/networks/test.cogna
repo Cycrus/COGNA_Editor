@@ -1,1 +1,10 @@
-placeholder
+{
+    "network": {
+        "transmitter_backfall_curvature": "1",
+        "transmitter_backfall_steepness": "0.0000001",
+        "max_transmitter_weight": "5",
+        "min_transmitter_weight": "0"
+    },
+    "neurons": [],
+    "connections": []
+}
