@@ -66,7 +66,6 @@ class NewProject:
                 can_close = False
             elif not self.project_is_unique(project_name):
                 can_close = False
-                print("lol")
             else:
                 self.network_manager.new_project(project_name)
                 self.network_manager.clear_all_networks()

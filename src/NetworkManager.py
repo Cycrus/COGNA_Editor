@@ -18,8 +18,8 @@ class NetworkManager:
         self.camera_y = []
         self.zoom_factor = []
 
-        self.transmitters = None
-        self.neuron_types = None
+        self.transmitters = []
+        self.neuron_types = []
 
         self.project_path = None
         self.project_name = None
@@ -63,6 +63,8 @@ class NetworkManager:
         self.project_path = path
         self.load_transmitters(path)
         self.load_neuron_types(path)
+        if self.project_path[-1] == os.sep:
+            self.project_path = self.project_path[:len(self.project_path)-1]
 
     def save_meta_info(self):
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
@@ -186,8 +188,31 @@ class NetworkManager:
         if len(self.networks) < 1:
             self.add_network()
 
-    def convert_network_to_json(self, network_id):
-        print(f"Converting network {network_id} to json.")
+    def store_network_in_json(self, network_id):
+        neuron_dict = {}
+        neuron_dict["neurons"] = []
+
+        for neuron in self.networks[network_id].neurons:
+            neuron_dict["neurons"].append(neuron.posx)
+
+        neuron_json = json.dumps(neuron_dict, indent=4)
+        return neuron_json
+
+    def read_network_from_json(self, file_path):
+        print(f"Reading network from json file {file_path}.")
+
+    def load_network(self):
+        file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
+                                      filetypes=(("cogna network", "*.cogna"),))
+        if not file:
+            return
+        if not self.project_path + os.sep + "networks" in file.name:
+            messagebox.showerror("Load Error", "Can only load networks out of correct project path.")
+            file.close()
+            return
+
+        print(file.read())
+        file.close()
 
     def save_network(self, save_as):
         file = None
@@ -201,17 +226,18 @@ class NetworkManager:
         if save_as:
             file = filedialog.asksaveasfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
                                             initialfile=self.filename[self.curr_network],
-                                            filetypes=(("cogna files", "*.cogna"), ("all files", "*")))
-        if file:
-            self.convert_network_to_json(self.curr_network)
-            name_split = file.name.split("/")
-            new_name = name_split[len(name_split)-1]
-            self.filename[self.curr_network] = new_name
-            new_location = ""
-            for word in name_split:
-                if word != new_name:
-                    new_location = new_location + word + "/"
-            self.locations[self.curr_network] = new_location
-            self.fixed_location[self.curr_network] = True
-            file.write("placeholder")
-            file.close()
+                                            filetypes=(("cogna network", "*.cogna"),))
+        if not file:
+            return
+        if not (self.project_path + os.sep + "networks") in file.name:
+            os.remove(file.name)
+            messagebox.showerror("Save Error", "Can only save networks in correct project path.")
+            return
+
+        network_json = self.store_network_in_json(self.curr_network)
+        name_split = file.name.split("/")
+        new_name = name_split[len(name_split)-1]
+        self.filename[self.curr_network] = new_name
+        self.fixed_location[self.curr_network] = True
+        file.write(network_json)
+        file.close()

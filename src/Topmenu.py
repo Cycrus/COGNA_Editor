@@ -215,10 +215,11 @@ class Topmenu:
     def open_project_command(self, event=None):
         file = filedialog.askopenfile(initialdir=os.getcwd() + os.sep + "Projects", title="Open Project",
                                       filetypes=(("project files", "*.project"),))
+        if not file:
+            return
         if not "Valid COGNA Project" in file.read():
             messagebox.showerror("Project Error", f"{file.name.split(os.sep)[-1]} Not a valid COGNA project.")
-            return
-        if not file:
+            file.close()
             return
 
         splitfile = file.name.split(os.sep)
@@ -232,10 +233,12 @@ class Topmenu:
         for file_idx in necessary_files:
             if file_idx not in project_files:
                 messagebox.showerror("Project Error", f"Invalid COGNA project. {file_idx} missing in project structure.")
+                file.close()
                 return
 
         self.network_manager.open_project(path)
         self.close_all_command()
+        file.close()
 
     def new_command(self, event=None):
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
@@ -248,7 +251,8 @@ class Topmenu:
         self.create_tab(self.network_manager.curr_network)
 
     def open_command(self):
-        print("Open file")
+        self.network_manager.load_network()
+        self.mark_active_tab()
 
     def import_command(self):
         print("Import network")
