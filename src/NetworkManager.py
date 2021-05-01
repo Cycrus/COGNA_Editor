@@ -1,8 +1,9 @@
+from src.GlobalLibraries import *
 from src.Network import *
 from src.Neuron import *
 from src.Connection import *
 from src.ParameterHandler import ParameterHandler
-from src.GlobalLibraries import *
+from src.Globals import *
 import os
 
 null_neuron_correcter = 1
@@ -232,24 +233,65 @@ class NetworkManager:
         network_dict["connections"] = []
         self.store_connections_in_dict(network_dict, network_id)
 
+        print(network_dict)
+
         network_json = json.dumps(network_dict, indent=4)
         return network_json
 
-    def read_network_from_json(self, file_path):
-        print(f"Reading network from json file {file_path}.")
+    def read_parameter_list(self, param_dict):
+        parameter = ParameterHandler()
+        parameter.load_by_dict(param_dict)
+        return parameter
+
+    def read_neurons_from_dict(self, neurons_dict):
+        for neuron in neurons_dict:
+            neuron_list = self.networks[self.curr_network].neurons
+            self.add_neuron(neuron["posx"], neuron["posy"], 25, self.curr_network)
+            neuron_list[len(neuron_list)-1].param = self.read_parameter_list(neuron)
+
+    def read_connections_from_dict(self, connections_dict):
+        for connection in connections_dict:
+            connection_list = self.networks[self.curr_network].connections
+            source_neuron = self.networks[self.curr_network].neurons[connection["prev_neuron"]-1]
+            self.add_connection(source_neuron, self.curr_network)
+            connection_list[len(connection_list)-1].vertices = connection["vertices"]
+            
+            if "next_neuron" in connection:
+                connection_list[len(connection_list)-1].next_neuron = connection["next_neuron"]
+            elif "next_connection" in connection:
+                connection_list[len(connection_list)-1].next_connection = connection["next_connection"]
+
+            connection_list[len(connection_list)-1].param = self.read_parameter_list(connection)
 
     def load_network(self):
         file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
                                       filetypes=(("cogna network", "*.cogna"),))
         if not file:
-            return
+            return Globals.ERROR
         if not self.project_path + os.sep + "networks" in file.name:
             messagebox.showerror("Load Error", "Can only load networks out of correct project path.")
             file.close()
-            return
+            return Globals.ERROR
 
-        print(file.read())
+        network_name = file.name.split(os.sep)[-1]
+        for idx, name in enumerate(self.filename):
+            if network_name == name:
+                self.curr_network = idx
+                file.close()
+                return Globals.ERROR
+
+        network_dict = json.loads(file.read())
+        print(network_dict.keys())
+
+        network_parameter = self.read_parameter_list(network_dict["network"])
+        self.add_network(network_parameter)
+        self.read_neurons_from_dict(network_dict["neurons"])
+        self.read_connections_from_dict(network_dict["connections"])
+        self.filename[self.curr_network] = network_name
+
         file.close()
+
+        return Globals.SUCCESS
 
     def save_network(self, save_as):
         file = None

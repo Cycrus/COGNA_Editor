@@ -163,8 +163,6 @@ class ParameterHandler:
                     self.list[key] = float(loading_dict[key])
                 except ValueError:
                     self.list[key] = loading_dict[key]
-            else:
-                print(key)
 
     @staticmethod
     def is_menu(name):

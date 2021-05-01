@@ -10,7 +10,7 @@ from tkinter import filedialog
 from PIL import ImageTk, Image
 from src.NetworkManager import *
 from src.Design import *
-
+from src.Globals import *
 
 def _create_circle(self, x, y, r, **kwargs):
     return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)

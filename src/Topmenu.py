@@ -106,8 +106,7 @@ class Topmenu:
         pass
 
     def create_tab_text(self, network_id):
-        return self.network_manager.project_name + " : " + \
-               self.network_manager.filename[network_id]
+        return self.network_manager.filename[network_id]
 
     def create_tab(self, network_id):
         temp_frame = tk.Frame(master=self.tabframe, background=design.grey_4[design.theme],
@@ -209,7 +208,7 @@ class Topmenu:
         self.mark_active_tab()
 
     def new_project_command(self, event=None):
-        new_project_frame = NewProject(self.root_frame, self.network_manager)
+        new_project_frame = NewProject(self.root_frame, self.network_manager, self.mainframe)
         self.close_all_command()
 
     def open_project_command(self, event=None):
@@ -251,8 +250,17 @@ class Topmenu:
         self.create_tab(self.network_manager.curr_network)
 
     def open_command(self):
-        self.network_manager.load_network()
-        self.mark_active_tab()
+        self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
+                                        parameter_names=self.mainframe.param_list)
+        self.mainframe.deselect_all()
+        error_code = self.network_manager.load_network()
+        if error_code == Globals.SUCCESS:
+            self.mainframe.reset_camera()
+            self.mainframe.render_scene()
+            self.mainframe.show_parameters(store=False)
+            self.create_tab(self.network_manager.curr_network)
+        else:
+            self.mark_active_tab()
 
     def import_command(self):
         print("Import network")
