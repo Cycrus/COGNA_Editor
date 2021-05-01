@@ -53,7 +53,9 @@ connection_special_parameter = ["base_weight", #numeric
 network_parameter = ["transmitter_backfall_curvature",
                      "transmitter_backfall_steepness",
                      "max_transmitter_weight",
-                     "min_transmitter_weight"]
+                     "min_transmitter_weight",
+                     "input_nodes",
+                     "output_nodes"]
 
 influences_transmitter_options = ["No", "Yes"]
 transmitter_influence_direction_options = ["Positive Influence", "Negative Influence"]

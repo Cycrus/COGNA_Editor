@@ -186,7 +186,7 @@ class Topmenu:
         if self.network_manager.curr_network < 0:
             self.network_manager.curr_network = len(self.network_manager.networks)-1
         self.mainframe.render_scene()
-        self.mainframe.show_parameters(store=True)
+        self.mainframe.show_editmenu(store=True)
         self.mark_active_tab()
 
     def next_network(self, event=None):
@@ -195,7 +195,7 @@ class Topmenu:
         if self.network_manager.curr_network > len(self.network_manager.networks)-1:
             self.network_manager.curr_network = 0
         self.mainframe.render_scene()
-        self.mainframe.show_parameters(store=True)
+        self.mainframe.show_editmenu(store=True)
         self.mark_active_tab()
 
     def show_specific_network(self, network_id):
@@ -204,7 +204,7 @@ class Topmenu:
         self.mainframe.deselect_all()
         self.network_manager.curr_network = network_id
         self.mainframe.render_scene()
-        self.mainframe.show_parameters(store=False)
+        self.mainframe.show_editmenu(store=False)
         self.mark_active_tab()
 
     def new_project_command(self, event=None):
@@ -246,7 +246,7 @@ class Topmenu:
         self.network_manager.add_network()
         self.mainframe.reset_camera()
         self.mainframe.render_scene()
-        self.mainframe.show_parameters(store=False)
+        self.mainframe.show_editmenu(store=False)
         self.create_tab(self.network_manager.curr_network)
 
     def open_command(self):
@@ -257,7 +257,7 @@ class Topmenu:
         if error_code == Globals.SUCCESS:
             self.mainframe.reset_camera()
             self.mainframe.render_scene()
-            self.mainframe.show_parameters(store=False)
+            self.mainframe.show_editmenu(store=False)
             self.create_tab(self.network_manager.curr_network)
         else:
             self.mark_active_tab()
@@ -277,7 +277,7 @@ class Topmenu:
         if len(self.network_manager.networks) > 0:
             self.network_manager.clear_single_network(network_id)
             self.delete_tab(network_id)
-        self.mainframe.show_parameters(store=False)
+        self.mainframe.show_editmenu(store=False)
 
     def close_command(self, event=None):
         self.mainframe.deselect_all()
@@ -288,7 +288,6 @@ class Topmenu:
 
     def close_all_command(self, event=None):
         for tab in reversed(self.tablist):
-            print(tab[1])
             self.delete_network(self.network_manager.curr_network)
         self.mainframe.render_scene()
         self.mark_active_tab()
@@ -339,21 +338,26 @@ class Topmenu:
         self.mainframe.editframe.config(background=design.grey_4[design.theme])
         self.mainframe.editresize.config(background=design.grey_2[design.theme])
         self.mainframe.edit_top.config(background=design.grey_4[design.theme])
+        self.mainframe.project_name_label.config(background=design.grey_4[design.theme],
+                                                 fg=design.light_blue[design.theme])
         self.mainframe.select_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
                                             activebackground=design.grey_7[design.theme])
         self.mainframe.neuron_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
                                             activebackground=design.grey_7[design.theme])
         self.mainframe.connection_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
                                                 activebackground=design.grey_7[design.theme])
+        self.mainframe.import_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
+                                            activebackground=design.grey_7[design.theme])
         self.mainframe.viewframe.config(background=design.grey_3[design.theme])
         self.mainframe.edit_1.config(background=design.grey_4[design.theme])
         for frame in self.mainframe.parameter_frame:
             frame.config(background=design.grey_4[design.theme])
         self.mainframe.general_info.config(bg=design.grey_4[design.theme], fg=design.light_blue[design.theme])
         self.mainframe.id_info.config(bg=design.grey_4[design.theme], fg=design.grey_c[design.theme])
-        self.mainframe.show_parameters(store=False)
+        self.mainframe.show_editmenu(store=False)
         self.root_frame.update()
         self.mainframe.render_scene()
+        self.mark_active_tab()
         self.root_frame.update()
 
     def show_about(self):
