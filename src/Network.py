@@ -5,6 +5,7 @@ class Network:
     def __init__(self, default_params=None):
         self.neurons = []
         self.connections = []
+        self.subnets = []
 
         self.param = ParameterHandler()
 

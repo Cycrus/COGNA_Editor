@@ -275,6 +275,8 @@ class Mainframe:
 
     def store_menu_parameters(self, option, name):
         self.selected_entity.param.list[name] = option
+        if not self.check_parameter_uniqueness(name):
+            self.selected_entity.param.list[name] = None
         self.show_editmenu(store=False)
 
     def print_entry_parameter(self, entity, entity_param, param_index, name):
@@ -632,6 +634,91 @@ class Mainframe:
                                           VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                           text=f"{neuron.id}", fill=design.grey_1[design.theme])
 
+    def render_subnet_nodes(self, subnet):
+        loop_number = (subnet.size_x*4 + subnet.size_y*4) // 50
+        direction = "right"
+
+        min_x = subnet.posx - subnet.size_x
+        min_y = subnet.posy - subnet.size_y
+        max_x = subnet.posx + subnet.size_x
+        max_y = subnet.posy + subnet.size_y
+
+        x_pos = min_x
+        y_pos = min_y
+
+        input_count = subnet.input_nodes
+        output_count = subnet.output_nodes
+
+        for pos in range(0, loop_number):
+            can_draw = False
+            label = 0
+            temp_x = VectorUtils.project_coordinate(x_pos,
+                                                    self.network_manager.camera_x[self.network_manager.curr_network],
+                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
+            temp_y = VectorUtils.project_coordinate(y_pos,
+                                                    self.network_manager.camera_y[self.network_manager.curr_network],
+                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
+
+            if pos % 2 == 0:
+                color = design.white[design.theme]
+                if input_count > 0:
+                    label = subnet.input_nodes - input_count + 1
+                    can_draw = True
+                    input_count = input_count - 1
+            else:
+                color = design.dark_blue[design.theme]
+                if output_count > 0:
+                    label = subnet.output_nodes - output_count + 1
+                    can_draw = True
+                    output_count = output_count - 1
+
+            if can_draw:
+                size = int(self.neuron_size/1.5) * self.network_manager.zoom_factor[self.network_manager.curr_network]
+                self.editorcanvas.create_circle(temp_x, temp_y, size, fill=color)
+                self.editorcanvas.create_text(temp_x, temp_y, text=label)
+
+                if x_pos == max_x and y_pos == min_y:
+                    direction = "down"
+                elif x_pos == max_x and y_pos == max_y:
+                    direction = "left"
+                elif x_pos == min_x and y_pos == max_y:
+                    direction = "up"
+
+                if direction == "right":
+                    x_pos = x_pos + 50
+                elif direction == "left":
+                    x_pos = x_pos - 50
+                if direction == "down":
+                    y_pos = y_pos + 50
+                elif direction == "up":
+                    y_pos = y_pos - 50
+
+    def render_subnets(self):
+        for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
+            x0 = VectorUtils.project_coordinate(subnet.posx-subnet.size_x,
+                                                self.network_manager.camera_x[self.network_manager.curr_network],
+                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
+            y0 = VectorUtils.project_coordinate(subnet.posy-subnet.size_y,
+                                                self.network_manager.camera_y[self.network_manager.curr_network],
+                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
+            x1 = VectorUtils.project_coordinate(subnet.posx+subnet.size_x,
+                                                self.network_manager.camera_x[self.network_manager.curr_network],
+                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
+            y1 = VectorUtils.project_coordinate(subnet.posy+subnet.size_y,
+                                                self.network_manager.camera_y[self.network_manager.curr_network],
+                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
+
+            self.editorcanvas.create_rectangle(x0, y0, x1, y1, fill=design.white[design.theme])
+            self.render_subnet_nodes(subnet)
+
+            label_x = VectorUtils.project_coordinate(subnet.posx,
+                                                     self.network_manager.camera_x[self.network_manager.curr_network],
+                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
+            label_y = VectorUtils.project_coordinate(subnet.posy - subnet.size_y + 30,
+                                                     self.network_manager.camera_y[self.network_manager.curr_network],
+                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
+            self.editorcanvas.create_text(label_x, label_y, text=f"{subnet.network_name}", fill=design.grey_1[design.theme])
+
     def render_ui_description(self):
         """
         Renders text elements onto the canvas.
@@ -682,6 +769,7 @@ class Mainframe:
                 if self.grid_snap:
                     self.render_grid()
 
+                self.render_subnets()
                 self.render_connections()
                 self.render_neurons()
 
@@ -733,7 +821,6 @@ class Mainframe:
         """
         self.get_free_cursor(event)
         self.render_scene()
-
         self.snap_cursor_to_grid()
 
     def add_neuron(self):
@@ -742,8 +829,15 @@ class Mainframe:
         """
         neuron_x = self.cursor_x
         neuron_y = self.cursor_y
-
         self.network_manager.add_neuron(neuron_x, neuron_y, self.neuron_size, self.network_manager.curr_network)
+
+    def add_subnet(self):
+        """
+        Adds a subnetwork to the network.
+        """
+        subnet_x = self.cursor_x
+        subnet_y = self.cursor_y
+        self.network_manager.add_subnet(self.network_option.get(), subnet_x, subnet_y, self.network_manager.curr_network)
 
     def init_connection(self, neuron):
         self.connecting_neuron = neuron
@@ -881,6 +975,8 @@ class Mainframe:
             if not self.do_connection:
                 if self.tool == TOOL_NEURONS:
                     self.add_neuron()
+                elif self.tool == TOOL_IMPORT:
+                    self.add_subnet()
             else:
                 connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
                 self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices.append(
@@ -920,10 +1016,19 @@ class Mainframe:
                     self.network_manager.delete_connection(connection.id, self.network_manager.curr_network)
             self.render_scene()
 
+    def delete_subnet(self):
+        if self.tool == TOOL_IMPORT:
+            for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
+                #TODO Incorrect Collision Detection
+                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, subnet, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                    self.network_manager.delete_subnet(subnet.id, self.network_manager.curr_network)
+            self.render_scene()
+
     def delete_entity(self, event):
         self.get_free_cursor(event)
         self.delete_neuron()
         self.delete_connection()
+        self.delete_subnet()
 
     def init_camera(self, event):
         self.prev_wheel_pos_x = event.x
