@@ -2,6 +2,7 @@ from src.GlobalLibraries import *
 from src.Network import *
 from src.Neuron import *
 from src.Connection import *
+from src.Subnetwork import *
 from src.ParameterHandler import ParameterHandler
 from src.Globals import *
 import os
@@ -131,6 +132,12 @@ class NetworkManager:
                              posx, posy, size, network_id)
         self.networks[network_id].neurons.append(temp_neuron)
 
+    def delete_subnet(self, id, network_id=0):
+        self.networks[network_id].subnets.pop(id)
+        for subnet in reversed(self.networks[network_id].subnets):
+            if subnet.id > id:
+                subnet.id = subnet.id - 1
+
     def delete_neuron(self, id, network_id=0):
         for connection in reversed(self.networks[network_id].connections):
             if connection.prev_neuron == id or connection.next_neuron == id:
@@ -160,6 +167,28 @@ class NetworkManager:
         for connection in reversed(self.networks[network_id].connections):
             if connection.id > id:
                 connection.id = connection.id - 1
+
+    def load_network_nodes(self, network_name):
+        input_nodes = 0
+        output_nodes = 0
+        with open(self.project_path + os.sep + "networks" + os.sep + network_name, "r") as file:
+            network_dict = json.loads(file.read())
+
+            network_parameter = self.read_parameter_list(network_dict["network"])
+            try:
+                input_nodes = int(network_parameter.list["input_nodes"])
+                output_nodes = int(network_parameter.list["output_nodes"])
+            except TypeError:
+                input_nodes = 0
+                output_nodes = 0
+
+        return input_nodes, output_nodes
+
+    def add_subnet(self, network_name, posx, posy, network_id=0):
+        input_nodes, output_nodes = self.load_network_nodes(network_name)
+        temp_subnet = Subnetwork(len(self.networks[network_id].subnets), network_name, posx, posy, network_id,
+                                 input_nodes, output_nodes)
+        self.networks[network_id].subnets.append(temp_subnet)
 
     def clear_all_networks(self):
         for network_id, network in enumerate(self.networks):
@@ -282,7 +311,6 @@ class NetworkManager:
                 return Globals.ERROR
 
         network_dict = json.loads(file.read())
-        print(network_dict.keys())
 
         network_parameter = self.read_parameter_list(network_dict["network"])
         self.add_network(network_parameter)
