@@ -127,8 +127,9 @@ class NetworkManager:
         self.zoom_factor.append(1.0)
 
     def add_neuron(self, posx, posy, size, network_id=0):
-        self.networks[network_id].neurons.append(Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
-                                                        posx, posy, size, network_id))
+        temp_neuron = Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
+                             posx, posy, size, network_id)
+        self.networks[network_id].neurons.append(temp_neuron)
 
     def delete_neuron(self, id, network_id=0):
         for connection in reversed(self.networks[network_id].connections):
