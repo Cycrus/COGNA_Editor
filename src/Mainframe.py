@@ -244,34 +244,40 @@ class Mainframe:
         return True
 
     def check_and_save_parameters(self, entity, container, parameter_name):
-        temp_param = container[0].get()
-        try:
-            if ParameterHandler.is_menu(parameter_name):
-                entity.param.list[parameter_name] = temp_param
-            else:
-                entity.param.list[parameter_name] = float(temp_param)
-        except ValueError:
-            entity.param.list[parameter_name] = None
+        if not ParameterHandler.is_menu(parameter_name):
+            temp_param = container[0].get()
+            try:
+                if ParameterHandler.is_menu(parameter_name):
+                    entity.param.list[parameter_name] = temp_param
+                else:
+                    entity.param.list[parameter_name] = float(temp_param)
+            except ValueError:
+                entity.param.list[parameter_name] = None
 
-        is_unique = self.check_parameter_uniqueness(parameter_name)
-        if not is_unique:
-            entity.param.list[parameter_name] = None
+            is_unique = self.check_parameter_uniqueness(parameter_name)
+            if not is_unique:
+                entity.param.list[parameter_name] = None
 
     def store_parameters(self, entity, parameter_names):
         """
         Stores all parameter, which are currently opened in the GUI.
         """
-        for i, name in enumerate(parameter_names):
-            for param_container in self.parameter_textbox:
-                if param_container[1] == name and param_container[1] != "neuron_type":
-                    self.check_and_save_parameters(entity, param_container, name)
+        if self.tool == TOOL_SELECT:
+            for i, name in enumerate(parameter_names):
+                for param_container in self.parameter_textbox:
+                    if param_container[1] == name and param_container[1] != "neuron_type":
+                        self.check_and_save_parameters(entity, param_container, name)
 
-        if isinstance(entity, Neuron):
-            for param_container in self.parameter_textbox:
-                if param_container[1] == "neuron_type":
-                    self.check_and_save_parameters(entity, param_container, "neuron_type")
+            if isinstance(entity, Neuron):
+                for param_container in self.parameter_textbox:
+                    if param_container[1] == "neuron_type":
+                        self.check_and_save_parameters(entity, param_container, "neuron_type")
 
-    def print_parameter(self, entity, entity_param, param_index, name):
+    def store_menu_parameters(self, option, name):
+        self.selected_entity.param.list[name] = option
+        self.show_editmenu(store=False)
+
+    def print_entry_parameter(self, entity, entity_param, param_index, name):
         """
         Prints the parameter into its textbox given corresponding index value.
         :param entity: The entity the parameter is assigned to.
@@ -283,13 +289,13 @@ class Mainframe:
             if isinstance(entity, Connection):
                 network_id = entity.network_id
                 neuron_id = entity.prev_neuron-1
-                self.print_parameter(self.network_manager.networks[network_id].neurons[neuron_id],
-                                     self.network_manager.networks[network_id].neurons[neuron_id].param,
-                                     param_index, name)
+                self.print_entry_parameter(self.network_manager.networks[network_id].neurons[neuron_id],
+                                           self.network_manager.networks[network_id].neurons[neuron_id].param,
+                                           param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             elif isinstance(entity, Neuron):
                 neuron_type = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, entity_param)
-                self.print_parameter(None, neuron_type, param_index, name)
+                self.print_entry_parameter(None, neuron_type, param_index, name)
                 self.parameter_textbox[param_index][0].config(fg=design.grey_4[design.theme])
             else:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
@@ -301,6 +307,27 @@ class Mainframe:
             except TypeError:
                 self.parameter_textbox[param_index][0].insert(tk.END, "Missing...")
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
+
+    def print_menu_parameter(self, entity, entity_param, name):
+        parameter = None
+        color = design.black[design.theme]
+
+        if entity_param.list[name] is None:
+            if isinstance(entity, Connection):
+                network_id = entity.network_id
+                neuron_id = entity.prev_neuron - 1
+                temp_neuron = self.network_manager.networks[network_id].neurons[neuron_id]
+                parameter, color = self.print_menu_parameter(temp_neuron, temp_neuron.param, name)
+                color = design.grey_4[design.theme]
+            elif isinstance(entity, Neuron):
+                neuron_type = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, entity.param)
+                parameter, color = self.print_menu_parameter(None, neuron_type, name)
+                color = design.grey_4[design.theme]
+        else:
+            parameter = entity_param.list[name]
+            color = design.black[design.theme]
+
+        return parameter, color
 
     def show_entity_parameters(self):
         """
@@ -341,12 +368,28 @@ class Mainframe:
                 pass
 
         for i, name in enumerate(self.param_list):
-            self.parameter_textbox.append([tk.Entry(master=self.parameter_frame[i+4], width=20,
-                                                    bg=design.grey_7[design.theme], borderwidth=0,
-                                                    highlightthickness=2, highlightbackground=design.grey_2[design.theme]),
-                                           name])
+            if ParameterHandler.is_menu(name):
+                var = tk.StringVar()
+                str_value, color = self.print_menu_parameter(self.selected_entity, self.selected_entity.param, name)
+                var.set(str_value)
+                menu = ParameterHandler.get_option_menu_list(name, self.network_manager)
+                temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
+                                           command=lambda option, n=name: self.store_menu_parameters(option=option,
+                                                                                                     name=n))
+                temp_field.config(bg=design.grey_7[design.theme], width=15,
+                                  fg=color,
+                                  borderwidth=0, highlightthickness=3,
+                                  highlightbackground=design.grey_2[design.theme],
+                                  activebackground=design.grey_7[design.theme])
+                self.parameter_textbox.append([temp_field, name])
 
-            self.print_parameter(self.selected_entity, self.selected_entity.param, i, name)
+            else:
+                temp_field = tk.Entry(master=self.parameter_frame[i+4], width=20,
+                                      bg=design.grey_7[design.theme], borderwidth=0,
+                                      highlightthickness=2, highlightbackground=design.grey_2[design.theme])
+                self.parameter_textbox.append([temp_field, name])
+                self.print_entry_parameter(self.selected_entity, self.selected_entity.param, i, name)
+
             self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
             self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,

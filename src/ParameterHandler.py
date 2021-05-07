@@ -116,7 +116,7 @@ class ParameterHandler:
 
         self.list["transmitter_change_curvature"] = 1.02
         self.list["transmitter_change_steepness"] = 0.02
-        self.list["influenced_transmitter"] = "None"
+        self.list["influenced_transmitter"] = "Default"
         self.list["influences_transmitter"] = "No"
         self.list["transmitter_influence_direction"] = "Positive Influence"
 
@@ -180,7 +180,7 @@ class ParameterHandler:
         if name == "influences_transmitter":
             menu = influences_transmitter_options
         elif name == "influenced_transmitter":
-            menu = influences_transmitter_options
+            menu = copy.copy(network_manager.transmitters)
         elif name == "transmitter_influence_direction":
             menu = transmitter_influence_direction_options
         elif name == "activation_type":
@@ -193,7 +193,7 @@ class ParameterHandler:
             menu = network_manager.transmitters
         elif name == "used_transmitter":
             menu = network_manager.transmitters
-        elif menu == "neuron_type":
+        elif name == "neuron_type":
             neuron_type_list = []
             for neuron in network_manager.neuron_types:
                 neuron_type_list.append(neuron[0])
