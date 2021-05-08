@@ -40,7 +40,6 @@ class Topmenu:
         self.file.add_command(label="Save Network     <ctr-s>", command=self.save_command)
         self.file.add_command(label="Save Network as", command=self.save_as_command)
         self.file.add_command(label="Open Network   <ctr-o>", command=self.open_command)
-        self.file.add_command(label="Import Network <ctr-i>", command=self.import_command)
         self.file.add_separator()
         self.file.add_command(label="Close Network     <ctr-w>", command=self.close_command)
         self.file.add_command(label="Exit", command=self.root_frame.quit)
@@ -250,8 +249,7 @@ class Topmenu:
         self.create_tab(self.network_manager.curr_network)
 
     def open_command(self):
-        self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
-                                        parameter_names=self.mainframe.param_list)
+        self.mainframe.show_editmenu(store=True)
         self.mainframe.deselect_all()
         error_code = self.network_manager.load_network()
         if error_code == Globals.SUCCESS:
@@ -262,14 +260,13 @@ class Topmenu:
         else:
             self.mark_active_tab()
 
-    def import_command(self):
-        print("Import network")
-
     def save_command(self, event=None):
+        self.mainframe.show_editmenu(store=True)
         self.network_manager.save_network(save_as=False)
         self.mark_active_tab()
 
     def save_as_command(self, event=None):
+        self.mainframe.show_editmenu(store=True)
         self.network_manager.save_network(save_as=True)
         self.mark_active_tab()
 
