@@ -671,78 +671,28 @@ class Mainframe:
                                           text=f"{neuron.id}", fill=design.grey_1[design.theme])
 
     def render_subnet_nodes(self, subnet):
-        loop_number = (subnet.size_x*4 + subnet.size_y*4) // 50
-        direction = "right"
-
-        min_x = subnet.posx - subnet.size_x
-        min_y = subnet.posy - subnet.size_y
-        max_x = subnet.posx + subnet.size_x
-        max_y = subnet.posy + subnet.size_y
-
-        x_pos = min_x
-        y_pos = min_y
-
-        input_count = subnet.input_nodes
-        output_count = subnet.output_nodes
-
-        for pos in range(0, loop_number):
-            can_draw = False
-            label = 0
-            temp_x = VectorUtils.project_coordinate(x_pos,
+        node_size = int(self.neuron_size / 1.5) * self.network_manager.zoom_factor[self.network_manager.curr_network]
+        for node in subnet.input_node_list:
+            corr_x = VectorUtils.project_coordinate(node.posx,
                                                     self.network_manager.camera_x[self.network_manager.curr_network],
                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
-            temp_y = VectorUtils.project_coordinate(y_pos,
+            corr_y = VectorUtils.project_coordinate(node.posy,
                                                     self.network_manager.camera_y[self.network_manager.curr_network],
                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
 
-            if output_count > 0 and input_count > 0:
-                if pos % 2 == 0:
-                    color = design.white[design.theme]
-                    if input_count > 0:
-                        label = subnet.input_nodes - input_count + 1
-                        can_draw = True
-                        input_count = input_count - 1
-                else:
-                    color = design.dark_blue[design.theme]
-                    if output_count > 0:
-                        label = subnet.output_nodes - output_count + 1
-                        can_draw = True
-                        output_count = output_count - 1
+            self.editorcanvas.create_circle(corr_x, corr_y, node_size, fill=design.white[design.theme])
+            self.editorcanvas.create_text(corr_x, corr_y, text=node.id)
 
-            else:
-                if output_count == 0:
-                    color = design.white[design.theme]
-                    if input_count > 0:
-                        label = subnet.input_nodes - input_count + 1
-                        can_draw = True
-                        input_count = input_count - 1
-                elif input_count == 0:
-                    color = design.dark_blue[design.theme]
-                    if output_count > 0:
-                        label = subnet.output_nodes - output_count + 1
-                        can_draw = True
-                        output_count = output_count - 1
+        for node in subnet.output_node_list:
+            corr_x = VectorUtils.project_coordinate(node.posx,
+                                                    self.network_manager.camera_x[self.network_manager.curr_network],
+                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
+            corr_y = VectorUtils.project_coordinate(node.posy,
+                                                    self.network_manager.camera_y[self.network_manager.curr_network],
+                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
 
-            if can_draw:
-                size = int(self.neuron_size/1.5) * self.network_manager.zoom_factor[self.network_manager.curr_network]
-                self.editorcanvas.create_circle(temp_x, temp_y, size, fill=color)
-                self.editorcanvas.create_text(temp_x, temp_y, text=label)
-
-                if x_pos == max_x and y_pos == min_y:
-                    direction = "down"
-                elif x_pos == max_x and y_pos == max_y:
-                    direction = "left"
-                elif x_pos == min_x and y_pos == max_y:
-                    direction = "up"
-
-                if direction == "right":
-                    x_pos = x_pos + 50
-                elif direction == "left":
-                    x_pos = x_pos - 50
-                if direction == "down":
-                    y_pos = y_pos + 50
-                elif direction == "up":
-                    y_pos = y_pos - 50
+            self.editorcanvas.create_circle(corr_x, corr_y, node_size, fill=design.dark_blue[design.theme])
+            self.editorcanvas.create_text(corr_x, corr_y, text=node.id)
 
     def render_subnets(self):
         for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
