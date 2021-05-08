@@ -12,12 +12,14 @@
             "id": 1,
             "posx": -600.0,
             "posy": -600.0,
+            "activation_type": "Excitatory",
             "activation_threshold": "777"
         },
         {
             "id": 2,
             "posx": -200.0,
-            "posy": -600.0
+            "posy": -600.0,
+            "activation_type": "Nondirectional"
         },
         {
             "id": 3,
@@ -44,8 +46,7 @@
                 ]
             ],
             "prev_neuron": 1,
-            "next_neuron": 2,
-            "activation_type": "Inhibitory"
+            "next_neuron": 2
         },
         {
             "id": 1,
@@ -115,7 +116,8 @@
                 ]
             ],
             "prev_neuron": 1,
-            "next_connection": 0
+            "next_connection": 0,
+            "activation_type": "Inhibitory"
         },
         {
             "id": 5,
@@ -138,7 +140,8 @@
                 ]
             ],
             "prev_neuron": 3,
-            "next_connection": 2
+            "next_connection": 2,
+            "activation_type": "Inhibitory"
         }
     ]
 }

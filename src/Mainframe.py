@@ -550,6 +550,24 @@ class Mainframe:
                                           fill=design.grey_4[design.theme], width=2)
             temp_y = temp_y + self.grid_size
 
+    def get_valid_parameter_value(self, entity, param):
+        return_value = None
+
+        if isinstance(entity, Connection):
+            if entity.param.list[param] is None:
+                prev_neuron = self.network_manager.networks[self.network_manager.curr_network].neurons[entity.prev_neuron - 1]
+                return_value = self.get_valid_parameter_value(prev_neuron, param)
+            else:
+                return_value = entity.param.list[param]
+        elif isinstance(entity, Neuron):
+            if entity.param.list[param] is None:
+                base_neuron = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, entity.param)
+                return_value = base_neuron.list[param]
+            else:
+                return_value = entity.param.list[param]
+
+        return return_value
+
     def render_connections(self):
         """
         Renders all connections of the currently active network.
@@ -557,6 +575,29 @@ class Mainframe:
         for connection_i, connection in enumerate(self.network_manager.networks[self.network_manager.curr_network].connections):
             distance = 5
             direction_marker_length = 8
+
+            activation_type = self.get_valid_parameter_value(connection, "activation_type")
+            max_weight = self.get_valid_parameter_value(connection, "max_weight")
+            base_weight = self.get_valid_parameter_value(connection, "base_weight")
+
+            width_ratio = base_weight / max_weight
+            con_width = design.connection_width * width_ratio
+            if con_width < 1:
+                con_width = 1
+            elif con_width > design.connection_width:
+                con_width = design.connection_width
+
+            print(con_width)
+
+            if connection.id == self.selected_connection:
+                color = design.grey_c[design.theme]
+            elif activation_type == "Excitatory":
+                color = design.light_blue[design.theme]
+            elif activation_type == "Inhibitory":
+                color = design.light_red[design.theme]
+            else:
+                color = design.light_green[design.theme]
+
 
             if not connection.next_neuron is None:
                 distance = self.neuron_size + distance
@@ -585,31 +626,20 @@ class Mainframe:
                                                                              self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(direction_marker_b[1],
                                                                              self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                              fill=design.light_blue[design.theme], width=design.connection_width)
+                                              fill=color, width=3)
             except IndexError:
                 pass
 
             for vert in range(0, len(temp_verts)-1):
-                if connection.id == self.selected_connection:
-                    self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
-                                                                                 self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(temp_verts[vert][1],
-                                                                                 self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][0],
-                                                                                 self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][1],
-                                                                                 self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  fill=design.grey_c[design.theme], width=design.selected_connection_width)
-                else:
-                    self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
-                                                                                 self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(temp_verts[vert][1],
-                                                                                 self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][0],
-                                                                                 self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(temp_verts[vert + 1][1],
-                                                                                 self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  fill=design.light_blue[design.theme], width=design.connection_width)
+                self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
+                                                                             self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              VectorUtils.project_coordinate(temp_verts[vert][1],
+                                                                             self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              VectorUtils.project_coordinate(temp_verts[vert + 1][0],
+                                                                             self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              VectorUtils.project_coordinate(temp_verts[vert + 1][1],
+                                                                             self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              fill=color, width=con_width)
 
     def render_neurons(self):
         """
