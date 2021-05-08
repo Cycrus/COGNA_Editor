@@ -587,8 +587,6 @@ class Mainframe:
             elif con_width > design.connection_width:
                 con_width = design.connection_width
 
-            print(con_width)
-
             if connection.id == self.selected_connection:
                 color = design.grey_c[design.theme]
             elif activation_type == "Excitatory":
@@ -738,7 +736,7 @@ class Mainframe:
                                                 self.network_manager.camera_y[self.network_manager.curr_network],
                                                 self.network_manager.zoom_factor[self.network_manager.curr_network])
 
-            self.editorcanvas.create_rectangle(x0, y0, x1, y1, fill=design.white[design.theme])
+            self.editorcanvas.create_rectangle(x0, y0, x1, y1, fill=design.grey_7[design.theme])
             self.render_subnet_nodes(subnet)
 
             label_x = VectorUtils.project_coordinate(subnet.posx,
