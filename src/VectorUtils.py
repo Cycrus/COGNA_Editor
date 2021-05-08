@@ -26,6 +26,17 @@ class VectorUtils:
         return False
 
     @staticmethod
+    def calc_rect_collision_by_size(cursor, obj_pos, size_x, size_y, zoom_factor):
+        corr_size_x = size_x * zoom_factor
+        corr_size_y = size_y * zoom_factor
+        bottom_left = [obj_pos[0] - corr_size_x, obj_pos[1] + corr_size_y]
+        top_right = [obj_pos[0] + corr_size_x, obj_pos[1] - corr_size_y]
+
+        if bottom_left[0] < cursor[0] < top_right[0] and bottom_left[1] > cursor[1] > top_right[1]:
+            return True
+        return False
+
+    @staticmethod
     def calc_vector(point_1, point_2):
         return np.array([point_2[0]-point_1[0], point_2[1]-point_1[1]])
 

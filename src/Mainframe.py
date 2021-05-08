@@ -617,26 +617,34 @@ class Mainframe:
                 direction_marker_a = temp_verts[len(temp_verts)-1] + normal_vector * direction_marker_length
                 direction_marker_b = temp_verts[len(temp_verts)-1] - normal_vector * direction_marker_length
                 self.editorcanvas.create_line(VectorUtils.project_coordinate(direction_marker_a[0],
-                                                                             self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_x[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(direction_marker_a[1],
-                                                                             self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_y[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(direction_marker_b[0],
-                                                                             self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_x[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(direction_marker_b[1],
-                                                                             self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_y[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               fill=color, width=3)
             except IndexError:
                 pass
 
             for vert in range(0, len(temp_verts)-1):
                 self.editorcanvas.create_line(VectorUtils.project_coordinate(temp_verts[vert][0],
-                                                                             self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_x[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(temp_verts[vert][1],
-                                                                             self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_y[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(temp_verts[vert + 1][0],
-                                                                             self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_x[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               VectorUtils.project_coordinate(temp_verts[vert + 1][1],
-                                                                             self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                                                             self.network_manager.camera_y[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               fill=color, width=con_width)
 
     def render_neurons(self):
@@ -1034,22 +1042,28 @@ class Mainframe:
             for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
                 if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.network_manager.zoom_factor[self.network_manager.curr_network]):
                     self.network_manager.delete_neuron(neuron.id, self.network_manager.curr_network)
+                    break
             self.render_scene()
 
     def delete_connection(self):
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
-            for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
+            for connection in reversed(self.network_manager.networks[self.network_manager.curr_network].connections):
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
                     self.network_manager.delete_connection(connection.id, self.network_manager.curr_network)
+                    break
             self.render_scene()
 
     def delete_subnet(self):
         if self.tool == TOOL_IMPORT:
-            for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
-                #TODO Incorrect Collision Detection
-                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, subnet, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+            for subnet in reversed(self.network_manager.networks[self.network_manager.curr_network].subnets):
+                does_collide = VectorUtils.calc_rect_collision_by_size([self.cursor_x, self.cursor_y],
+                                                                       [subnet.posx, subnet.posy],
+                                                                       subnet.size_x, subnet.size_y,
+                                                                       self.network_manager.zoom_factor[self.network_manager.curr_network])
+                if does_collide:
                     self.network_manager.delete_subnet(subnet.id, self.network_manager.curr_network)
+                    break
             self.render_scene()
 
     def delete_entity(self, event):
