@@ -695,18 +695,33 @@ class Mainframe:
                                                     self.network_manager.camera_y[self.network_manager.curr_network],
                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
 
-            if pos % 2 == 0:
-                color = design.white[design.theme]
-                if input_count > 0:
-                    label = subnet.input_nodes - input_count + 1
-                    can_draw = True
-                    input_count = input_count - 1
+            if output_count > 0 and input_count > 0:
+                if pos % 2 == 0:
+                    color = design.white[design.theme]
+                    if input_count > 0:
+                        label = subnet.input_nodes - input_count + 1
+                        can_draw = True
+                        input_count = input_count - 1
+                else:
+                    color = design.dark_blue[design.theme]
+                    if output_count > 0:
+                        label = subnet.output_nodes - output_count + 1
+                        can_draw = True
+                        output_count = output_count - 1
+
             else:
-                color = design.dark_blue[design.theme]
-                if output_count > 0:
-                    label = subnet.output_nodes - output_count + 1
-                    can_draw = True
-                    output_count = output_count - 1
+                if output_count == 0:
+                    color = design.white[design.theme]
+                    if input_count > 0:
+                        label = subnet.input_nodes - input_count + 1
+                        can_draw = True
+                        input_count = input_count - 1
+                elif input_count == 0:
+                    color = design.dark_blue[design.theme]
+                    if output_count > 0:
+                        label = subnet.output_nodes - output_count + 1
+                        can_draw = True
+                        output_count = output_count - 1
 
             if can_draw:
                 size = int(self.neuron_size/1.5) * self.network_manager.zoom_factor[self.network_manager.curr_network]

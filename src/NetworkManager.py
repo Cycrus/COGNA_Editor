@@ -31,7 +31,11 @@ class NetworkManager:
             self.new_project("DefaultProject")
 
         self.curr_network = 0
-        self.add_network()
+        try:
+            self.load_network(self.project_path + os.sep + "networks" + os.sep + "network-1.cogna")
+        except Exception as e:
+            print(e)
+            self.add_network()
 
     def new_project(self, project_name):
         default_neuron_params = ParameterHandler()
@@ -263,8 +267,6 @@ class NetworkManager:
         network_dict["connections"] = []
         self.store_connections_in_dict(network_dict, network_id)
 
-        print(network_dict)
-
         network_json = json.dumps(network_dict, indent=4)
         return network_json
 
@@ -293,9 +295,13 @@ class NetworkManager:
 
             connection_list[len(connection_list)-1].param = self.read_parameter_list(connection)
 
-    def load_network(self):
-        file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
-                                      filetypes=(("cogna network", "*.cogna"),))
+    def load_network(self, filename=None):
+        if filename is None:
+            file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
+                                          filetypes=(("cogna network", "*.cogna"),))
+        else:
+            file = open(filename, "r")
+
         if not file:
             return Globals.ERROR
         if not self.project_path + os.sep + "networks" in file.name:
