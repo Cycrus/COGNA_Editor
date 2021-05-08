@@ -14,10 +14,12 @@ class Design:
         self.grey_1 = ["#111111", "#222222"]
         self.grey_7 = ["#777777", "#cccccc"]
         self.light_blue = ["#1cd4d8", "#107F81"]
+        self.light_red = ["#f03b3b", "#9a2020"]
+        self.light_green = ["#3ddb38", "#2d9829"]
         self.dark_blue = ["#14405a", "#278fcd"]
         self.white = ["#FFFFFF", "#FFFFFF"]
         self.black = ["#000000", "#000000"]
-        self.connection_width = 3
+        self.connection_width = 13
         self.selected_connection_width = self.connection_width+3
         self.editbutton_size_relation = 3
 
