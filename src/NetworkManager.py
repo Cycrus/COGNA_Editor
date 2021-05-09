@@ -193,6 +193,7 @@ class NetworkManager:
         temp_subnet = Subnetwork(len(self.networks[network_id].subnets), network_name, posx, posy, network_id,
                                  input_nodes, output_nodes)
         self.networks[network_id].subnets.append(temp_subnet)
+        print(temp_subnet.id)
 
     def clear_all_networks(self):
         for network_id, network in enumerate(self.networks):

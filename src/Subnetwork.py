@@ -1,12 +1,5 @@
 from src.GlobalLibraries import *
-
-
-class SubnetNode:
-    def __init__(self, id, posx, posy):
-        self.id = id
-        self.posx = posx
-        self.posy = posy
-
+from src.Neuron import *
 
 class Subnetwork:
     def __init__(self, id, network_name, posx, posy, network_id, input_nodes, output_nodes):
@@ -18,12 +11,14 @@ class Subnetwork:
         self.output_node_number = output_nodes
         self.size_x = 200
         self.size_y = 100
+        self.node_size = 18
 
         self.input_node_list = []
         self.output_node_list = []
-        self.generate_node_lists()
 
         self.network_id = network_id
+
+        self.generate_node_lists()
 
     def generate_node_lists(self):
         loop_number = (self.size_x * 4 + self.size_y * 4) // 50
@@ -73,7 +68,8 @@ class Subnetwork:
                         output_count = output_count - 1
 
             if can_create:
-                temp_node = SubnetNode(node_id, x_pos, y_pos)
+                temp_node = Neuron(node_id, x_pos, y_pos, self.node_size,
+                                   network_id=self.network_id, subnet_id=self.id, function=type)
                 if type == "input":
                     self.input_node_list.append(temp_node)
                 elif type == "output":
