@@ -131,9 +131,9 @@ class NetworkManager:
         self.camera_y.append(0.0)
         self.zoom_factor.append(1.0)
 
-    def add_neuron(self, posx, posy, size, network_id=0):
+    def add_neuron(self, posx, posy, size, network_id=0, function="neuron"):
         temp_neuron = Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
-                             posx, posy, size, network_id)
+                             posx, posy, size, network_id, function=function)
         self.networks[network_id].neurons.append(temp_neuron)
 
     def delete_subnet(self, id, network_id=0):
