@@ -593,8 +593,10 @@ class Mainframe:
                 con_width = design.connection_width
 
             if connection.id == self.selected_connection:
+                color = design.white[design.theme]
+            elif connection.prev_subnet != -1:
                 color = design.grey_c[design.theme]
-            elif activation_type == "Excitatory" or activation_type is None:
+            elif activation_type == "Excitatory":
                 color = design.light_blue[design.theme]
             elif activation_type == "Inhibitory":
                 color = design.light_red[design.theme]
