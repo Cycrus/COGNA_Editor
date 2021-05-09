@@ -335,6 +335,11 @@ class Mainframe:
         """
         The function which renders the parameters to the left frame of the program.
         """
+        show_parameters = True
+        if isinstance(self.selected_entity, Connection):
+            if self.selected_entity.prev_subnet != -1:
+                show_parameters = False
+
         if self.selected_connection > -1:
             self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Connection")
@@ -354,49 +359,51 @@ class Mainframe:
                                                 *ParameterHandler.param_drop_options_network,
                                                 command=self.show_editmenu)
 
-        self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
-                                   borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
-                                   activebackground=design.grey_7[design.theme])
-        self.edit_drop_menu["menu"].config(bg=design.grey_4[design.theme], fg=design.grey_c[design.theme], borderwidth=1,
-                                           activebackground=design.grey_7[design.theme], relief=tk.RIDGE)
-
         self.general_info.pack(side=tk.LEFT)
-        self.edit_drop_menu.pack(side=tk.LEFT)
 
-        if self.selected_neuron < 0 and self.selected_connection < 0:
-            try:
-                self.param_list.remove("neuron_type")
-            except ValueError:
-                pass
+        if show_parameters:
+            self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
+                                       borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
+                                       activebackground=design.grey_7[design.theme])
+            self.edit_drop_menu["menu"].config(bg=design.grey_4[design.theme], fg=design.grey_c[design.theme], borderwidth=1,
+                                               activebackground=design.grey_7[design.theme], relief=tk.RIDGE)
 
-        for i, name in enumerate(self.param_list):
-            if ParameterHandler.is_menu(name):
-                var = tk.StringVar()
-                str_value, color = self.print_menu_parameter(self.selected_entity, self.selected_entity.param, name)
-                var.set(str_value)
-                menu = ParameterHandler.get_option_menu_list(name, self.network_manager)
-                temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
-                                           command=lambda option, n=name: self.store_menu_parameters(option=option,
-                                                                                                     name=n))
-                temp_field.config(bg=design.grey_7[design.theme], width=15,
-                                  fg=color,
-                                  borderwidth=0, highlightthickness=3,
-                                  highlightbackground=design.grey_2[design.theme],
-                                  activebackground=design.grey_7[design.theme])
-                self.parameter_textbox.append([temp_field, name])
+            self.edit_drop_menu.pack(side=tk.LEFT)
 
-            else:
-                temp_field = tk.Entry(master=self.parameter_frame[i+4], width=20,
-                                      bg=design.grey_7[design.theme], borderwidth=0,
-                                      highlightthickness=2, highlightbackground=design.grey_2[design.theme])
-                self.parameter_textbox.append([temp_field, name])
-                self.print_entry_parameter(self.selected_entity, self.selected_entity.param, i, name)
+            if self.selected_neuron < 0 and self.selected_connection < 0:
+                try:
+                    self.param_list.remove("neuron_type")
+                except ValueError:
+                    pass
 
-            self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
+            for i, name in enumerate(self.param_list):
+                if ParameterHandler.is_menu(name):
+                    var = tk.StringVar()
+                    str_value, color = self.print_menu_parameter(self.selected_entity, self.selected_entity.param, name)
+                    var.set(str_value)
+                    menu = ParameterHandler.get_option_menu_list(name, self.network_manager)
+                    temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
+                                               command=lambda option, n=name: self.store_menu_parameters(option=option,
+                                                                                                         name=n))
+                    temp_field.config(bg=design.grey_7[design.theme], width=15,
+                                      fg=color,
+                                      borderwidth=0, highlightthickness=3,
+                                      highlightbackground=design.grey_2[design.theme],
+                                      activebackground=design.grey_7[design.theme])
+                    self.parameter_textbox.append([temp_field, name])
 
-            self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,
-                                                bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
-            self.parameter_info[i].pack(side=tk.LEFT)
+                else:
+                    temp_field = tk.Entry(master=self.parameter_frame[i+4], width=20,
+                                          bg=design.grey_7[design.theme], borderwidth=0,
+                                          highlightthickness=2, highlightbackground=design.grey_2[design.theme])
+                    self.parameter_textbox.append([temp_field, name])
+                    self.print_entry_parameter(self.selected_entity, self.selected_entity.param, i, name)
+
+                self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
+
+                self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,
+                                                    bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
+                self.parameter_info[i].pack(side=tk.LEFT)
 
     def get_network_list(self):
         return os.listdir(self.network_manager.project_path + os.sep + "networks")
@@ -593,8 +600,10 @@ class Mainframe:
                 con_width = design.connection_width
 
             if connection.id == self.selected_connection:
+                color = design.white[design.theme]
+            elif connection.prev_subnet != -1:
                 color = design.grey_c[design.theme]
-            elif activation_type == "Excitatory" or activation_type is None:
+            elif activation_type == "Excitatory":
                 color = design.light_blue[design.theme]
             elif activation_type == "Inhibitory":
                 color = design.light_red[design.theme]

@@ -137,6 +137,10 @@ class NetworkManager:
         self.networks[network_id].neurons.append(temp_neuron)
 
     def delete_subnet(self, id, network_id=0):
+        for connection in reversed(self.networks[self.curr_network].connections):
+            if connection.prev_subnet == id or connection.next_subnet == id:
+                self.delete_connection(connection.id, self.curr_network)
+
         self.networks[network_id].subnets.pop(id)
         for subnet in reversed(self.networks[network_id].subnets):
             if subnet.id > id:
@@ -193,7 +197,6 @@ class NetworkManager:
         temp_subnet = Subnetwork(len(self.networks[network_id].subnets), network_name, posx, posy, network_id,
                                  input_nodes, output_nodes)
         self.networks[network_id].subnets.append(temp_subnet)
-        print(temp_subnet.id)
 
     def clear_all_networks(self):
         for network_id, network in enumerate(self.networks):

@@ -75,7 +75,11 @@ class VectorUtils:
         scalarproduct = (vector[0]*coord_vector[0]+vector[1]*coord_vector[1])
         absolute_vector = math.sqrt(vector[0]**2 + vector[1]**2)
         absolute_coord_vector = math.sqrt(coord_vector[0]**2 + coord_vector[1]**2)
-        return math.acos(scalarproduct / (absolute_vector * absolute_coord_vector))
+        dividend = (absolute_vector * absolute_coord_vector)
+        if dividend != 0:
+            return math.acos(scalarproduct / dividend)
+        else:
+            return 0
 
     @staticmethod
     def connection_cursor_collision(connection, cursor_x, cursor_y, camera_x, camera_y, zoom_factor):
