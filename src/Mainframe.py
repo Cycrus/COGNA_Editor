@@ -576,9 +576,14 @@ class Mainframe:
             distance = 5
             direction_marker_length = 8
 
-            activation_type = self.get_valid_parameter_value(connection, "activation_type")
-            max_weight = self.get_valid_parameter_value(connection, "max_weight")
-            base_weight = self.get_valid_parameter_value(connection, "base_weight")
+            try:
+                activation_type = self.get_valid_parameter_value(connection, "activation_type")
+                max_weight = self.get_valid_parameter_value(connection, "max_weight")
+                base_weight = self.get_valid_parameter_value(connection, "base_weight")
+            except IndexError:
+                activation_type = None
+                max_weight = 5
+                base_weight = 1
 
             width_ratio = base_weight / max_weight
             con_width = design.connection_width * width_ratio
@@ -589,13 +594,12 @@ class Mainframe:
 
             if connection.id == self.selected_connection:
                 color = design.grey_c[design.theme]
-            elif activation_type == "Excitatory":
+            elif activation_type == "Excitatory" or activation_type is None:
                 color = design.light_blue[design.theme]
             elif activation_type == "Inhibitory":
                 color = design.light_red[design.theme]
             else:
                 color = design.light_green[design.theme]
-
 
             if not connection.next_neuron is None:
                 distance = self.neuron_size + distance
@@ -671,7 +675,8 @@ class Mainframe:
                                           text=f"{neuron.id}", fill=design.grey_1[design.theme])
 
     def render_subnet_nodes(self, subnet):
-        node_size = int(self.neuron_size / 1.5) * self.network_manager.zoom_factor[self.network_manager.curr_network]
+        node_size = subnet.node_size * self.network_manager.zoom_factor[self.network_manager.curr_network]
+
         for node in subnet.input_node_list:
             corr_x = VectorUtils.project_coordinate(node.posx,
                                                     self.network_manager.camera_x[self.network_manager.curr_network],
@@ -770,8 +775,8 @@ class Mainframe:
                 if self.grid_snap:
                     self.render_grid()
 
-                self.render_subnets()
                 self.render_connections()
+                self.render_subnets()
                 self.render_neurons()
 
                 self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
@@ -908,8 +913,8 @@ class Mainframe:
             self.grid_snap = True
         self.render_scene()
 
-    def create_neuron_connection(self, neuron):
-        if self.do_connection:
+    def create_neuron_connection(self, neuron, direction="input_output"):
+        if self.do_connection and "output" in direction:
             can_connect = True
             connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
             for check_con in self.network_manager.networks[self.network_manager.curr_network].connections:
@@ -919,13 +924,16 @@ class Mainframe:
             if can_connect:
                 vertex_position = len(self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices) - 1
                 self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_neuron = neuron.id
+                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_subnet = neuron.subnet_id
                 self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices[vertex_position] = [
                     neuron.posx, neuron.posy]
             else:
                 self.discard_connection()
             self.do_connection = False
-        else:
+        elif not self.do_connection and "input" in direction:
             self.init_connection(neuron)
+        else:
+            self.discard_connection()
 
     def create_synaptic_connection(self, connection):
         if self.do_connection:
@@ -954,7 +962,7 @@ class Mainframe:
                 if self.tool == TOOL_CONNECTIONS:
                     if not self.do_connection:
                         self.connection_source_neuron = neuron
-                    self.create_neuron_connection(neuron)
+                    self.create_neuron_connection(neuron, direction="input_output")
                     if not self.do_connection:
                         self.connection_source_neuron = None
                 elif self.tool == TOOL_SELECT:
@@ -965,6 +973,24 @@ class Mainframe:
                     self.show_editmenu(store=False)
 
                 neuron_collision = True
+
+        for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
+            for node in subnet.output_node_list:
+                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, node, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                    if self.tool == TOOL_CONNECTIONS:
+                        if not self.do_connection:
+                            self.connection_source_neuron = node
+                        self.create_neuron_connection(node, direction="output")
+                        if not self.do_connection:
+                            self.connection_source_neuron = node
+            for node in subnet.input_node_list:
+                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, node, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                    if self.tool == TOOL_CONNECTIONS:
+                        if not self.do_connection:
+                            self.connection_source_neuron = node
+                        self.create_neuron_connection(node, direction="input")
+                        if not self.do_connection:
+                            self.connection_source_neuron = node
 
         if not neuron_collision:
             for connection in self.network_manager.networks[self.network_manager.curr_network].connections:

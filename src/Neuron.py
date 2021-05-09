@@ -2,7 +2,7 @@ from src.ParameterHandler import *
 
 
 class Neuron:
-    def __init__(self, id, posx, posy, size, network_id):
+    def __init__(self, id, posx, posy, size, network_id, subnet_id=-1):
         self.posx = posx
         self.posy = posy
         self.size = size
@@ -10,4 +10,9 @@ class Neuron:
 
         self.id = id
 
-        self.param = ParameterHandler()
+        self.subnet_id = subnet_id
+
+        if subnet_id == -1:
+            self.param = ParameterHandler()
+        else:
+            self.param = None
