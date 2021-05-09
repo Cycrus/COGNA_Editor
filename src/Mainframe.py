@@ -916,40 +916,47 @@ class Mainframe:
     def create_neuron_connection(self, neuron, direction="input_output"):
         if self.do_connection and "output" in direction:
             can_connect = True
-            connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
-            for check_con in self.network_manager.networks[self.network_manager.curr_network].connections:
-                if check_con.prev_neuron == self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron \
+            connection_list = self.network_manager.networks[self.network_manager.curr_network].connections
+            connection_position = len(connection_list) - 1
+            for check_con in connection_list:
+                if check_con.prev_neuron == connection_list[connection_position].prev_neuron \
                         and check_con.next_neuron == neuron.id:
-                    can_connect = False
+                    if check_con.prev_subnet == connection_list[connection_position].prev_subnet \
+                            and check_con.next_subnet == neuron.subnet_id:
+                        if check_con.prev_neuron_function == connection_list[connection_position].prev_neuron_function \
+                                and check_con.next_neuron_function == neuron.function:
+                            can_connect = False
             if can_connect:
-                vertex_position = len(self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices) - 1
-                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_neuron = neuron.id
-                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_subnet = neuron.subnet_id
-                self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices[vertex_position] = [
-                    neuron.posx, neuron.posy]
+                vertex_position = len(connection_list[connection_position].vertices) - 1
+                connection_list[connection_position].next_neuron = neuron.id
+                connection_list[connection_position].next_subnet = neuron.subnet_id
+                connection_list[connection_position].next_neuron_function = neuron.function
+                connection_list[connection_position].vertices[vertex_position] = [neuron.posx, neuron.posy]
             else:
                 self.discard_connection()
             self.do_connection = False
+
         elif not self.do_connection and "input" in direction:
             self.init_connection(neuron)
+
         else:
             self.discard_connection()
 
     def create_synaptic_connection(self, connection):
         if self.do_connection:
-            if connection.id < len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1:
+            connection_list = self.network_manager.networks[self.network_manager.curr_network].connections
+            if connection.id < len(connection_list) - 1:
                 can_connect = True
-                connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
-                for check_con in self.network_manager.networks[self.network_manager.curr_network].connections:
-                    if check_con.prev_neuron == self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron \
+                connection_position = len(connection_list) - 1
+                for check_con in connection_list:
+                    if check_con.prev_neuron == connection_list[connection_position].prev_neuron \
                             and check_con.next_connection == connection.id:
                         can_connect = False
 
                 if can_connect:
-                    vertex_position = len(self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices) - 1
-                    self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].next_connection = connection.id
-                    self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices[vertex_position] = [
-                        self.cursor_x, self.cursor_y]
+                    vertex_position = len(connection_list[connection_position].vertices) - 1
+                    connection_list[connection_position].next_connection = connection.id
+                    connection_list[connection_position].vertices[vertex_position] = [self.cursor_x, self.cursor_y]
                 else:
                     self.discard_connection()
                 self.do_connection = False

@@ -15,9 +15,10 @@ class Subnetwork:
 
         self.input_node_list = []
         self.output_node_list = []
-        self.generate_node_lists()
 
         self.network_id = network_id
+
+        self.generate_node_lists()
 
     def generate_node_lists(self):
         loop_number = (self.size_x * 4 + self.size_y * 4) // 50
@@ -67,7 +68,8 @@ class Subnetwork:
                         output_count = output_count - 1
 
             if can_create:
-                temp_node = Neuron(node_id, x_pos, y_pos, self.node_size, self.id)
+                temp_node = Neuron(node_id, x_pos, y_pos, self.node_size,
+                                   network_id=self.network_id, subnet_id=self.id, function=type)
                 if type == "input":
                     self.input_node_list.append(temp_node)
                 elif type == "output":
