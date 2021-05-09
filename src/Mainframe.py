@@ -6,6 +6,7 @@ TOOL_NEURONS = 0
 TOOL_CONNECTIONS = 1
 TOOL_SELECT = 2
 TOOL_IMPORT = 3
+TOOL_EXCHANGE = 4
 
 
 class Mainframe:
@@ -39,7 +40,7 @@ class Mainframe:
 
         self.root_frame.update()
 
-        self.editframe_width = int(self.root_frame.winfo_width()/3)
+        self.editframe_width = int(self.root_frame.winfo_width()/3.5)
         self.pixelVirtual = tk.PhotoImage(width=1, height=1)
 
         self.edit_selection = tk.StringVar()
@@ -52,6 +53,9 @@ class Mainframe:
         self.grid_snap = True
 
         self.network_option = tk.StringVar()
+
+        self.exchange_option = tk.StringVar()
+        self.option_list = ["Interface Input", "Interface Output", "Subnet Input", "Subnet Output"]
         
         self.mainframe = None
         self.editframe = None
@@ -62,6 +66,7 @@ class Mainframe:
         self.neuron_button = None
         self.connection_button = None
         self.import_button = None
+        self.exchange_button = None
         self.viewframe = None
         self.editorcanvas = None
         self.edit_1 = None
@@ -126,6 +131,11 @@ class Mainframe:
                                        fg=design.grey_c[design.theme], command=self.switch_tool_import, image=self.pixelVirtual,
                                        activebackground=design.grey_7[design.theme],
                                        width=50, relief=tk.FLAT, compound="c")
+        self.exchange_button = tk.Button(master=self.edit_top, text="E", background=design.grey_3[design.theme],
+                                         fg=design.grey_c[design.theme], command=self.switch_tool_exchange,
+                                         image=self.pixelVirtual,
+                                         activebackground=design.grey_7[design.theme],
+                                         width=50, relief=tk.FLAT, compound="c")
 
         self.viewframe = tk.Frame(master=self.mainframe, background=design.grey_3[design.theme],
                                   highlightthickness=0,
@@ -171,6 +181,7 @@ class Mainframe:
         self.neuron_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
         self.connection_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
         self.import_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
+        self.exchange_button.pack(side=tk.LEFT, padx=design.button_padding_x, pady=design.button_padding_y)
 
         for i in range(0, self.parameter_count):
             padding_y = 10
@@ -348,10 +359,20 @@ class Mainframe:
                                                 command=self.show_editmenu)
         elif self.selected_neuron > -1:
             self.general_info.config(text=f"Neuron <{self.selected_neuron}> Selected")
-            self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Neuron")
-            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
-                                                *ParameterHandler.param_drop_options_neuron,
-                                                command=self.show_editmenu)
+            self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Neuron",
+                                                                 self.selected_entity.function)
+            if "neuron" in self.selected_entity.function:
+                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                                    *ParameterHandler.param_drop_options_neuron,
+                                                    command=self.show_editmenu)
+            elif "interface" in self.selected_entity.function:
+                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                                    *ParameterHandler.param_drop_options_interface,
+                                                    command=self.show_editmenu)
+            elif "subnet" in self.selected_entity.function:
+                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                                                    *ParameterHandler.param_drop_options_subnet,
+                                                    command=self.show_editmenu)
         else:
             self.general_info.config(text=f"Network <{self.network_manager.curr_network}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Network")
@@ -423,6 +444,20 @@ class Mainframe:
                                             bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
         self.parameter_info[0].pack(side=tk.LEFT)
 
+    def show_exchange_menu(self):
+        self.exchange_option.set(self.option_list[0])
+
+        self.parameter_textbox.append([tk.OptionMenu(self.parameter_frame[1], self.exchange_option, *self.option_list)])
+        self.parameter_textbox[0][0].config(bg=design.grey_7[design.theme], width=15,
+                                            fg=design.black[design.theme],
+                                            borderwidth=0, highlightthickness=3,
+                                            highlightbackground=design.grey_2[design.theme],
+                                            activebackground=design.grey_7[design.theme])
+        self.parameter_textbox[0][0].pack(side=tk.LEFT, padx=20)
+        self.parameter_info.append(tk.Label(master=self.parameter_frame[1], text="Exchange Node Type",
+                                            bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
+        self.parameter_info[0].pack(side=tk.LEFT)
+
     def show_editmenu(self, event=None, store=True):
         """
         Initializes and prepares parameter frame for rendering new parameters.
@@ -454,6 +489,8 @@ class Mainframe:
             self.show_entity_parameters()
         elif self.tool == TOOL_IMPORT:
             self.show_import_menu()
+        elif self.tool == TOOL_EXCHANGE:
+            self.show_exchange_menu()
 
     def switch_tool_neurons(self):
         """
@@ -465,6 +502,7 @@ class Mainframe:
         self.connection_button.configure(background=design.grey_3[design.theme])
         self.select_button.configure(background=design.grey_3[design.theme])
         self.import_button.configure(background=design.grey_3[design.theme])
+        self.exchange_button.configure(background=design.grey_3[design.theme])
         self.discard_connection()
         self.deselect_all()
         self.show_editmenu(store=False)
@@ -480,6 +518,7 @@ class Mainframe:
         self.connection_button.configure(background=design.dark_blue[design.theme])
         self.select_button.configure(background=design.grey_3[design.theme])
         self.import_button.configure(background=design.grey_3[design.theme])
+        self.exchange_button.configure(background=design.grey_3[design.theme])
         self.deselect_all()
         self.show_editmenu(store=False)
         self.render_scene()
@@ -493,6 +532,7 @@ class Mainframe:
         self.connection_button.configure(background=design.grey_3[design.theme])
         self.select_button.configure(background=design.dark_blue[design.theme])
         self.import_button.configure(background=design.grey_3[design.theme])
+        self.exchange_button.configure(background=design.grey_3[design.theme])
         self.discard_connection()
         self.deselect_all()
         self.show_editmenu(store=False)
@@ -507,6 +547,22 @@ class Mainframe:
         self.connection_button.configure(background=design.grey_3[design.theme])
         self.select_button.configure(background=design.grey_3[design.theme])
         self.import_button.configure(background=design.dark_blue[design.theme])
+        self.exchange_button.configure(background=design.grey_3[design.theme])
+        self.discard_connection()
+        self.deselect_all()
+        self.show_editmenu(store=False)
+        self.render_scene()
+
+    def switch_tool_exchange(self):
+        """
+        Function to switch tool stance to importing other networks.
+        """
+        self.tool = TOOL_EXCHANGE
+        self.neuron_button.configure(background=design.grey_3[design.theme])
+        self.connection_button.configure(background=design.grey_3[design.theme])
+        self.select_button.configure(background=design.grey_3[design.theme])
+        self.import_button.configure(background=design.grey_3[design.theme])
+        self.exchange_button.configure(background=design.dark_blue[design.theme])
         self.discard_connection()
         self.deselect_all()
         self.show_editmenu(store=False)
@@ -666,22 +722,49 @@ class Mainframe:
         """
         for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
             if self.selected_neuron == neuron.id:
-                self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
-                                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
-                                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white[design.theme],
-                                                outline=design.light_blue[design.theme],
-                                                width=5 * self.network_manager.zoom_factor[self.network_manager.curr_network])
+                temp_outline = design.light_blue[design.theme]
+                temp_width = 5 * self.network_manager.zoom_factor[self.network_manager.curr_network]
             else:
-                self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
-                                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
-                                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network], fill=design.white[design.theme])
+                temp_outline = "#000000"
+                temp_width = 1
+
+            if "neuron" in neuron.function:
+                temp_color = design.white[design.theme]
+                temp_text = neuron.id
+            elif "interface" in neuron.function:
+                temp_color = design.dark_red[design.theme]
+                temp_text = None
+                if "input" in neuron.function:
+                    temp_text = "I"
+                elif "output" in neuron.function:
+                    temp_text = "O"
+            elif "subnet" in neuron.function:
+                temp_color = design.dark_blue[design.theme]
+                temp_text = None
+                if "input" in neuron.function:
+                    try:
+                        temp_text = "I " + str(int(neuron.param.list["node_id"]))
+                    except:
+                        temp_text = "I"
+                elif "output" in neuron.function:
+                    try:
+                        temp_text = "O " + str(int(neuron.param.list["node_id"]))
+                    except:
+                        temp_text = "O"
+
+
+            self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
+                                                                           self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                            VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
+                                                                           self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                            self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network],
+                                            fill=temp_color,
+                                            outline=temp_outline,
+                                            width=temp_width)
+
             self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                           VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          text=f"{neuron.id}", fill=design.grey_1[design.theme])
+                                          text=temp_text, fill=design.grey_1[design.theme])
 
     def render_subnet_nodes(self, subnet):
         node_size = subnet.node_size * self.network_manager.zoom_factor[self.network_manager.curr_network]
@@ -752,6 +835,9 @@ class Mainframe:
         elif self.tool == TOOL_IMPORT:
             self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
                                           text="IMPORTING NETWORK", fill=design.light_blue[design.theme])
+        elif self.tool == TOOL_EXCHANGE:
+            self.editorcanvas.create_text(85, self.editorcanvas.winfo_height() - 15, anchor="w",
+                                          text="EXCHANGE NODE EDITING", fill=design.light_blue[design.theme])
 
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 90, anchor="w",
                                       text=f"Camera X: {int(self.network_manager.camera_x[self.network_manager.curr_network])}", fill=design.grey_c[design.theme])
@@ -838,13 +924,13 @@ class Mainframe:
         self.render_scene()
         self.snap_cursor_to_grid()
 
-    def add_neuron(self):
+    def add_neuron(self, function="neuron"):
         """
         Adds a neuron to the network.
         """
         neuron_x = self.cursor_x
         neuron_y = self.cursor_y
-        self.network_manager.add_neuron(neuron_x, neuron_y, self.neuron_size, self.network_manager.curr_network)
+        self.network_manager.add_neuron(neuron_x, neuron_y, self.neuron_size, self.network_manager.curr_network, function)
 
     def add_subnet(self):
         """
@@ -913,6 +999,8 @@ class Mainframe:
         elif self.tool == TOOL_CONNECTIONS:
             self.switch_tool_import()
         elif self.tool == TOOL_IMPORT:
+            self.switch_tool_exchange()
+        elif self.tool == TOOL_EXCHANGE:
             self.switch_tool_select()
 
     def toggle_grid_snap(self, event):
@@ -1017,9 +1105,18 @@ class Mainframe:
 
             if not self.do_connection:
                 if self.tool == TOOL_NEURONS:
-                    self.add_neuron()
+                    self.add_neuron("neuron")
                 elif self.tool == TOOL_IMPORT:
                     self.add_subnet()
+                elif self.tool == TOOL_EXCHANGE:
+                    if self.exchange_option.get() == self.option_list[0]:
+                        self.add_neuron("interface_input")
+                    elif self.exchange_option.get() == self.option_list[1]:
+                        self.add_neuron("interface_output")
+                    elif self.exchange_option.get() == self.option_list[2]:
+                        self.add_neuron("subnet_input")
+                    elif self.exchange_option.get() == self.option_list[3]:
+                        self.add_neuron("subnet_output")
             else:
                 connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
                 self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices.append(
@@ -1047,10 +1144,18 @@ class Mainframe:
     def delete_neuron(self):
         if self.tool == TOOL_NEURONS:
             for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
-                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.network_manager.zoom_factor[self.network_manager.curr_network]):
-                    self.network_manager.delete_neuron(neuron.id, self.network_manager.curr_network)
-                    break
-            self.render_scene()
+                if neuron.function == "neuron":
+                    if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                        self.network_manager.delete_neuron(neuron.id, self.network_manager.curr_network)
+                        break
+        elif self.tool == TOOL_EXCHANGE:
+            for neuron in self.network_manager.networks[self.network_manager.curr_network].neurons:
+                if neuron.function == "interface_input" or neuron.function == "interface_output" or \
+                        neuron.function == "subnet_input" or neuron.function == "subnet_output":
+                    if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                        self.network_manager.delete_neuron(neuron.id, self.network_manager.curr_network)
+                        break
+        self.render_scene()
 
     def delete_connection(self):
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
