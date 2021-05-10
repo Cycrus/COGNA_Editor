@@ -184,12 +184,13 @@ class ParameterHandler:
     def is_menu(name):
         if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
                 name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
-                name == "influences_transmitter" or name == "influenced_transmitter" or name == "neuron_type":
+                name == "influences_transmitter" or name == "influenced_transmitter" or name == "neuron_type" or \
+                name == "node_id":
             return True
         return False
 
     @staticmethod
-    def get_option_menu_list(name, network_manager):
+    def get_option_menu_list(name, network_manager, neuron_function=None):
         menu = None
         if name == "influences_transmitter":
             menu = influences_transmitter_options
@@ -212,6 +213,16 @@ class ParameterHandler:
             for neuron in network_manager.neuron_types:
                 neuron_type_list.append(neuron[0])
             menu = neuron_type_list
+        elif name == "node_id":
+            menu = []
+            if "input" in neuron_function:
+                node_number = int(network_manager.networks[network_manager.curr_network].param.list["input_nodes"])
+            elif "output" in neuron_function:
+                node_number = int(network_manager.networks[network_manager.curr_network].param.list["output_nodes"])
+            for i in range(0, node_number):
+                menu.append(str(i))
+            if not menu:
+                menu = None
 
         return menu
 

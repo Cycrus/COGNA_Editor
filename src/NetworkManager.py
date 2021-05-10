@@ -244,6 +244,10 @@ class NetworkManager:
             if parameter[param] is not None:
                 target_dict[param] = ParameterHandler.deny_scientific_notation(parameter[param])
 
+    def store_single_parameter(self, target_dict, param, value):
+        if value is not None:
+            target_dict[param] = value
+
     def store_network_param_in_dict(self, network_id):
         temp_dict = {}
         self.convert_parameter_to_dict(temp_dict, self.networks[network_id].param.list)
@@ -252,24 +256,46 @@ class NetworkManager:
     def store_neurons_in_dict(self, target_dict, network_id):
         for neuron in self.networks[network_id].neurons:
             temp_dict = {}
-            temp_dict["id"] = neuron.id
-            temp_dict["posx"] = neuron.posx
-            temp_dict["posy"] = neuron.posy
+            self.store_single_parameter(temp_dict, "id", neuron.id)
+            self.store_single_parameter(temp_dict, "posx", neuron.posx)
+            self.store_single_parameter(temp_dict, "posy", neuron.posy)
             self.convert_parameter_to_dict(temp_dict, neuron.param.list)
             target_dict["neurons"].append(temp_dict)
+
+    def store_nodes_in_dict(self, target_dict, network_id):
+        for node in self.networks[network_id].nodes:
+            temp_dict = {}
+            self.store_single_parameter(temp_dict, "id", node.id)
+            self.store_single_parameter(temp_dict, "posx", node.posx)
+            self.store_single_parameter(temp_dict, "posy", node.posy)
+            self.store_single_parameter(temp_dict, "function", node.function)
+            self.convert_parameter_to_dict(temp_dict, node.param.list)
+            target_dict["nodes"].append(temp_dict)
+
+    def store_subnets_in_dict(self, target_dict, network_id):
+        for subnet in self.networks[network_id].subnets:
+            temp_dict = {}
+            self.store_single_parameter(temp_dict, "id", subnet.id)
+            self.store_single_parameter(temp_dict, "network_name", subnet.network_name)
+            self.store_single_parameter(temp_dict, "posx", subnet.posx)
+            self.store_single_parameter(temp_dict, "posy", subnet.posy)
+            target_dict["subnetworks"].append(temp_dict)
 
     def store_connections_in_dict(self, target_dict, network_id):
         for connection in self.networks[network_id].connections:
             temp_dict = {}
-            temp_dict["id"] = connection.id
+            self.store_single_parameter(temp_dict, "id", connection.id)
+            self.store_single_parameter(temp_dict, "prev_neuron", connection.prev_neuron)
+            self.store_single_parameter(temp_dict, "prev_neuron_function", connection.prev_neuron_function)
+            self.store_single_parameter(temp_dict, "next_neuron_function", connection.next_neuron_function)
+            self.store_single_parameter(temp_dict, "prev_subnetwork", connection.prev_subnet)
+            self.store_single_parameter(temp_dict, "next_subnetwork", connection.next_subnet)
+            self.store_single_parameter(temp_dict, "next_neuron", connection.next_neuron)
+            self.store_single_parameter(temp_dict, "next_connection", connection.next_connection)
             temp_dict["vertices"] = []
-            temp_dict["prev_neuron"] = connection.prev_neuron
+            print(connection.id, connection.next_subnet)
             for vert in connection.vertices:
                 temp_dict["vertices"].append([vert[0], vert[1]])
-            if connection.next_neuron is not None:
-                temp_dict["next_neuron"] = connection.next_neuron
-            if connection.next_connection is not None:
-                temp_dict["next_connection"] = connection.next_connection
             self.convert_parameter_to_dict(temp_dict, connection.param.list)
             target_dict["connections"].append(temp_dict)
 
@@ -279,6 +305,12 @@ class NetworkManager:
 
         network_dict["neurons"] = []
         self.store_neurons_in_dict(network_dict, network_id)
+
+        network_dict["nodes"] = []
+        self.store_nodes_in_dict(network_dict, network_id)
+
+        network_dict["subnetworks"] = []
+        self.store_subnets_in_dict(network_dict, network_id)
 
         network_dict["connections"] = []
         self.store_connections_in_dict(network_dict, network_id)
@@ -293,23 +325,58 @@ class NetworkManager:
 
     def read_neurons_from_dict(self, neurons_dict):
         for neuron in neurons_dict:
-            neuron_list = self.networks[self.curr_network].neurons
-            self.add_neuron(neuron["posx"], neuron["posy"], 25, self.curr_network)
-            neuron_list[len(neuron_list)-1].param = self.read_parameter_list(neuron)
+            try:
+                neuron_list = self.networks[self.curr_network].neurons
+                self.add_neuron(neuron["posx"], neuron["posy"], 25, self.curr_network)
+                neuron_list[len(neuron_list)-1].param = self.read_parameter_list(neuron)
+            except:
+                pass
 
-    def read_connections_from_dict(self, connections_dict):
+    def read_nodes_from_dict(self, nodes_dict):
+        for node in nodes_dict:
+            try:
+                node_list = self.networks[self.curr_network].nodes
+                self.add_neuron(node["posx"], node["posy"], 25, self.curr_network,
+                                node["function"])
+                node_list[len(node_list)-1].param = self.read_parameter_list(node)
+            except:
+                pass
+
+    def read_subnets_from_dict(self, subnet_dict):
+        error_ids = []
+        for subnet in subnet_dict:
+            try:
+                self.add_subnet(subnet["network_name"], subnet["posx"], subnet["posy"], self.curr_network)
+            except:
+                error_ids.append(subnet["id"])
+        return error_ids
+
+    def read_connections_from_dict(self, connections_dict, error_subnets):
         for connection in connections_dict:
-            connection_list = self.networks[self.curr_network].connections
-            source_neuron = self.networks[self.curr_network].neurons[connection["prev_neuron"]-1]
-            self.add_connection(source_neuron, self.curr_network)
-            connection_list[len(connection_list)-1].vertices = connection["vertices"]
-            
-            if "next_neuron" in connection:
-                connection_list[len(connection_list)-1].next_neuron = connection["next_neuron"]
-            elif "next_connection" in connection:
-                connection_list[len(connection_list)-1].next_connection = connection["next_connection"]
+            try:
+                if connection["next_subnetwork"] in error_subnets or \
+                        connection["prev_subnetwork"] in error_subnets:
+                    raise ValueError
+                connection_list = self.networks[self.curr_network].connections
+                if "neuron" in connection["prev_neuron_function"]:
+                    source_neuron = self.networks[self.curr_network].neurons[connection["prev_neuron"]-1]
+                else:
+                    source_neuron = self.networks[self.curr_network].nodes[connection["prev_neuron"] - 1]
+                self.add_connection(source_neuron, self.curr_network)
+                temp_connection = connection_list[len(connection_list)-1]
+                temp_connection.vertices = connection["vertices"]
+                temp_connection.prev_neuron_function = connection["prev_neuron_function"]
 
-            connection_list[len(connection_list)-1].param = self.read_parameter_list(connection)
+                if "next_neuron" in connection:
+                    temp_connection.next_neuron_function = connection["next_neuron_function"]
+                    temp_connection.next_subnet = connection["next_subnetwork"]
+                    connection_list[len(connection_list) - 1].next_neuron = connection["next_neuron"]
+                elif "next_connection" in connection:
+                    connection_list[len(connection_list)-1].next_connection = connection["next_connection"]
+
+                connection_list[len(connection_list)-1].param = self.read_parameter_list(connection)
+            except:
+                pass
 
     def load_network(self, filename=None):
         if filename is None:
@@ -337,7 +404,9 @@ class NetworkManager:
         network_parameter = self.read_parameter_list(network_dict["network"])
         self.add_network(network_parameter)
         self.read_neurons_from_dict(network_dict["neurons"])
-        self.read_connections_from_dict(network_dict["connections"])
+        self.read_nodes_from_dict(network_dict["nodes"])
+        error_subnets = self.read_subnets_from_dict(network_dict["subnetworks"])
+        self.read_connections_from_dict(network_dict["connections"], error_subnets)
         self.filename[self.curr_network] = network_name
 
         file.close()
