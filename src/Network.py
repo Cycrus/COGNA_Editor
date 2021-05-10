@@ -4,6 +4,8 @@ from src.ParameterHandler import *
 class Network:
     def __init__(self, default_params=None):
         self.neurons = []
+        self.nodes = []
+        self.all_nodes = [self.neurons, self.nodes]
         self.connections = []
         self.subnets = []
 
