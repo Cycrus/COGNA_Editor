@@ -132,9 +132,14 @@ class NetworkManager:
         self.zoom_factor.append(1.0)
 
     def add_neuron(self, posx, posy, size, network_id=0, function="neuron"):
-        temp_neuron = Neuron(len(self.networks[network_id].neurons)+null_neuron_correcter,
-                             posx, posy, size, network_id, function=function)
-        self.networks[network_id].neurons.append(temp_neuron)
+        if function == "neuron":
+            temp_neuron = Neuron(len(self.networks[network_id].neurons) + null_neuron_correcter,
+                                 posx, posy, size, network_id, function=function)
+            self.networks[network_id].neurons.append(temp_neuron)
+        else:
+            temp_neuron = Neuron(len(self.networks[network_id].nodes) + null_neuron_correcter,
+                                 posx, posy, size, network_id, function=function)
+            self.networks[network_id].nodes.append(temp_neuron)
 
     def delete_subnet(self, id, network_id=0):
         for connection in reversed(self.networks[self.curr_network].connections):
@@ -146,9 +151,10 @@ class NetworkManager:
             if subnet.id > id:
                 subnet.id = subnet.id - 1
 
-    def delete_neuron(self, id, network_id=0):
+    def delete_neuron(self, id, function, network_id=0):
         for connection in reversed(self.networks[network_id].connections):
-            if connection.prev_neuron == id or connection.next_neuron == id:
+            if connection.prev_neuron == id and connection.prev_neuron_function == function \
+                or connection.next_neuron == id and connection.next_neuron_function == function:
                 self.delete_connection(connection.id, network_id)
 
         for connection in self.networks[network_id].connections:
@@ -158,10 +164,16 @@ class NetworkManager:
                 if connection.next_neuron > id-1:
                     connection.next_neuron = connection.next_neuron - 1
 
-        self.networks[network_id].neurons.pop(id - 1)
-        for neuron in reversed(self.networks[network_id].neurons):
-            if neuron.id > id:
-                neuron.id = neuron.id - 1
+        if "neuron" in function:
+            self.networks[network_id].neurons.pop(id - 1)
+            for neuron in reversed(self.networks[network_id].neurons):
+                if neuron.id > id:
+                    neuron.id = neuron.id - 1
+        else:
+            self.networks[network_id].nodes.pop(id - 1)
+            for neuron in reversed(self.networks[network_id].nodes):
+                if neuron.id > id:
+                    neuron.id = neuron.id - 1
 
     def add_connection(self, source_neuron, network_id=0):
         self.networks[network_id].connections.append(Connection(len(self.networks[network_id].connections),
