@@ -264,7 +264,7 @@ class Mainframe:
             try:
                 if ParameterHandler.is_menu(parameter_name):
                     entity.param.list[parameter_name] = temp_param
-                elif parameter_name == "ip_address" or parameter_name == "port":
+                elif parameter_name == "ip_address" or parameter_name == "port" or parameter_name == "channel":
                     entity.param.list[parameter_name] = temp_param
                 else:
                     entity.param.list[parameter_name] = float(temp_param)

@@ -58,7 +58,8 @@ network_parameter = ["transmitter_backfall_curvature",
                      "output_nodes"]
 
 interface_parameter = ["ip_address",
-                       "port"]
+                       "port",
+                       "channel"]
 
 subnet_parameter = ["node_id"]
 
