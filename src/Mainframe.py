@@ -264,6 +264,8 @@ class Mainframe:
             try:
                 if ParameterHandler.is_menu(parameter_name):
                     entity.param.list[parameter_name] = temp_param
+                elif parameter_name == "ip_address" or parameter_name == "port":
+                    entity.param.list[parameter_name] = temp_param
                 else:
                     entity.param.list[parameter_name] = float(temp_param)
             except ValueError:
@@ -413,20 +415,27 @@ class Mainframe:
                     pass
 
             for i, name in enumerate(self.param_list):
+                menu = None
+
                 if ParameterHandler.is_menu(name):
                     var = tk.StringVar()
                     str_value, color = self.print_menu_parameter(self.selected_entity, self.selected_entity.param, name)
                     var.set(str_value)
-                    menu = ParameterHandler.get_option_menu_list(name, self.network_manager)
-                    temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
-                                               command=lambda option, n=name: self.store_menu_parameters(option=option,
-                                                                                                         name=n))
-                    temp_field.config(bg=design.grey_7[design.theme], width=15,
-                                      fg=color,
-                                      borderwidth=0, highlightthickness=3,
-                                      highlightbackground=design.grey_2[design.theme],
-                                      activebackground=design.grey_7[design.theme])
-                    self.parameter_textbox.append([temp_field, name])
+                    if isinstance(self.selected_entity, Neuron):
+                        function = self.selected_entity.function
+                    else:
+                        function = None
+                    menu = ParameterHandler.get_option_menu_list(name, self.network_manager, function)
+                    if menu:
+                        temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
+                                                   command=lambda option, n=name: self.store_menu_parameters(option=option,
+                                                                                                             name=n))
+                        temp_field.config(bg=design.grey_7[design.theme], width=15,
+                                          fg=color,
+                                          borderwidth=0, highlightthickness=3,
+                                          highlightbackground=design.grey_2[design.theme],
+                                          activebackground=design.grey_7[design.theme])
+                        self.parameter_textbox.append([temp_field, name])
 
                 else:
                     temp_field = tk.Entry(master=self.parameter_frame[i+4], width=20,
@@ -435,29 +444,31 @@ class Mainframe:
                     self.parameter_textbox.append([temp_field, name])
                     self.print_entry_parameter(self.selected_entity, self.selected_entity.param, i, name)
 
-                self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
+                if menu or not ParameterHandler.is_menu(name):
+                    self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
-                self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,
-                                                    bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
-                self.parameter_info[i].pack(side=tk.LEFT)
+                    self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,
+                                                        bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
+                    self.parameter_info[i].pack(side=tk.LEFT)
 
     def get_network_list(self):
         return os.listdir(self.network_manager.project_path + os.sep + "networks")
 
     def show_import_menu(self):
         network_list = self.get_network_list()
-        self.network_option.set(network_list[0])
+        if network_list:
+            self.network_option.set(network_list[0])
 
-        self.parameter_textbox.append([tk.OptionMenu(self.parameter_frame[1], self.network_option, *network_list)])
-        self.parameter_textbox[0][0].config(bg=design.grey_7[design.theme], width=15,
-                                            fg=design.black[design.theme],
-                                            borderwidth=0, highlightthickness=3,
-                                            highlightbackground=design.grey_2[design.theme],
-                                            activebackground=design.grey_7[design.theme])
-        self.parameter_textbox[0][0].pack(side=tk.LEFT, padx=20)
-        self.parameter_info.append(tk.Label(master=self.parameter_frame[1], text="Imported Network",
-                                            bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
-        self.parameter_info[0].pack(side=tk.LEFT)
+            self.parameter_textbox.append([tk.OptionMenu(self.parameter_frame[1], self.network_option, *network_list)])
+            self.parameter_textbox[0][0].config(bg=design.grey_7[design.theme], width=15,
+                                                fg=design.black[design.theme],
+                                                borderwidth=0, highlightthickness=3,
+                                                highlightbackground=design.grey_2[design.theme],
+                                                activebackground=design.grey_7[design.theme])
+            self.parameter_textbox[0][0].pack(side=tk.LEFT, padx=20)
+            self.parameter_info.append(tk.Label(master=self.parameter_frame[1], text="Imported Network",
+                                                bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
+            self.parameter_info[0].pack(side=tk.LEFT)
 
     def show_exchange_menu(self):
         self.exchange_option.set(self.option_list[0])
@@ -1092,12 +1103,13 @@ class Mainframe:
                             and check_con.next_connection == connection.id:
                         can_connect = False
                         break
-                if not "neuron" in connection.prev_neuron_function:
+                if "neuron" not in connection.prev_neuron_function:
                     can_connect = False
 
                 if can_connect:
                     vertex_position = len(connection_list[connection_position].vertices) - 1
                     connection_list[connection_position].next_connection = connection.id
+                    connection_list[connection_position].next_subnet = connection.next_subnet
                     connection_list[connection_position].vertices[vertex_position] = [self.cursor_x, self.cursor_y]
                 else:
                     self.discard_connection()
