@@ -293,7 +293,6 @@ class NetworkManager:
             self.store_single_parameter(temp_dict, "next_neuron", connection.next_neuron)
             self.store_single_parameter(temp_dict, "next_connection", connection.next_connection)
             temp_dict["vertices"] = []
-            print(connection.id, connection.next_subnet)
             for vert in connection.vertices:
                 temp_dict["vertices"].append([vert[0], vert[1]])
             self.convert_parameter_to_dict(temp_dict, connection.param.list)
