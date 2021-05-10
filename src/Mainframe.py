@@ -756,22 +756,24 @@ class Mainframe:
                 temp_text = neuron.id
 
             elif "interface" in neuron.function:
-                temp_color = design.dark_red[design.theme]
                 temp_text = None
                 if "input" in neuron.function:
+                    temp_color = design.dark_blue[design.theme]
                     temp_text = "I"
                 elif "output" in neuron.function:
+                    temp_color = design.dark_red[design.theme]
                     temp_text = "O"
 
             elif "subnet" in neuron.function:
-                temp_color = design.dark_blue[design.theme]
                 temp_text = None
                 if "input" in neuron.function:
+                    temp_color = design.dark_blue[design.theme]
                     try:
                         temp_text = "I " + str(int(neuron.param.list["node_id"]))
                     except:
                         temp_text = "I"
                 elif "output" in neuron.function:
+                    temp_color = design.dark_red[design.theme]
                     try:
                         temp_text = "O " + str(int(neuron.param.list["node_id"]))
                     except:
@@ -1089,6 +1091,9 @@ class Mainframe:
                     if check_con.prev_neuron == connection_list[connection_position].prev_neuron \
                             and check_con.next_connection == connection.id:
                         can_connect = False
+                        break
+                if not "neuron" in connection.prev_neuron_function:
+                    can_connect = False
 
                 if can_connect:
                     vertex_position = len(connection_list[connection_position].vertices) - 1
