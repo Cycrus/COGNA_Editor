@@ -381,8 +381,7 @@ class Topmenu:
                             'Copyright (c) by Cyril Marx 2021')
 
     def show_help(self):
-        messagebox.showinfo("Help for COGNA Editor",
-                            "Help for COGNA Editor")
+        os.system("start html" + os.sep + "help.html")
 
     def show_controls(self):
         messagebox.showinfo("Controls of COGNA Editor",
