@@ -191,29 +191,32 @@ class ParameterHandler:
         return False
 
     @staticmethod
-    def get_option_menu_list(name, network_manager, neuron_function=None):
+    def get_option_menu_list(name, network_manager, neuron_function=None, entity=None):
         menu = None
         if name == "influences_transmitter":
-            menu = influences_transmitter_options
+            menu = copy.copy(influences_transmitter_options)
         elif name == "influenced_transmitter":
             menu = copy.copy(network_manager.transmitters)
         elif name == "transmitter_influence_direction":
-            menu = transmitter_influence_direction_options
+            menu = copy.copy(transmitter_influence_direction_options)
         elif name == "activation_type":
-            menu = activation_type_options
+            menu = copy.copy(activation_type_options)
+            if entity is not None:
+                if entity.next_neuron is not None:
+                    menu.remove("Nondirectional")
         elif name == "activation_function":
-            menu = activation_function_options
+            menu = copy.copy(activation_function_options)
         elif name == "learning_type":
-            menu = learning_type_options
+            menu = copy.copy(learning_type_options)
         elif name == "transmitter_type":
-            menu = network_manager.transmitters
+            menu = copy.copy(network_manager.transmitters)
         elif name == "used_transmitter":
-            menu = network_manager.transmitters
+            menu = copy.copy(network_manager.transmitters)
         elif name == "neuron_type":
             neuron_type_list = []
             for neuron in network_manager.neuron_types:
                 neuron_type_list.append(neuron[0])
-            menu = neuron_type_list
+            menu = copy.copy(neuron_type_list)
         elif name == "node_id":
             menu = []
             if "input" in neuron_function:

@@ -425,7 +425,8 @@ class Mainframe:
                         function = self.selected_entity.function
                     else:
                         function = None
-                    menu = ParameterHandler.get_option_menu_list(name, self.network_manager, function)
+                    menu = ParameterHandler.get_option_menu_list(name, self.network_manager, function,
+                                                                 entity=self.selected_entity)
                     if menu:
                         temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
                                                    command=lambda option, n=name: self.store_menu_parameters(option=option,
