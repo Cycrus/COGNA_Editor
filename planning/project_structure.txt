@@ -1,0 +1,11 @@
+Project
+    - Networks
+        . Network_1.cogna
+        . Network_2.cogna
+        . Network_3.cogna
+        . ...
+
+    - globals.conf
+    - meta.conf
+    - neuron_types.conf
+    - transmitters.conf
