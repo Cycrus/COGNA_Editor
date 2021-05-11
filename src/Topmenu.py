@@ -4,6 +4,7 @@ from src.TransmitterConfigurator import TransmitterConfigurator
 from src.NeuronConfigurator import NeuronConfigurator
 from src.SpashScreen import SplashScreen
 from src.NewProject import NewProject
+from src.GlobalConfig import GlobalConfig
 
 # Good Tutorial: https://pythonguides.com/python-tkinter-menu-bar/
 
@@ -59,10 +60,10 @@ class Topmenu:
         self.configuration = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
                                      foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
                                      activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
-        self.configuration.add_command(label="Global Configurations")
+        self.configuration.add_command(label="Global Configurations", command=self.global_config_command)
         self.configuration.add_command(label="Neuron Type Config", command=self.neuron_config_command)
         self.configuration.add_command(label="Transmitter Config", command=self.transmitter_config_command)
-        self.configuration.add_command(label="Plasticity Rules")
+        self.configuration.add_command(label="Plasticity Rules", command=self.plasticity_rules_command)
         self.menubar.add_cascade(label="Configuration", menu=self.configuration)
 
         self.view = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
@@ -227,7 +228,7 @@ class Topmenu:
                 path = path + token + os.sep
 
         project_files = os.listdir(path)
-        necessary_files = ["transmitters.config", "networks", "neuron_type.config"]
+        necessary_files = ["transmitters.config", "networks", "neuron_type.config", "global.config"]
         for file_idx in necessary_files:
             if file_idx not in project_files:
                 messagebox.showerror("Project Error", f"Invalid COGNA project. {file_idx} missing in project structure.")
@@ -236,22 +237,27 @@ class Topmenu:
 
         self.network_manager.open_project(path)
         self.close_all_command()
+        try:
+            self.open_command(filename=self.network_manager.project_path + os.sep + "networks" + os.sep + self.network_manager.main_network)
+        except:
+            self.new_command(self.network_manager.main_network)
+        self.close_command(del_network=0)
         file.close()
 
-    def new_command(self, event=None):
+    def new_command(self, event=None, filename=None):
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.mainframe.deselect_all()
-        self.network_manager.add_network()
+        self.network_manager.add_network(name=filename)
         self.mainframe.reset_camera()
         self.mainframe.render_scene()
         self.mainframe.show_editmenu(store=False)
         self.create_tab(self.network_manager.curr_network)
 
-    def open_command(self):
+    def open_command(self, filename=None):
         self.mainframe.show_editmenu(store=True)
         self.mainframe.deselect_all()
-        error_code = self.network_manager.load_network()
+        error_code = self.network_manager.load_network(filename)
         if error_code == Globals.SUCCESS:
             self.mainframe.reset_camera()
             self.mainframe.render_scene()
@@ -276,9 +282,13 @@ class Topmenu:
             self.delete_tab(network_id)
         self.mainframe.show_editmenu(store=False)
 
-    def close_command(self, event=None):
+    def close_command(self, event=None, del_network=None):
+        if del_network is None:
+            deleted_network = self.network_manager.curr_network
+        else:
+            deleted_network = del_network
         self.mainframe.deselect_all()
-        self.delete_network(self.network_manager.curr_network)
+        self.delete_network(deleted_network)
 
         self.mainframe.render_scene()
         self.mark_active_tab()
@@ -290,13 +300,16 @@ class Topmenu:
         self.mark_active_tab()
 
     def neuron_config_command(self):
-        neuron_configurator = NeuronConfigurator(self.root_frame,
-                                                 self.mainframe,
-                                                 self.network_manager)
+        neuron_configurator = NeuronConfigurator(self.root_frame, self.mainframe, self.network_manager)
 
     def transmitter_config_command(self):
-        transmitter_configurator = TransmitterConfigurator(self.root_frame,
-                                                           self.network_manager)
+        transmitter_configurator = TransmitterConfigurator(self.root_frame, self.network_manager)
+
+    def plasticity_rules_command(self):
+        pass
+
+    def global_config_command(self):
+        global_configurator = GlobalConfig(self.root_frame, self.network_manager)
 
     def grid_command(self):
         self.mainframe.toggle_grid_snap(None)
