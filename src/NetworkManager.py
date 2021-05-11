@@ -235,6 +235,17 @@ class NetworkManager:
         self.add_network()
 
     def clear_single_network(self, network_id):
+        for idx, network in enumerate(self.networks):
+            if idx > network_id:
+                for neuron in chain(*network.all_nodes):
+                    neuron.network_id = neuron.network_id - 1
+                for subnet in network.subnets:
+                    subnet.network_id = subnet.network_id - 1
+                    for node in chain(subnet.input_node_list, subnet.output_node_list):
+                        node.network_id = node.network_id - 1
+                for connection in network.connections:
+                    connection.network_id = connection.network_id - 1
+
         self.networks[network_id].connections.clear()
         self.networks[network_id].neurons.clear()
         self.networks.pop(network_id)
