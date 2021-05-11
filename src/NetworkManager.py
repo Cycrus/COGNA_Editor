@@ -34,22 +34,32 @@ class NetworkManager:
 
         self.curr_network = 0
         try:
-            self.load_network(self.project_path + os.sep + "networks" + os.sep + self.main_network)
+            self.load_network(filename=self.project_path + os.sep + "networks" + os.sep + self.main_network)
         except Exception as e:
             print(e)
             self.add_network(name="main.cogna")
 
-    def new_project(self, project_name):
+    def default_neuron_types(self):
         default_neuron_params = ParameterHandler()
         default_neuron_params.fill_in_params()
+        self.neuron_types = [["Default", default_neuron_params]]
 
+    def default_transmitters(self):
+        self.transmitters = ["Default"]
+
+    def default_global_info(self):
+        self.frequency = 10
+        self.main_network = "main.cogna"
+
+    def new_project(self, project_name):
         try:
             os.mkdir(os.getcwd() + os.sep + "Projects")
         except:
             pass
 
-        self.transmitters = ["Default"]
-        self.neuron_types = [["Default", default_neuron_params]]
+        self.default_transmitters()
+        self.default_neuron_types()
+        self.default_global_info()
 
         new_path = os.getcwd() + os.sep + "Projects" + os.sep + project_name
         self.project_path = new_path
@@ -72,8 +82,21 @@ class NetworkManager:
             path = path[:len(path)-1]
         self.project_name = path.split(os.sep)[-1]
         self.project_path = path
-        self.load_transmitters(path)
-        self.load_neuron_types(path)
+        try:
+            self.load_global_info(path)
+        except:
+            self.default_global_info()
+            messagebox.showwarning("Invalid Global Info", "global.config is invalid. Loading default values.")
+        try:
+            self.load_transmitters(path)
+        except:
+            self.default_transmitters()
+            messagebox.showwarning("Invalid Transmitters", "transmitters.config is invalid. Loading default values.")
+        try:
+            self.load_neuron_types(path)
+        except:
+            self.default_neuron_types()
+            messagebox.showwarning("Invalid Neuron Types", "neuron_type.config is invalid. Loading default values.")
 
     def save_meta_info(self):
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
@@ -81,9 +104,12 @@ class NetworkManager:
             file.write(self.project_name)
 
     def save_global_info(self):
+        dict_obj = {}
+        dict_obj["frequency"] = self.frequency
+        dict_obj["main_network"] = self.main_network
+        json_obj = json.dumps(dict_obj, indent=4)
         with open(self.project_path + os.sep + "global.config", "w") as file:
-            file.write("frequency:" + str(self.frequency) + "\n")
-            file.write("main_network:" + str(self.main_network))
+            file.write(json_obj)
 
     def save_transmitters(self):
         dict_obj = {"transmitters": self.transmitters}
@@ -95,6 +121,12 @@ class NetworkManager:
         with open(project_path + os.sep + "transmitters.config", "r") as file:
             transmitter_dict = json.loads(file.read())
             self.transmitters = transmitter_dict["transmitters"]
+
+    def load_global_info(self, path):
+        with open(self.project_path + os.sep + "global.config", "r") as file:
+            global_dict = json.loads(file.read())
+            self.frequency = global_dict["frequency"]
+            self.main_network = global_dict["main_network"]
 
     def save_neuron_types(self):
         dict_obj = {}
@@ -470,3 +502,7 @@ class NetworkManager:
         self.fixed_location[self.curr_network] = True
         file.write(network_json)
         file.close()
+
+    def get_network_list(self):
+        path = self.project_path + os.sep + "networks"
+        return os.listdir(path)
