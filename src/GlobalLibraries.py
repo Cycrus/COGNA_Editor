@@ -13,6 +13,8 @@ from src.NetworkManager import *
 from src.Design import *
 from src.Globals import *
 
+os.sep = "/"
+
 
 def _create_circle(self, x, y, r, **kwargs):
     return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
