@@ -90,14 +90,15 @@ class Topmenu:
         self.root_frame.bind("<Control-Left>", self.prev_network)
         self.root_frame.bind("<Control-Right>", self.next_network)
         self.root_frame.bind("<Control-n>", self.new_command)
+        self.root_frame.bind("<Control-o>", self.open_command)
         self.root_frame.bind("<Control-w>", self.close_command)
         self.root_frame.bind("<Control-s>", self.save_command)
         self.root_frame.bind("<Configure>", self.resize_window)
         self.root_frame.bind("<Control-Tab>", self.next_network)
         if platform == "linux" or platform == "linux2":
-            self.root_frame.bind("<Control-ISO_Left_Tab>", self.prev_network)
+            self.root_frame.bind("<ISO_Left_Tab>", self.prev_network)
         elif platform == "win32":
-            self.root_frame.bind("<Control-Shift-Tab>", self.prev_network)
+            self.root_frame.bind("<Shift-Tab>", self.prev_network)
 
         self.create_spashscreen()
 
@@ -254,10 +255,10 @@ class Topmenu:
         self.mainframe.show_editmenu(store=False)
         self.create_tab(self.network_manager.curr_network)
 
-    def open_command(self, filename=None):
+    def open_command(self, event=None, filename=None):
         self.mainframe.show_editmenu(store=True)
         self.mainframe.deselect_all()
-        error_code = self.network_manager.load_network(filename)
+        error_code = self.network_manager.load_network(filename=filename)
         if error_code == Globals.SUCCESS:
             self.mainframe.reset_camera()
             self.mainframe.render_scene()
@@ -290,6 +291,7 @@ class Topmenu:
         self.mainframe.deselect_all()
         self.delete_network(deleted_network)
 
+        self.mainframe.reset_camera()
         self.mainframe.render_scene()
         self.mark_active_tab()
 
@@ -358,6 +360,8 @@ class Topmenu:
                                                 activebackground=design.grey_7[design.theme])
         self.mainframe.import_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
                                             activebackground=design.grey_7[design.theme])
+        self.mainframe.exchange_button.config(background=design.grey_3[design.theme], fg=design.grey_c[design.theme],
+                                              activebackground=design.grey_7[design.theme])
         self.mainframe.viewframe.config(background=design.grey_3[design.theme])
         self.mainframe.edit_1.config(background=design.grey_4[design.theme])
         for frame in self.mainframe.parameter_frame:
