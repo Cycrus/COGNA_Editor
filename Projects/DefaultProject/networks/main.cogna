@@ -1,0 +1,130 @@
+{
+    "network": {
+        "transmitter_backfall_curvature": "1",
+        "transmitter_backfall_steepness": "0.0000001",
+        "max_transmitter_weight": "5",
+        "min_transmitter_weight": "0",
+        "input_nodes": "0",
+        "output_nodes": "0"
+    },
+    "neurons": [
+        {
+            "id": 1,
+            "posx": -400.0,
+            "posy": -300.0
+        },
+        {
+            "id": 2,
+            "posx": -400.0,
+            "posy": -100.0
+        },
+        {
+            "id": 3,
+            "posx": -150.0,
+            "posy": -300.0
+        },
+        {
+            "id": 4,
+            "posx": -150.0,
+            "posy": -100.0
+        }
+    ],
+    "nodes": [],
+    "subnetworks": [],
+    "connections": [
+        {
+            "id": 0,
+            "prev_neuron": 1,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 4,
+            "vertices": [
+                [
+                    -400.0,
+                    -300.0
+                ],
+                [
+                    -300.0,
+                    -300.0
+                ],
+                [
+                    -300.0,
+                    -100.0
+                ],
+                [
+                    -150.0,
+                    -100.0
+                ]
+            ]
+        },
+        {
+            "id": 1,
+            "prev_neuron": 2,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 3,
+            "vertices": [
+                [
+                    -400.0,
+                    -100.0
+                ],
+                [
+                    -400.0,
+                    -50.0
+                ],
+                [
+                    -100.0,
+                    -50.0
+                ],
+                [
+                    -50.0,
+                    -100.0
+                ],
+                [
+                    -50.0,
+                    -200.0
+                ],
+                [
+                    -50.0,
+                    -250.0
+                ],
+                [
+                    -100.0,
+                    -300.0
+                ],
+                [
+                    -150.0,
+                    -300.0
+                ]
+            ],
+            "activation_type": "Inhibitory"
+        },
+        {
+            "id": 2,
+            "prev_neuron": 2,
+            "prev_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_connection": 0,
+            "vertices": [
+                [
+                    -400.0,
+                    -100.0
+                ],
+                [
+                    -400.0,
+                    -200.0
+                ],
+                [
+                    -300.0,
+                    -200.0
+                ]
+            ],
+            "activation_type": "Nondirectional"
+        }
+    ]
+}
