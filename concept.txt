@@ -1,3 +1,0 @@
-The panel is filled with an area where the user can place circles. the middle of the circles
-represents their coordinates. Each time a circle is placed, it receives a unique ID and its
-position is saved.
