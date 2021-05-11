@@ -9,7 +9,7 @@ class NewProject:
         self.mainframe = mainframe
 
         self.width = self.root_frame.winfo_screenwidth() // 4
-        self.height = self.root_frame.winfo_screenheight() // 8
+        self.height = self.root_frame.winfo_screenheight() // 6
         self.pos_x = self.root_frame.winfo_screenwidth() // 2 - self.width // 2
         self.pos_y = self.root_frame.winfo_screenheight() // 2 - self.height // 2
 

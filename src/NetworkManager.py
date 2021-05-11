@@ -22,6 +22,8 @@ class NetworkManager:
 
         self.transmitters = []
         self.neuron_types = []
+        self.frequency = 10
+        self.main_network = "main.cogna"
 
         self.project_path = None
         self.project_name = None
@@ -32,10 +34,10 @@ class NetworkManager:
 
         self.curr_network = 0
         try:
-            self.load_network(self.project_path + os.sep + "networks" + os.sep + "network-1.cogna")
+            self.load_network(self.project_path + os.sep + "networks" + os.sep + self.main_network)
         except Exception as e:
             print(e)
-            self.add_network()
+            self.add_network(name="main.cogna")
 
     def new_project(self, project_name):
         default_neuron_params = ParameterHandler()
@@ -61,6 +63,7 @@ class NetworkManager:
         except:
             pass
         self.save_meta_info()
+        self.save_global_info()
         self.save_transmitters()
         self.save_neuron_types()
 
@@ -76,6 +79,11 @@ class NetworkManager:
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
             file.write("Valid COGNA Project\n")
             file.write(self.project_name)
+
+    def save_global_info(self):
+        with open(self.project_path + os.sep + "global.config", "w") as file:
+            file.write("frequency:" + str(self.frequency) + "\n")
+            file.write("main_network:" + str(self.main_network))
 
     def save_transmitters(self):
         dict_obj = {"transmitters": self.transmitters}
@@ -120,10 +128,13 @@ class NetworkManager:
                 break
         return name
 
-    def add_network(self, params=None):
+    def add_network(self, params=None, name=None):
         self.networks.append(Network(params))
         self.curr_network = len(self.networks)-1
-        temp_filename = self.network_default_name(1)
+        if name is None:
+            temp_filename = self.network_default_name(1)
+        else:
+            temp_filename = name
         self.filename.append(temp_filename)
         self.locations.append(self.project_path + os.sep + "networks" + os.sep)
         self.fixed_location.append(False)
@@ -386,7 +397,11 @@ class NetworkManager:
 
         if not file:
             return Globals.ERROR
-        if not self.project_path + os.sep + "networks" in file.name:
+
+        check_path = (self.project_path + os.sep + "networks").replace("\\", "/")
+        corrected_filename = file.name.replace("\\", "/")
+
+        if not check_path in corrected_filename:
             messagebox.showerror("Load Error", "Can only load networks out of correct project path.")
             file.close()
             return Globals.ERROR
@@ -425,9 +440,14 @@ class NetworkManager:
             file = filedialog.asksaveasfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
                                             initialfile=self.filename[self.curr_network],
                                             filetypes=(("cogna network", "*.cogna"),))
+
         if not file:
             return
-        if not (self.project_path + os.sep + "networks") in file.name:
+
+        check_path = (self.project_path + os.sep + "networks").replace("\\", "/")
+        corrected_filename = file.name.replace("\\", "/")
+
+        if not check_path in corrected_filename:
             os.remove(file.name)
             messagebox.showerror("Save Error", "Can only save networks in correct project path.")
             return

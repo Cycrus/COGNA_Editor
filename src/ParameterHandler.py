@@ -228,7 +228,7 @@ class ParameterHandler:
         return menu
 
     @staticmethod
-    def get_paramter_list(parameter_selector, type, neuron_function=None):
+    def get_paramter_list(parameter_selector, type, neuron_function="neuron"):
         param_list = None
 
         if type == "Connection":
