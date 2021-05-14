@@ -72,6 +72,7 @@ class Mainframe:
         self.editorcanvas = None
         self.edit_1 = None
         self.general_info = None
+        self.connection_info = None
         self.id_info = None
         self.edit_drop_menu = None
 
@@ -366,11 +367,31 @@ class Mainframe:
                 show_parameters = False
 
         if self.selected_connection > -1:
+            if "neuron" in self.selected_entity.prev_neuron_function:
+                prev_entity_name = "neuron"
+                prev_entity_id = self.selected_entity.prev_neuron
+            else:
+                prev_entity_name = "node"
+                prev_entity_id = self.selected_entity.prev_neuron
+            if self.selected_entity.next_neuron_function is None:
+                next_entity_name = "connection"
+                next_entity_id = self.selected_entity.next_connection
+            elif "neuron" in self.selected_entity.next_neuron_function:
+                next_entity_name = "neuron"
+                next_entity_id = self.selected_entity.next_neuron
+            else:
+                next_entity_name = "node"
+                next_entity_id = self.selected_entity.next_neuron
+
+            connection_text = f"connects {prev_entity_name} {str(prev_entity_id)} to {next_entity_name} {str(next_entity_id)}"
             self.general_info.config(text=f"Connection <{self.selected_connection}> Selected")
+            self.connection_info = tk.Label(master=self.parameter_frame[2], text=connection_text,
+                                            bg=design.grey_4[design.theme], fg=design.light_blue[design.theme])
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Connection")
-            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                                 *ParameterHandler.param_drop_options_connection,
                                                 command=self.show_editmenu)
+
         elif self.selected_neuron > -1:
             if "neuron" in self.selected_function:
                 self.general_info.config(text=f"Neuron <{self.selected_neuron}> Selected")
@@ -379,27 +400,31 @@ class Mainframe:
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Neuron",
                                                                  self.selected_entity.function)
             if "neuron" in self.selected_entity.function:
-                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                                     *ParameterHandler.param_drop_options_neuron,
                                                     command=self.show_editmenu)
             elif "interface" in self.selected_entity.function:
-                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                                     *ParameterHandler.param_drop_options_interface,
                                                     command=self.show_editmenu)
             elif "subnet" in self.selected_entity.function:
-                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+                self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                                     *ParameterHandler.param_drop_options_subnet,
                                                     command=self.show_editmenu)
+
         else:
-            self.general_info.config(text=f"Network <{self.network_manager.curr_network}> Selected")
+            self.general_info.config(text=f"Network <{self.network_manager.filename[self.network_manager.curr_network]}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Network")
-            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[2], self.edit_selection,
+            self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
                                                 *ParameterHandler.param_drop_options_network,
                                                 command=self.show_editmenu)
 
         self.general_info.pack(side=tk.LEFT)
 
         if show_parameters:
+            if self.connection_info is not None:
+                self.connection_info.pack(side=tk.LEFT)
+
             self.edit_drop_menu.config(bg=design.grey_4[design.theme], width=self.editframe_width, fg=design.grey_c[design.theme],
                                        borderwidth=0, highlightthickness=3, highlightbackground=design.grey_2[design.theme],
                                        activebackground=design.grey_7[design.theme])
@@ -428,7 +453,7 @@ class Mainframe:
                     menu = ParameterHandler.get_option_menu_list(name, self.network_manager, function,
                                                                  entity=self.selected_entity)
                     if menu:
-                        temp_field = tk.OptionMenu(self.parameter_frame[i+4], var, *menu,
+                        temp_field = tk.OptionMenu(self.parameter_frame[i+5], var, *menu,
                                                    command=lambda option, n=name: self.store_menu_parameters(option=option,
                                                                                                              name=n))
                         temp_field.config(bg=design.grey_7[design.theme], width=15,
@@ -439,7 +464,7 @@ class Mainframe:
                         self.parameter_textbox.append([temp_field, name])
 
                 else:
-                    temp_field = tk.Entry(master=self.parameter_frame[i+4], width=20,
+                    temp_field = tk.Entry(master=self.parameter_frame[i+5], width=20,
                                           bg=design.grey_7[design.theme], borderwidth=0,
                                           highlightthickness=2, highlightbackground=design.grey_2[design.theme])
                     self.parameter_textbox.append([temp_field, name])
@@ -448,7 +473,7 @@ class Mainframe:
                 if menu or not ParameterHandler.is_menu(name):
                     self.parameter_textbox[i][0].pack(side=tk.LEFT, padx=20)
 
-                    self.parameter_info.append(tk.Label(master=self.parameter_frame[i+4], text=name,
+                    self.parameter_info.append(tk.Label(master=self.parameter_frame[i+5], text=name,
                                                         bg=design.grey_4[design.theme], fg=design.grey_c[design.theme]))
                     self.parameter_info[i].pack(side=tk.LEFT)
 
@@ -514,6 +539,9 @@ class Mainframe:
             self.parameter_textbox[i][0].destroy()
         self.parameter_textbox.clear()
         self.general_info.forget()
+        if self.connection_info is not None:
+            self.connection_info.forget()
+        self.connection_info = None
 
         if self.tool == TOOL_SELECT:
             self.show_entity_parameters()
@@ -755,6 +783,10 @@ class Mainframe:
         """
         Renders all neurons of the currently active network.
         """
+        temp_camera_x = self.network_manager.camera_x[self.network_manager.curr_network]
+        temp_camera_y = self.network_manager.camera_y[self.network_manager.curr_network]
+        temp_zoom = self.network_manager.zoom_factor[self.network_manager.curr_network]
+
         for neuron in chain(*self.network_manager.networks[self.network_manager.curr_network].all_nodes):
             if self.selected_neuron == neuron.id and self.selected_function == neuron.function:
                 temp_outline = design.light_blue[design.theme]
@@ -792,81 +824,80 @@ class Mainframe:
                         temp_text = "O"
 
             if "neuron" in neuron.function or "subnet" in neuron.function:
-                self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
-                                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
-                                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network],
+                self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, temp_camera_x, temp_zoom),
+                                                VectorUtils.project_coordinate(neuron.posy, temp_camera_y, temp_zoom),
+                                                self.neuron_size * temp_zoom,
                                                 fill=temp_color,
                                                 outline=temp_outline,
                                                 width=temp_width)
                 temp_y = neuron.posy
             elif "interface" in neuron.function:
-                self.editorcanvas.create_triangle(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
-                                                                                 self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  VectorUtils.project_coordinate(neuron.posy, self.network_manager.camera_y[self.network_manager.curr_network],
-                                                                                 self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                                  self.neuron_size * self.network_manager.zoom_factor[self.network_manager.curr_network],
+                self.editorcanvas.create_triangle(VectorUtils.project_coordinate(neuron.posx, temp_camera_x, temp_zoom),
+                                                  VectorUtils.project_coordinate(neuron.posy, temp_camera_y, temp_zoom),
+                                                  self.neuron_size * temp_zoom,
                                                   fill=temp_color,
                                                   outline=temp_outline,
                                                   width=temp_width)
                 temp_y = neuron.posy + 10
 
-            self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, self.network_manager.camera_x[self.network_manager.curr_network],
-                                                                         self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                          VectorUtils.project_coordinate(temp_y, self.network_manager.camera_y[self.network_manager.curr_network],
-                                                                         self.network_manager.zoom_factor[self.network_manager.curr_network]),
+            if neuron.param.list["influences_transmitter"] is not None:
+                if neuron.param.list["influences_transmitter"] == "Yes":
+                    self.editorcanvas.create_circle(VectorUtils.project_coordinate(neuron.posx, temp_camera_x, temp_zoom),
+                                                    VectorUtils.project_coordinate(neuron.posy, temp_camera_y, temp_zoom),
+                                                    (self.neuron_size-5) * temp_zoom,
+                                                    fill=temp_color,
+                                                    outline=temp_outline,
+                                                    width=3)
+
+            if neuron.param.list["random_chance"] is not None:
+                if neuron.param.list["random_chance"] > 0:
+                    self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, temp_camera_x, temp_zoom),
+                                                  VectorUtils.project_coordinate(neuron.posy+40, temp_camera_y, temp_zoom),
+                                                  text=str(neuron.param.list["random_chance"]) + "%",
+                                                  fill=design.white[design.theme])
+
+            self.editorcanvas.create_text(VectorUtils.project_coordinate(neuron.posx, temp_camera_x, temp_zoom),
+                                          VectorUtils.project_coordinate(neuron.posy, temp_camera_y, temp_zoom),
                                           text=temp_text, fill=design.grey_1[design.theme])
 
     def render_subnet_nodes(self, subnet):
+        temp_camera_x = self.network_manager.camera_x[self.network_manager.curr_network]
+        temp_camera_y = self.network_manager.camera_y[self.network_manager.curr_network]
+        temp_zoom = self.network_manager.zoom_factor[self.network_manager.curr_network]
+
         node_size = subnet.node_size * self.network_manager.zoom_factor[self.network_manager.curr_network]
 
         for node in subnet.input_node_list:
-            corr_x = VectorUtils.project_coordinate(node.posx,
-                                                    self.network_manager.camera_x[self.network_manager.curr_network],
-                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
-            corr_y = VectorUtils.project_coordinate(node.posy,
-                                                    self.network_manager.camera_y[self.network_manager.curr_network],
-                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
+            corr_x = VectorUtils.project_coordinate(node.posx, temp_camera_x, temp_zoom)
+            corr_y = VectorUtils.project_coordinate(node.posy, temp_camera_y, temp_zoom)
 
             self.editorcanvas.create_circle(corr_x, corr_y, node_size, fill=design.white[design.theme])
             self.editorcanvas.create_text(corr_x, corr_y, text=node.id)
 
         for node in subnet.output_node_list:
-            corr_x = VectorUtils.project_coordinate(node.posx,
-                                                    self.network_manager.camera_x[self.network_manager.curr_network],
-                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
-            corr_y = VectorUtils.project_coordinate(node.posy,
-                                                    self.network_manager.camera_y[self.network_manager.curr_network],
-                                                    self.network_manager.zoom_factor[self.network_manager.curr_network])
+            corr_x = VectorUtils.project_coordinate(node.posx, temp_camera_x, temp_zoom)
+            corr_y = VectorUtils.project_coordinate(node.posy, temp_camera_y, temp_zoom)
 
             self.editorcanvas.create_circle(corr_x, corr_y, node_size, fill=design.dark_blue[design.theme])
             self.editorcanvas.create_text(corr_x, corr_y, text=node.id)
 
     def render_subnets(self):
+        temp_camera_x = self.network_manager.camera_x[self.network_manager.curr_network]
+        temp_camera_y = self.network_manager.camera_y[self.network_manager.curr_network]
+        temp_zoom = self.network_manager.zoom_factor[self.network_manager.curr_network]
+
         for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
             x0 = VectorUtils.project_coordinate(subnet.posx-subnet.size_x,
-                                                self.network_manager.camera_x[self.network_manager.curr_network],
-                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
-            y0 = VectorUtils.project_coordinate(subnet.posy-subnet.size_y,
-                                                self.network_manager.camera_y[self.network_manager.curr_network],
-                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
-            x1 = VectorUtils.project_coordinate(subnet.posx+subnet.size_x,
-                                                self.network_manager.camera_x[self.network_manager.curr_network],
-                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
-            y1 = VectorUtils.project_coordinate(subnet.posy+subnet.size_y,
-                                                self.network_manager.camera_y[self.network_manager.curr_network],
-                                                self.network_manager.zoom_factor[self.network_manager.curr_network])
+                                                temp_camera_x, temp_zoom)
+            y0 = VectorUtils.project_coordinate(subnet.posy-subnet.size_y, temp_camera_y, temp_zoom)
+            x1 = VectorUtils.project_coordinate(subnet.posx+subnet.size_x, temp_camera_x, temp_zoom)
+            y1 = VectorUtils.project_coordinate(subnet.posy+subnet.size_y, temp_camera_y, temp_zoom)
 
             self.editorcanvas.create_rectangle(x0, y0, x1, y1, fill=design.grey_7[design.theme])
             self.render_subnet_nodes(subnet)
 
-            label_x = VectorUtils.project_coordinate(subnet.posx,
-                                                     self.network_manager.camera_x[self.network_manager.curr_network],
-                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
-            label_y = VectorUtils.project_coordinate(subnet.posy - subnet.size_y + 30,
-                                                     self.network_manager.camera_y[self.network_manager.curr_network],
-                                                     self.network_manager.zoom_factor[self.network_manager.curr_network])
+            label_x = VectorUtils.project_coordinate(subnet.posx, temp_camera_x, temp_zoom)
+            label_y = VectorUtils.project_coordinate(subnet.posy - subnet.size_y + 30, temp_camera_y, temp_zoom)
             self.editorcanvas.create_text(label_x, label_y, text=f"{subnet.network_name}", fill=design.grey_1[design.theme])
 
     def render_ui_description(self):
