@@ -1,0 +1,858 @@
+{
+    "network": {
+        "transmitter_backfall_curvature": "1",
+        "transmitter_backfall_steepness": "0.0000001",
+        "max_transmitter_weight": "5",
+        "min_transmitter_weight": "0",
+        "input_nodes": "0",
+        "output_nodes": "0"
+    },
+    "neurons": [
+        {
+            "id": 1,
+            "posx": -150.0,
+            "posy": -300.0
+        },
+        {
+            "id": 2,
+            "posx": -150.0,
+            "posy": 300.0
+        },
+        {
+            "id": 3,
+            "posx": 300.0,
+            "posy": -300.0
+        },
+        {
+            "id": 4,
+            "posx": 300.0,
+            "posy": 300.0
+        },
+        {
+            "id": 5,
+            "posx": 750.0,
+            "posy": -300.0
+        },
+        {
+            "id": 6,
+            "posx": 750.0,
+            "posy": 300.0
+        },
+        {
+            "id": 7,
+            "posx": -300.0,
+            "posy": 0.0
+        },
+        {
+            "id": 8,
+            "posx": 0.0,
+            "posy": -200.0
+        },
+        {
+            "id": 9,
+            "posx": 0.0,
+            "posy": 200.0
+        },
+        {
+            "id": 10,
+            "posx": 50.0,
+            "posy": 0.0,
+            "random_chance": "4"
+        },
+        {
+            "id": 11,
+            "posx": 150.0,
+            "posy": 0.0,
+            "random_chance": "4"
+        },
+        {
+            "id": 12,
+            "posx": -50.0,
+            "posy": -450.0
+        },
+        {
+            "id": 13,
+            "posx": 100.0,
+            "posy": -450.0
+        },
+        {
+            "id": 14,
+            "posx": -50.0,
+            "posy": 450.0
+        },
+        {
+            "id": 15,
+            "posx": 100.0,
+            "posy": 450.0
+        }
+    ],
+    "nodes": [
+        {
+            "id": 1,
+            "posx": 900.0,
+            "posy": -300.0,
+            "function": "interface_output"
+        },
+        {
+            "id": 2,
+            "posx": 900.0,
+            "posy": 300.0,
+            "function": "interface_output"
+        },
+        {
+            "id": 3,
+            "posx": -450.0,
+            "posy": 0.0,
+            "function": "interface_input"
+        },
+        {
+            "id": 4,
+            "posx": -200.0,
+            "posy": -650.0,
+            "function": "interface_input",
+            "ip_address": "Missing...",
+            "port": "Missing...",
+            "channel": "Missing..."
+        },
+        {
+            "id": 5,
+            "posx": -50.0,
+            "posy": -650.0,
+            "function": "interface_input"
+        },
+        {
+            "id": 6,
+            "posx": -50.0,
+            "posy": 650.0,
+            "function": "interface_input"
+        },
+        {
+            "id": 7,
+            "posx": -200.0,
+            "posy": 650.0,
+            "function": "interface_input"
+        }
+    ],
+    "subnetworks": [],
+    "connections": [
+        {
+            "id": 0,
+            "prev_neuron": 3,
+            "prev_neuron_function": "interface_input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 7,
+            "vertices": [
+                [
+                    -450.0,
+                    0.0
+                ],
+                [
+                    -300.0,
+                    0.0
+                ]
+            ]
+        },
+        {
+            "id": 1,
+            "prev_neuron": 7,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 2,
+            "vertices": [
+                [
+                    -300.0,
+                    0.0
+                ],
+                [
+                    -300.0,
+                    250.0
+                ],
+                [
+                    -250.0,
+                    300.0
+                ],
+                [
+                    -150.0,
+                    300.0
+                ]
+            ]
+        },
+        {
+            "id": 2,
+            "prev_neuron": 7,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 1,
+            "vertices": [
+                [
+                    -300.0,
+                    0.0
+                ],
+                [
+                    -300.0,
+                    -250.0
+                ],
+                [
+                    -250.0,
+                    -300.0
+                ],
+                [
+                    -150.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 3,
+            "prev_neuron": 1,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 3,
+            "vertices": [
+                [
+                    -150.0,
+                    -300.0
+                ],
+                [
+                    300.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 4,
+            "prev_neuron": 2,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 4,
+            "vertices": [
+                [
+                    -150.0,
+                    300.0
+                ],
+                [
+                    300.0,
+                    300.0
+                ]
+            ]
+        },
+        {
+            "id": 5,
+            "prev_neuron": 3,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 5,
+            "vertices": [
+                [
+                    300.0,
+                    -300.0
+                ],
+                [
+                    750.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 6,
+            "prev_neuron": 5,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "interface_output",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 1,
+            "vertices": [
+                [
+                    750.0,
+                    -300.0
+                ],
+                [
+                    900.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 7,
+            "prev_neuron": 4,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 6,
+            "vertices": [
+                [
+                    300.0,
+                    300.0
+                ],
+                [
+                    750.0,
+                    300.0
+                ]
+            ]
+        },
+        {
+            "id": 8,
+            "prev_neuron": 6,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "interface_output",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 2,
+            "vertices": [
+                [
+                    750.0,
+                    300.0
+                ],
+                [
+                    900.0,
+                    300.0
+                ]
+            ]
+        },
+        {
+            "id": 9,
+            "prev_neuron": 7,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 8,
+            "vertices": [
+                [
+                    -300.0,
+                    0.0
+                ],
+                [
+                    -250.0,
+                    -50.0
+                ],
+                [
+                    -250.0,
+                    -150.0
+                ],
+                [
+                    -200.0,
+                    -200.0
+                ],
+                [
+                    0.0,
+                    -200.0
+                ]
+            ]
+        },
+        {
+            "id": 10,
+            "prev_neuron": 7,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 9,
+            "vertices": [
+                [
+                    -300.0,
+                    0.0
+                ],
+                [
+                    -250.0,
+                    50.0
+                ],
+                [
+                    -250.0,
+                    150.0
+                ],
+                [
+                    -200.0,
+                    200.0
+                ],
+                [
+                    0.0,
+                    200.0
+                ]
+            ]
+        },
+        {
+            "id": 11,
+            "prev_neuron": 10,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 8,
+            "vertices": [
+                [
+                    50.0,
+                    0.0
+                ],
+                [
+                    50.0,
+                    -50.0
+                ],
+                [
+                    0.0,
+                    -100.0
+                ],
+                [
+                    0.0,
+                    -200.0
+                ]
+            ]
+        },
+        {
+            "id": 12,
+            "prev_neuron": 11,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 9,
+            "vertices": [
+                [
+                    150.0,
+                    0.0
+                ],
+                [
+                    150.0,
+                    50.0
+                ],
+                [
+                    100.0,
+                    100.0
+                ],
+                [
+                    50.0,
+                    100.0
+                ],
+                [
+                    0.0,
+                    150.0
+                ],
+                [
+                    0.0,
+                    200.0
+                ]
+            ]
+        },
+        {
+            "id": 13,
+            "prev_neuron": 8,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 3,
+            "vertices": [
+                [
+                    0.0,
+                    -200.0
+                ],
+                [
+                    250.0,
+                    -200.0
+                ],
+                [
+                    300.0,
+                    -250.0
+                ],
+                [
+                    300.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 14,
+            "prev_neuron": 9,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 4,
+            "vertices": [
+                [
+                    0.0,
+                    200.0
+                ],
+                [
+                    250.0,
+                    200.0
+                ],
+                [
+                    300.0,
+                    250.0
+                ],
+                [
+                    300.0,
+                    300.0
+                ]
+            ]
+        },
+        {
+            "id": 15,
+            "prev_neuron": 4,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 5,
+            "vertices": [
+                [
+                    300.0,
+                    300.0
+                ],
+                [
+                    350.0,
+                    250.0
+                ],
+                [
+                    350.0,
+                    150.0
+                ],
+                [
+                    750.0,
+                    -250.0
+                ],
+                [
+                    750.0,
+                    -300.0
+                ]
+            ],
+            "activation_type": "Inhibitory"
+        },
+        {
+            "id": 16,
+            "prev_neuron": 3,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 6,
+            "vertices": [
+                [
+                    300.0,
+                    -300.0
+                ],
+                [
+                    350.0,
+                    -250.0
+                ],
+                [
+                    350.0,
+                    -150.0
+                ],
+                [
+                    750.0,
+                    250.0
+                ],
+                [
+                    750.0,
+                    300.0
+                ]
+            ],
+            "activation_type": "Inhibitory"
+        },
+        {
+            "id": 17,
+            "prev_neuron": 12,
+            "prev_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_connection": 3,
+            "vertices": [
+                [
+                    -50.0,
+                    -450.0
+                ],
+                [
+                    -50.0,
+                    -300.0
+                ]
+            ],
+            "activation_type": "Inhibitory"
+        },
+        {
+            "id": 18,
+            "prev_neuron": 13,
+            "prev_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_connection": 3,
+            "vertices": [
+                [
+                    100.0,
+                    -450.0
+                ],
+                [
+                    100.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 19,
+            "prev_neuron": 14,
+            "prev_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_connection": 4,
+            "vertices": [
+                [
+                    -50.0,
+                    450.0
+                ],
+                [
+                    -50.0,
+                    300.0
+                ]
+            ],
+            "activation_type": "Inhibitory"
+        },
+        {
+            "id": 20,
+            "prev_neuron": 15,
+            "prev_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_connection": 4,
+            "vertices": [
+                [
+                    100.0,
+                    450.0
+                ],
+                [
+                    100.0,
+                    300.0
+                ]
+            ]
+        },
+        {
+            "id": 21,
+            "prev_neuron": 5,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 13,
+            "vertices": [
+                [
+                    750.0,
+                    -300.0
+                ],
+                [
+                    600.0,
+                    -450.0
+                ],
+                [
+                    100.0,
+                    -450.0
+                ]
+            ]
+        },
+        {
+            "id": 22,
+            "prev_neuron": 5,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 12,
+            "vertices": [
+                [
+                    750.0,
+                    -300.0
+                ],
+                [
+                    750.0,
+                    -400.0
+                ],
+                [
+                    650.0,
+                    -500.0
+                ],
+                [
+                    0.0,
+                    -500.0
+                ],
+                [
+                    -50.0,
+                    -450.0
+                ]
+            ]
+        },
+        {
+            "id": 23,
+            "prev_neuron": 6,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 15,
+            "vertices": [
+                [
+                    750.0,
+                    300.0
+                ],
+                [
+                    600.0,
+                    450.0
+                ],
+                [
+                    100.0,
+                    450.0
+                ]
+            ]
+        },
+        {
+            "id": 24,
+            "prev_neuron": 6,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 14,
+            "vertices": [
+                [
+                    750.0,
+                    300.0
+                ],
+                [
+                    750.0,
+                    400.0
+                ],
+                [
+                    650.0,
+                    500.0
+                ],
+                [
+                    0.0,
+                    500.0
+                ],
+                [
+                    -50.0,
+                    450.0
+                ]
+            ]
+        },
+        {
+            "id": 25,
+            "prev_neuron": 5,
+            "prev_neuron_function": "interface_input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 13,
+            "vertices": [
+                [
+                    -50.0,
+                    -650.0
+                ],
+                [
+                    50.0,
+                    -650.0
+                ],
+                [
+                    100.0,
+                    -600.0
+                ],
+                [
+                    100.0,
+                    -450.0
+                ]
+            ]
+        },
+        {
+            "id": 26,
+            "prev_neuron": 4,
+            "prev_neuron_function": "interface_input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 12,
+            "vertices": [
+                [
+                    -200.0,
+                    -650.0
+                ],
+                [
+                    -200.0,
+                    -500.0
+                ],
+                [
+                    -150.0,
+                    -450.0
+                ],
+                [
+                    -50.0,
+                    -450.0
+                ]
+            ]
+        },
+        {
+            "id": 27,
+            "prev_neuron": 6,
+            "prev_neuron_function": "interface_input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 15,
+            "vertices": [
+                [
+                    -50.0,
+                    650.0
+                ],
+                [
+                    50.0,
+                    650.0
+                ],
+                [
+                    100.0,
+                    600.0
+                ],
+                [
+                    100.0,
+                    450.0
+                ]
+            ]
+        },
+        {
+            "id": 28,
+            "prev_neuron": 7,
+            "prev_neuron_function": "interface_input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 14,
+            "vertices": [
+                [
+                    -200.0,
+                    650.0
+                ],
+                [
+                    -200.0,
+                    500.0
+                ],
+                [
+                    -150.0,
+                    450.0
+                ],
+                [
+                    -50.0,
+                    450.0
+                ]
+            ]
+        }
+    ]
+}
