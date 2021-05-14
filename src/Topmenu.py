@@ -213,6 +213,7 @@ class Topmenu:
         self.close_all_command()
 
     def open_project_command(self, event=None):
+        self.mainframe.deselect_all()
         file = filedialog.askopenfile(initialdir=os.getcwd() + os.sep + "Projects", title="Open Project",
                                       filetypes=(("project files", "*.project"),))
         if not file:

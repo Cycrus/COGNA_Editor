@@ -201,9 +201,12 @@ class ParameterHandler:
             menu = copy.copy(transmitter_influence_direction_options)
         elif name == "activation_type":
             menu = copy.copy(activation_type_options)
-            if entity is not None:
-                if entity.next_neuron is not None:
-                    menu.remove("Nondirectional")
+            try:
+                if entity is not None:
+                    if entity.next_neuron is not None:
+                        menu.remove("Nondirectional")
+            except AttributeError:
+                pass
         elif name == "activation_function":
             menu = copy.copy(activation_function_options)
         elif name == "learning_type":
