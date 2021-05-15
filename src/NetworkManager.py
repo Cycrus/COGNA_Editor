@@ -527,3 +527,53 @@ class NetworkManager:
     def get_network_list(self):
         path = self.project_path + os.sep + "networks"
         return os.listdir(path)
+
+    def save_storing(self, parameter_names, prev_values, new_values):
+        if len(new_values) == 1:
+            temp_value = new_values[0]
+            new_values = []
+            for idx, param in enumerate(prev_values):
+                new_values.append(temp_value)
+        elif len(new_values) != len(prev_values):
+            return Globals.ERROR
+
+        for idx, prev_value in enumerate(prev_values):
+            if new_values[idx] is not None:
+                for network in self.networks:
+                    for neuron in network.neurons:
+                        for param in parameter_names:
+                            if param in neuron.param.list:
+                                if neuron.param.list[param] == prev_value:
+                                    neuron.param.list[param] = new_values[idx]
+
+                for neuron in self.neuron_types:
+                    for param in parameter_names:
+                        if param in neuron[1].list:
+                            if neuron[1].list[param] == prev_value:
+                                neuron[1].list[param] = new_values[idx]
+
+                network_list = self.get_network_list()
+                for filename in network_list:
+                    is_changed = False
+                    network_dict = self.get_network_dict(filename)
+                    for neuron in network_dict["neurons"]:
+                        for param in parameter_names:
+                            if param in neuron:
+                                if neuron[param] == prev_value:
+                                    neuron[param] = new_values[idx]
+                                    is_changed = True
+                    if is_changed:
+                        self.save_network_by_dict(filename, network_dict)
+
+                neuron_dict = self.get_neuron_types()
+                is_changed = False
+                for neuron in neuron_dict:
+                    for param in parameter_names:
+                        if param in neuron:
+                            if neuron[param] == prev_value:
+                                neuron[param] = new_values[idx]
+                                is_changed = True
+                if is_changed:
+                    self.save_neuron_types_by_dict(neuron_dict)
+
+        return Globals.SUCCESS

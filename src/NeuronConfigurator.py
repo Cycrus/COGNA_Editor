@@ -8,6 +8,7 @@ class NeuronConfigurator:
         self.root_frame = root
         self.mainframe = mainframe
         self.neuron_list = copy.deepcopy(network_manager.neuron_types)
+        self.deleted_neurons = []
         self.network_manager = network_manager
         self.frame_number = 30
         self.curr_neuron = self.neuron_list[0][0]
@@ -232,6 +233,7 @@ class NeuronConfigurator:
     def del_neuron(self, n):
         for idx, neuron in enumerate(self.neuron_list):
             if n == neuron:
+                self.deleted_neurons.append(neuron[0])
                 self.neuron_list.pop(idx)
 
         change_curr_neuron = True
@@ -291,8 +293,10 @@ class NeuronConfigurator:
     def close_window(self, save):
         if save:
             self.store_parameter()
-            self.network_manager.neuron_types = copy.deepcopy(self.neuron_list)
-            self.network_manager.save_neuron_types()
+            error_code = self.network_manager.save_storing(["neuron_type"], self.deleted_neurons, [self.neuron_list[0][0]])
+            if error_code == Globals.SUCCESS:
+                self.network_manager.neuron_types = copy.deepcopy(self.neuron_list)
+                self.network_manager.save_neuron_types()
         self.top_frame.grab_release()
         self.top_frame.destroy()
         self.mainframe.show_editmenu(store=False)

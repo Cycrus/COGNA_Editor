@@ -11,8 +11,7 @@
         {
             "id": 1,
             "posx": -400.0,
-            "posy": -300.0,
-            "used_transmitter": "Default"
+            "posy": -300.0
         },
         {
             "id": 2,
@@ -22,7 +21,9 @@
         {
             "id": 3,
             "posx": -150.0,
-            "posy": -300.0
+            "posy": -300.0,
+            "neuron_type": "Default",
+            "used_transmitter": "CCC"
         },
         {
             "id": 4,
