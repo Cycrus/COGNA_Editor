@@ -11,7 +11,8 @@
         {
             "id": 1,
             "posx": 0.0,
-            "posy": -50.0
+            "posy": -50.0,
+            "used_transmitter": "Default"
         },
         {
             "id": 2,
@@ -21,7 +22,8 @@
         {
             "id": 3,
             "posx": 100.0,
-            "posy": -300.0
+            "posy": -300.0,
+            "influenced_transmitter": "Default"
         }
     ],
     "nodes": [
@@ -144,48 +146,6 @@
                 [
                     200.0,
                     -50.0
-                ]
-            ]
-        },
-        {
-            "id": 4,
-            "prev_neuron": 3,
-            "prev_neuron_function": "neuron",
-            "prev_subnetwork": -1,
-            "next_connection": 4,
-            "vertices": [
-                [
-                    100.0,
-                    -300.0
-                ],
-                [
-                    100.0,
-                    -150.0
-                ]
-            ]
-        },
-        {
-            "id": 5,
-            "prev_neuron": 3,
-            "prev_neuron_function": "neuron",
-            "prev_subnetwork": -1,
-            "next_connection": 3,
-            "vertices": [
-                [
-                    100.0,
-                    -300.0
-                ],
-                [
-                    250.0,
-                    -300.0
-                ],
-                [
-                    250.0,
-                    100.0
-                ],
-                [
-                    50.0,
-                    100.0
                 ]
             ]
         }
