@@ -11,7 +11,8 @@
         {
             "id": 1,
             "posx": -400.0,
-            "posy": -300.0
+            "posy": -300.0,
+            "used_transmitter": "Default"
         },
         {
             "id": 2,
@@ -102,29 +103,6 @@
                 ]
             ],
             "activation_type": "Inhibitory"
-        },
-        {
-            "id": 2,
-            "prev_neuron": 2,
-            "prev_neuron_function": "neuron",
-            "prev_subnetwork": -1,
-            "next_subnetwork": -1,
-            "next_connection": 0,
-            "vertices": [
-                [
-                    -400.0,
-                    -100.0
-                ],
-                [
-                    -400.0,
-                    -200.0
-                ],
-                [
-                    -300.0,
-                    -200.0
-                ]
-            ],
-            "activation_type": "Nondirectional"
         }
     ]
 }

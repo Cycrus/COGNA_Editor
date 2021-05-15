@@ -231,6 +231,21 @@ class NetworkManager:
             if connection.id > id:
                 connection.id = connection.id - 1
 
+    def get_network_dict(self, network_name):
+        with open(self.project_path + os.sep + "networks" + os.sep + network_name, "r") as file:
+            network_dict = json.loads(file.read())
+        return network_dict
+
+    def get_neuron_types(self):
+        with open(self.project_path + os.sep + "neuron_type.config", "r") as file:
+            neuron_dict = json.loads(file.read())
+        return neuron_dict
+
+    def save_neuron_types_by_dict(self, dict):
+        with open(self.project_path + os.sep + "neuron_type.config", "w") as file:
+            neuron_json = json.dumps(dict, indent=4)
+            file.write(neuron_json)
+
     def load_network_nodes(self, network_name):
         input_nodes = 0
         output_nodes = 0
@@ -465,10 +480,16 @@ class NetworkManager:
         error_subnets = self.read_subnets_from_dict(network_dict["subnetworks"])
         self.read_connections_from_dict(network_dict["connections"], error_subnets)
         self.filename[self.curr_network] = network_name
+        self.fixed_location[self.curr_network] = True
 
         file.close()
 
         return Globals.SUCCESS
+
+    def save_network_by_dict(self, network_name, network_dict):
+        network_json = json.dumps(network_dict, indent=4)
+        with open(self.project_path + os.sep + "networks" + os.sep + network_name, "w") as file:
+            file.write(network_json)
 
     def save_network(self, save_as):
         file = None

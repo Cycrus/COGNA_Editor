@@ -54,11 +54,16 @@ class GlobalConfig:
                                      width=self.top_frame.winfo_width())
         self.button_space.pack(side=tk.BOTTOM, fill=tk.X, pady=20)
 
+        self.close_button = tk.Button(master=self.button_space, text="Discard",
+                                      background=design.grey_3[design.theme],
+                                      fg=design.grey_c[design.theme], activebackground=design.grey_7[design.theme],
+                                      command=lambda x=False: self.close_window(x))
         self.save_button = tk.Button(master=self.button_space, text="Save & Close",
                                      background=design.grey_3[design.theme],
                                      fg=design.grey_c[design.theme], activebackground=design.grey_7[design.theme],
-                                     command=self.close_window)
-        self.save_button.pack(side=tk.BOTTOM, padx=self.top_frame.winfo_width() / 7, pady=5)
+                                     command=lambda x=True: self.close_window(x))
+        self.close_button.pack(side=tk.LEFT, padx=20, pady=5)
+        self.save_button.pack(side=tk.RIGHT, padx=20, pady=5)
 
         self.main_network_menu = None
         self.main_network_label = None
@@ -100,9 +105,10 @@ class GlobalConfig:
         self.fps_entry.pack(side=tk.LEFT, padx=20, pady=10)
         self.fps_label.pack(side=tk.LEFT, padx=20, pady=10)
 
-    def close_window(self):
-        self.network_manager.main_network = self.main_network_option.get()
-        self.network_manager.frequency = self.fps_entry.get()
+    def close_window(self, save):
+        if save:
+            self.network_manager.main_network = self.main_network_option.get()
+            self.network_manager.frequency = self.fps_entry.get()
 
         for idx, frame in enumerate(self.edit_frames):
             frame.destroy()

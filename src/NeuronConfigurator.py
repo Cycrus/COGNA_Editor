@@ -7,7 +7,7 @@ class NeuronConfigurator:
     def __init__(self, root, mainframe, network_manager):
         self.root_frame = root
         self.mainframe = mainframe
-        self.neuron_list = network_manager.neuron_types
+        self.neuron_list = copy.deepcopy(network_manager.neuron_types)
         self.network_manager = network_manager
         self.frame_number = 30
         self.curr_neuron = self.neuron_list[0][0]
@@ -92,10 +92,14 @@ class NeuronConfigurator:
                                      height=self.top_frame.winfo_height() // 7,
                                      width=self.top_frame.winfo_width())
         self.button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=20)
-        self.close_button = tk.Button(master=self.button_frame, text="Save & Close", background=design.grey_3[design.theme],
+        self.close_button = tk.Button(master=self.button_frame, text="Discard", background=design.grey_3[design.theme],
                                       fg=design.grey_c[design.theme], activebackground=design.grey_7[design.theme],
-                                      command=self.close_window)
-        self.close_button.pack(side=tk.TOP, padx=self.top_frame.winfo_width()/7, pady=5)
+                                      command=lambda x=False: self.close_window(x))
+        self.save_button = tk.Button(master=self.button_frame, text="Save & Close", background=design.grey_3[design.theme],
+                                     fg=design.grey_c[design.theme], activebackground=design.grey_7[design.theme],
+                                     command=lambda x=True: self.close_window(x))
+        self.close_button.pack(side=tk.LEFT, padx=80, pady=5)
+        self.save_button.pack(side=tk.RIGHT, padx=80, pady=5)
 
         self.render_buttons()
         self.render_parameter(store=False)
@@ -284,10 +288,11 @@ class NeuronConfigurator:
 
         add_frame.grab_set()
 
-    def close_window(self, save=True):
+    def close_window(self, save):
         if save:
             self.store_parameter()
+            self.network_manager.neuron_types = copy.deepcopy(self.neuron_list)
+            self.network_manager.save_neuron_types()
         self.top_frame.grab_release()
-        self.network_manager.save_neuron_types()
         self.top_frame.destroy()
         self.mainframe.show_editmenu(store=False)

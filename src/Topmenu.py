@@ -306,7 +306,7 @@ class Topmenu:
         neuron_configurator = NeuronConfigurator(self.root_frame, self.mainframe, self.network_manager)
 
     def transmitter_config_command(self):
-        transmitter_configurator = TransmitterConfigurator(self.root_frame, self.network_manager)
+        transmitter_configurator = TransmitterConfigurator(self.root_frame, self.network_manager, self.mainframe)
 
     def plasticity_rules_command(self):
         pass
