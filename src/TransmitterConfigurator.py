@@ -7,6 +7,12 @@ class TransmitterConfigurator:
         self.root_frame = root
         self.transmitter_list = copy.deepcopy(network_manager.transmitters)
         self.deleted_transmitters = []
+        self.renamed_transmitters = []
+        self.renamed_transmitters.append([])
+        self.renamed_transmitters.append([])
+        for t in self.transmitter_list:
+            self.renamed_transmitters[0].append(t)
+            self.renamed_transmitters[1].append(None)
         self.network_manager = network_manager
         self.mainframe = mainframe
         self.frame_number = 30
@@ -108,6 +114,9 @@ class TransmitterConfigurator:
         for idx, tran in enumerate(self.transmitter_list):
             if idx > 0:
                 temp_tran = self.edit_widgets[idx][0].get().replace("\n", "").replace(" ", "")
+                for j, check_trans in enumerate(self.renamed_transmitters[0]):
+                    if check_trans == tran:
+                        self.renamed_transmitters[1][j] = temp_tran
             else:
                 temp_tran = "Default"
             self.transmitter_list[idx] = temp_tran
@@ -122,57 +131,9 @@ class TransmitterConfigurator:
         self.store_transmitter()
         self.deleted_transmitters.append(self.transmitter_list[trans_index])
         self.transmitter_list.pop(trans_index)
+        self.renamed_transmitters[0].pop(trans_index)
+        self.renamed_transmitters[1].pop(trans_index)
         self.render_editor()
-
-    def save_storing(self):
-        if len(self.deleted_transmitters) > 0:
-            network = self.network_manager.networks[self.network_manager.curr_network]
-            for del_trans in self.deleted_transmitters:
-                for neuron in network.neurons:
-                    if "influenced_transmitter" in neuron.param.list:
-                        if neuron.param.list["influenced_transmitter"] == del_trans:
-                            neuron.param.list["influenced_transmitter"] = self.transmitter_list[0]
-                    if "used_transmitter" in neuron.param.list:
-                        if neuron.param.list["used_transmitter"] == del_trans:
-                            neuron.param.list["used_transmitter"] = self.transmitter_list[0]
-
-                for neuron in self.network_manager.neuron_types:
-                    if "influenced_transmitter" in neuron[1].list:
-                        if neuron[1].list["influenced_transmitter"] == del_trans:
-                            neuron[1].list["influenced_transmitter"] = self.transmitter_list[0]
-                    if "used_transmitter" in neuron[1].list:
-                        if neuron[1].list["used_transmitter"] == del_trans:
-                            neuron[1].list["used_transmitter"] = self.transmitter_list[0]
-
-                network_list = self.network_manager.get_network_list()
-                for filename in network_list:
-                    is_changed = False
-                    network_dict = self.network_manager.get_network_dict(filename)
-                    for neuron in network_dict["neurons"]:
-                        if "influenced_transmitter" in neuron:
-                            if neuron["influenced_transmitter"] == del_trans:
-                                neuron["influenced_transmitter"] = self.transmitter_list[0]
-                                is_changed = True
-                        if "used_transmitter" in neuron:
-                            if neuron["used_transmitter"] == del_trans:
-                                neuron["used_transmitter"] = self.transmitter_list[0]
-                                is_changed = True
-                    if is_changed:
-                        self.network_manager.save_network_by_dict(filename, network_dict)
-
-                neuron_dict = self.network_manager.get_neuron_types()
-                is_changed = False
-                for neuron in neuron_dict:
-                    if "influenced_transmitter" in neuron:
-                        if neuron["influenced_transmitter"] == del_trans:
-                            neuron["influenced_transmitter"] = self.transmitter_list[0]
-                            is_changed = True
-                    if "used_transmitter" in neuron:
-                        if neuron["used_transmitter"] == del_trans:
-                            neuron["used_transmitter"] = self.transmitter_list[0]
-                            is_changed = True
-                if is_changed:
-                    self.network_manager.save_neuron_types_by_dict(neuron_dict)
 
     def close_window(self, save):
         if save:
@@ -186,8 +147,18 @@ class TransmitterConfigurator:
                             can_save = False
                     if can_save:
                         temp_list.append(trans)
-            self.network_manager.transmitters = temp_list
-            self.save_storing()
+                    try:
+                        if not can_save and self.renamed_transmitters[0][idx] is not None:
+                            temp_list.append(self.renamed_transmitters[0][idx])
+                    except:
+                        pass
+
+            error_code_1 = self.network_manager.save_storing(["influenced_transmitter", "used_transmitter"],
+                                                             self.deleted_transmitters, [self.transmitter_list[0]])
+            error_code_2 = self.network_manager.save_storing(["influenced_transmitter", "used_transmitter"],
+                                                             self.renamed_transmitters[0], self.renamed_transmitters[1])
+            if error_code_1 == Globals.SUCCESS and error_code_2 == Globals.SUCCESS:
+                self.network_manager.transmitters = temp_list
 
         for idx, frame in enumerate(self.edit_frames):
             frame.destroy()

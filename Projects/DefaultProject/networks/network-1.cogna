@@ -12,7 +12,7 @@
             "id": 1,
             "posx": 0.0,
             "posy": -50.0,
-            "used_transmitter": "Default"
+            "used_transmitter": "CCC"
         },
         {
             "id": 2,
@@ -23,7 +23,7 @@
             "id": 3,
             "posx": 100.0,
             "posy": -300.0,
-            "influenced_transmitter": "Default"
+            "used_transmitter": "CCC"
         }
     ],
     "nodes": [
