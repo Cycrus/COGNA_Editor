@@ -54,9 +54,21 @@
 			<p>The COGNA Editor is a tool to easily create and edit COGNA networks with a GUI.</p>
 			
 		<h2>Overview</h2>
-			<p>In the editor you can create networks, where you place neurons, interfaces and subnetworks, which you can connect with each other. Every element has a certain set of parameters, which can be edited.</p>
+			<p>In the editor you can create networks, where you place neurons, interfaces and subnetworks, which you can
+				connect with each other. Every element has a certain set of parameters, which can be edited.</p>
 			
-		<h2>File Structure</h2>
+		<h2>Project File Structure</h2>
+			<p>A COGNA network is structured as a project to make handling of all necessary parameters easier. Most
+				files are coded as json files, thus they can be finetuned without the editor software. It is not
+				advised to write the json for a network from scratch without the editor.</p>
+			<p>The root folder of a project must contain the following files and folders:</p>
+			<ul>
+				<li>"Project Name".project</li>
+				<li>global.config</li>
+				<li>neuron_type.config</li>
+				<li>transmitters.config</li>
+				<li>networks/</li>
+			</ul>
 		
 		<h2>Top Menu</h2>
 		

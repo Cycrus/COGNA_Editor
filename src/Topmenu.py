@@ -382,7 +382,15 @@ class Topmenu:
                             'Copyright (c) by Cyril Marx 2021')
 
     def show_help(self):
-        os.system("start html" + os.sep + "help.html")
+        if platform == "linux" or platform == "linux2":
+            error_code = os.system("google-chrome html" + os.sep + "help.html")
+            if error_code != Globals.SUCCESS:
+                error_code = os.system("firefox html" + os.sep + "help.html")
+            if error_code != Globals.SUCCESS:
+                messagebox.showerror("Browser Error",
+                                     "Cannot open help file probably due to unexpected browser. Try opening html/help manually.")
+        elif platform == "win32":
+            os.system("start html" + os.sep + "help.html")
 
     def show_controls(self):
         messagebox.showinfo("Controls of COGNA Editor",
