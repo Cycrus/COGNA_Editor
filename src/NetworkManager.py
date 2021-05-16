@@ -197,14 +197,21 @@ class NetworkManager:
     def delete_neuron(self, id, function, network_id=0):
         for connection in reversed(self.networks[network_id].connections):
             if connection.prev_neuron == id and connection.prev_neuron_function == function \
-                or connection.next_neuron == id and connection.next_neuron_function == function:
+                    or connection.next_neuron == id and connection.next_neuron_function == function:
                 self.delete_connection(connection.id, network_id)
 
+        if function == "neuron":
+            neuron_type = ["neuron"]
+        elif "subnet" in function or "interface" in function:
+            neuron_type = ["interface_input", "interface_output", "subnet_input", "subnet_output"]
+        else:
+            neuron_type = ["no change"]
+
         for connection in self.networks[network_id].connections:
-            if connection.prev_neuron > id-1:
+            if connection.prev_neuron > id-1 and connection.prev_neuron_function in neuron_type:
                 connection.prev_neuron = connection.prev_neuron - 1
             if connection.next_neuron is not None:
-                if connection.next_neuron > id-1:
+                if connection.next_neuron > id-1 and connection.next_neuron_function in neuron_type:
                     connection.next_neuron = connection.next_neuron - 1
 
         if "neuron" in function:

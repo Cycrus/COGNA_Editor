@@ -961,8 +961,10 @@ class Mainframe:
                 self.render_subnets()
                 self.render_neurons()
 
-                self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
-                                              VectorUtils.project_coordinate(0, self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                self.editorcanvas.create_text(VectorUtils.project_coordinate(0, self.network_manager.camera_x[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
+                                              VectorUtils.project_coordinate(0, self.network_manager.camera_y[self.network_manager.curr_network],
+                                                                             self.network_manager.zoom_factor[self.network_manager.curr_network]),
                                               text="X", fill=design.light_blue[design.theme], font="arial 15")
 
                 self.render_ui_description()
@@ -1036,6 +1038,9 @@ class Mainframe:
         self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices.append(
             np.array([self.cursor_x,
                       self.cursor_y]))
+        if neuron.function == "input" or neuron.function == "output":
+            self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron_function = neuron.function
+
 
     def draw_connection(self):
         if self.do_connection:
@@ -1072,12 +1077,17 @@ class Mainframe:
         self.render_scene()
 
     def delete_event(self, event):
-        if self.selected_neuron != -1:
-            self.network_manager.delete_neuron(self.selected_neuron, self.selected_function)
+        if isinstance(self.selected_entity, Neuron):
+            self.network_manager.delete_neuron(self.selected_neuron, self.selected_function,
+                                               self.network_manager.curr_network)
             self.deselect_neurons()
-        if self.selected_connection != -1:
-            self.network_manager.delete_connection(self.selected_connection)
+        elif isinstance(self.selected_entity, Connection):
+            self.network_manager.delete_connection(self.selected_connection,
+                                                   self.network_manager.curr_network)
             self.deselect_connections()
+        elif isinstance(self.selected_entity, Subnetwork):
+            self.network_manager.delete_subnet(self.selected_entity.id,
+                                               self.network_manager.curr_network)
         self.render_scene()
 
     def tab_event(self, event):
@@ -1224,7 +1234,8 @@ class Mainframe:
 
             if self.tool == TOOL_CONNECTIONS:
                 for node in chain(subnet.output_node_list, subnet.input_node_list):
-                    if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, node, self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                    if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, node,
+                                                         self.network_manager.zoom_factor[self.network_manager.curr_network]):
                         if not self.do_connection:
                             self.connection_source_neuron = node
                         self.create_neuron_connection(node)
@@ -1234,7 +1245,9 @@ class Mainframe:
         if not neuron_collision and not subnet_collision:
             for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
-                                                           self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                                                           self.network_manager.camera_x[self.network_manager.curr_network],
+                                                           self.network_manager.camera_y[self.network_manager.curr_network],
+                                                           self.network_manager.zoom_factor[self.network_manager.curr_network]):
                     if self.tool == TOOL_CONNECTIONS:
                         self.create_synaptic_connection(connection)
 
@@ -1263,7 +1276,9 @@ class Mainframe:
                 self.show_editmenu(store=False)
                 for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                     if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
-                                                               self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                                                               self.network_manager.camera_x[self.network_manager.curr_network],
+                                                               self.network_manager.camera_y[self.network_manager.curr_network],
+                                                               self.network_manager.zoom_factor[self.network_manager.curr_network]):
                         self.selected_connection = connection.id
                         self.selected_entity = connection
                         connection_collision = True
@@ -1301,7 +1316,9 @@ class Mainframe:
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
             for connection in reversed(self.network_manager.networks[self.network_manager.curr_network].connections):
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
-                                                           self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                                                           self.network_manager.camera_x[self.network_manager.curr_network],
+                                                           self.network_manager.camera_y[self.network_manager.curr_network],
+                                                           self.network_manager.zoom_factor[self.network_manager.curr_network]):
                     self.network_manager.delete_connection(connection.id, self.network_manager.curr_network)
                     break
             self.render_scene()
