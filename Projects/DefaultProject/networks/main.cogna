@@ -20,7 +20,7 @@
         },
         {
             "id": 3,
-            "posx": -150.0,
+            "posx": -200.0,
             "posy": -300.0,
             "neuron_type": "Default",
             "used_transmitter": "CCC"
@@ -31,8 +31,28 @@
             "posy": -100.0
         }
     ],
-    "nodes": [],
-    "subnetworks": [],
+    "nodes": [
+        {
+            "id": 1,
+            "posx": 50.0,
+            "posy": -500.0,
+            "function": "interface_input"
+        },
+        {
+            "id": 2,
+            "posx": 50.0,
+            "posy": -250.0,
+            "function": "subnet_output"
+        }
+    ],
+    "subnetworks": [
+        {
+            "id": 0,
+            "network_name": "network-2.cogna",
+            "posx": 0.0,
+            "posy": 450.0
+        }
+    ],
     "connections": [
         {
             "id": 0,
@@ -99,11 +119,115 @@
                     -300.0
                 ],
                 [
-                    -150.0,
+                    -200.0,
                     -300.0
                 ]
             ],
             "activation_type": "Inhibitory"
+        },
+        {
+            "id": 2,
+            "prev_neuron": 1,
+            "prev_neuron_function": "interface_input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 3,
+            "vertices": [
+                [
+                    50.0,
+                    -500.0
+                ],
+                [
+                    -150.0,
+                    -450.0
+                ],
+                [
+                    -200.0,
+                    -300.0
+                ]
+            ]
+        },
+        {
+            "id": 3,
+            "prev_neuron": 3,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "subnet_output",
+            "prev_subnetwork": -1,
+            "next_subnetwork": -1,
+            "next_neuron": 2,
+            "vertices": [
+                [
+                    -200.0,
+                    -300.0
+                ],
+                [
+                    -50.0,
+                    -350.0
+                ],
+                [
+                    50.0,
+                    -350.0
+                ],
+                [
+                    50.0,
+                    -250.0
+                ]
+            ]
+        },
+        {
+            "id": 4,
+            "prev_neuron": 1,
+            "prev_neuron_function": "input",
+            "next_neuron_function": "neuron",
+            "prev_subnetwork": 0,
+            "next_subnetwork": -1,
+            "next_neuron": 2,
+            "vertices": [
+                [
+                    -200.0,
+                    350.0
+                ],
+                [
+                    -350.0,
+                    200.0
+                ],
+                [
+                    -450.0,
+                    150.0
+                ],
+                [
+                    -450.0,
+                    -100.0
+                ],
+                [
+                    -400.0,
+                    -100.0
+                ]
+            ]
+        },
+        {
+            "id": 5,
+            "prev_neuron": 4,
+            "prev_neuron_function": "neuron",
+            "next_neuron_function": "output",
+            "prev_subnetwork": -1,
+            "next_subnetwork": 0,
+            "next_neuron": 2,
+            "vertices": [
+                [
+                    -150.0,
+                    -100.0
+                ],
+                [
+                    -150.0,
+                    100.0
+                ],
+                [
+                    -50.0,
+                    350.0
+                ]
+            ]
         }
     ]
 }

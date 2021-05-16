@@ -1,6 +1,7 @@
 from src.GlobalLibraries import *
 from src.Neuron import *
 
+
 class Subnetwork:
     def __init__(self, id, network_name, posx, posy, network_id, input_nodes, output_nodes):
         self.id = id
@@ -12,6 +13,8 @@ class Subnetwork:
         self.size_x = 200
         self.size_y = 100
         self.node_size = 18
+
+        self.param = ParameterHandler()
 
         self.input_node_list = []
         self.output_node_list = []
@@ -90,3 +93,8 @@ class Subnetwork:
                     y_pos = y_pos + 50
                 elif direction == "up":
                     y_pos = y_pos - 50
+
+    def set_node_position(self, prev_x, prev_y, new_x, new_y):
+        for node in chain(self.input_node_list, self.output_node_list):
+            node.posx = node.posx + (new_x - prev_x)
+            node.posy = node.posy + (new_y - prev_y)
