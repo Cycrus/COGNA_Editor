@@ -180,7 +180,7 @@
             "prev_neuron": 1,
             "prev_neuron_function": "input",
             "next_neuron_function": "neuron",
-            "prev_subnetwork": 0,
+            "prev_subnetwork": -1,
             "next_subnetwork": -1,
             "next_neuron": 2,
             "vertices": [

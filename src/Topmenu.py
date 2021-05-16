@@ -80,8 +80,7 @@ class Topmenu:
                             foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
                             activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.help.add_command(label="About COGNA Editor", command=self.show_about)
-        self.help.add_command(label="Help", command=self.show_help)
-        self.help.add_command(label="Controls", command=self.show_controls)
+        self.help.add_command(label="Manual/Help", command=self.show_help)
         self.menubar.add_cascade(label="Help", menu=self.help)
 
         self.root_frame.config(menu=self.menubar)
@@ -95,6 +94,7 @@ class Topmenu:
         self.root_frame.bind("<Control-s>", self.save_command)
         self.root_frame.bind("<Configure>", self.resize_window)
         self.root_frame.bind("<Control-Tab>", self.next_network)
+        self.root_frame.bind("<F1>", self.show_help)
         if platform == "linux" or platform == "linux2":
             self.root_frame.bind("<ISO_Left_Tab>", self.prev_network)
         elif platform == "win32":
@@ -381,7 +381,7 @@ class Topmenu:
                             'Author: Cyril Marx\n'
                             'Copyright (c) by Cyril Marx 2021')
 
-    def show_help(self):
+    def show_help(self, event=None):
         if platform == "linux" or platform == "linux2":
             error_code = os.system("google-chrome html" + os.sep + "help.html")
             if error_code != Globals.SUCCESS:
