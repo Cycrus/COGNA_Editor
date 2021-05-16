@@ -30,7 +30,8 @@ class Mainframe:
         self.selected_neuron = -1
         self.selected_connection = -1
         self.selected_function = ""
-        self.selected_entity = None
+        self.selected_entity = network_manager.networks[network_manager.curr_network]
+        self.move_entity = False
 
         self.connecting_neuron = None
         self.connection_source_neuron = None
@@ -212,6 +213,8 @@ class Mainframe:
         self.editorcanvas.bind("<Button-2>", self.init_camera)
         self.editorcanvas.bind("<B2-Motion>", self.move_camera)
         self.editorcanvas.bind("<Button-1>", self.left_click)
+        self.editorcanvas.bind("<ButtonRelease-1>", self.release_left_click)
+        self.editorcanvas.bind("<B1-Motion>", self.move_entity_event)
         self.editorcanvas.bind("<Button-3>", self.delete_entity)
         # Windows Mouse Wheel
         self.editorcanvas.bind("<MouseWheel>", self.zoom_scene)
@@ -235,12 +238,12 @@ class Mainframe:
         :param parameter_name: The parameter which should be checked.
         :return: Bool value if parameter is unique or not.
         """
-        if self.selected_neuron > -1:
+        if isinstance(self.selected_entity, Neuron):
             neuron_param = self.selected_entity.param.list[parameter_name]
             base_param = ParameterHandler.get_base_neuron(self.network_manager.neuron_types, self.selected_entity.param).list[parameter_name]
             if neuron_param == base_param:
                 return False
-        elif self.selected_connection > -1:
+        elif isinstance(self.selected_entity, Connection):
             connection_param = self.selected_entity.param.list[parameter_name]
             connection_network = self.selected_entity.network_id
             prev_neuron = self.selected_entity.prev_neuron
@@ -254,7 +257,7 @@ class Mainframe:
                 return False
             elif connection_param == neuron_param:
                 return False
-        else:
+        elif self.selected_entity is None:
             return True
 
         return True
@@ -363,16 +366,13 @@ class Mainframe:
         """
         show_parameters = True
         if isinstance(self.selected_entity, Connection):
-            if not "neuron" in self.selected_entity.prev_neuron_function:
-                show_parameters = False
-
-        if self.selected_connection > -1:
             if "neuron" in self.selected_entity.prev_neuron_function:
                 prev_entity_name = "neuron"
                 prev_entity_id = self.selected_entity.prev_neuron
             else:
                 prev_entity_name = "node"
                 prev_entity_id = self.selected_entity.prev_neuron
+                show_parameters = False
             if self.selected_entity.next_neuron_function is None:
                 next_entity_name = "connection"
                 next_entity_id = self.selected_entity.next_connection
@@ -392,7 +392,7 @@ class Mainframe:
                                                 *ParameterHandler.param_drop_options_connection,
                                                 command=self.show_editmenu)
 
-        elif self.selected_neuron > -1:
+        elif isinstance(self.selected_entity, Neuron):
             if "neuron" in self.selected_function:
                 self.general_info.config(text=f"Neuron <{self.selected_neuron}> Selected")
             else:
@@ -412,7 +412,11 @@ class Mainframe:
                                                     *ParameterHandler.param_drop_options_subnet,
                                                     command=self.show_editmenu)
 
-        else:
+        elif isinstance(self.selected_entity, Subnetwork):
+            self.general_info.config(text=f"Subnetwork <{self.selected_entity.id}> Selected")
+            show_parameters = False
+
+        elif isinstance(self.selected_entity, Network):
             self.general_info.config(text=f"Network <{self.network_manager.filename[self.network_manager.curr_network]}> Selected")
             self.param_list = ParameterHandler.get_paramter_list(self.edit_selection, "Network")
             self.edit_drop_menu = tk.OptionMenu(self.parameter_frame[3], self.edit_selection,
@@ -520,15 +524,6 @@ class Mainframe:
 
         if store:
             self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
-        if self.selected_connection > -1:
-            self.selected_entity = self.network_manager.networks[self.network_manager.curr_network].connections[self.selected_connection]
-        elif self.selected_neuron > -1:
-            if "neuron" in self.selected_function:
-                self.selected_entity = self.network_manager.networks[self.network_manager.curr_network].neurons[self.selected_neuron-1]
-            else:
-                self.selected_entity = self.network_manager.networks[self.network_manager.curr_network].nodes[self.selected_neuron-1]
-        else:
-            self.selected_entity = self.network_manager.networks[self.network_manager.curr_network]
 
         self.edit_drop_menu.destroy()
         self.id_info.pack_forget()
@@ -887,13 +882,22 @@ class Mainframe:
         temp_zoom = self.network_manager.zoom_factor[self.network_manager.curr_network]
 
         for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
+            if self.selected_entity == subnet:
+                temp_outline = design.light_blue[design.theme]
+                temp_width = 5 * self.network_manager.zoom_factor[self.network_manager.curr_network]
+            else:
+                temp_outline = "#000000"
+                temp_width = 1
             x0 = VectorUtils.project_coordinate(subnet.posx-subnet.size_x,
                                                 temp_camera_x, temp_zoom)
             y0 = VectorUtils.project_coordinate(subnet.posy-subnet.size_y, temp_camera_y, temp_zoom)
             x1 = VectorUtils.project_coordinate(subnet.posx+subnet.size_x, temp_camera_x, temp_zoom)
             y1 = VectorUtils.project_coordinate(subnet.posy+subnet.size_y, temp_camera_y, temp_zoom)
 
-            self.editorcanvas.create_rectangle(x0, y0, x1, y1, fill=design.grey_7[design.theme])
+            self.editorcanvas.create_rectangle(x0, y0, x1, y1,
+                                               fill=design.grey_7[design.theme],
+                                               outline=temp_outline,
+                                               width=temp_width)
             self.render_subnet_nodes(subnet)
 
             label_x = VectorUtils.project_coordinate(subnet.posx, temp_camera_x, temp_zoom)
@@ -970,7 +974,7 @@ class Mainframe:
         """
         Toggles grid snapping and visibility of grid.
         """
-        if self.tool != TOOL_SELECT:
+        if self.tool != TOOL_SELECT or self.move_entity:
             if self.grid_snap:
                 posx = self.cursor_x
                 posy = self.cursor_y
@@ -1058,6 +1062,7 @@ class Mainframe:
     def deselect_all(self):
         self.deselect_neurons()
         self.deselect_connections()
+        self.selected_entity = self.network_manager.networks[self.network_manager.curr_network]
 
     def escape_event(self, event):
         self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
@@ -1147,8 +1152,44 @@ class Mainframe:
                     self.discard_connection()
                 self.do_connection = False
 
+    def move_entity_event(self, event):
+        if self.move_entity and self.tool == TOOL_SELECT and self.selected_entity is not None:
+            self.get_cursor_position(event)
+
+            prev_posx = self.selected_entity.posx
+            prev_posy = self.selected_entity.posy
+
+            self.selected_entity.posx = self.cursor_x
+            self.selected_entity.posy = self.cursor_y
+
+            if isinstance(self.selected_entity, Subnetwork):
+                self.selected_entity.set_node_position(prev_posx, prev_posy, self.cursor_x, self.cursor_y)
+
+            for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
+                if isinstance(self.selected_entity, Neuron):
+                    if connection.next_neuron == self.selected_entity.id and \
+                            connection.next_neuron_function == self.selected_entity.function:
+                        connection.vertices[len(connection.vertices)-1][0] = self.cursor_x
+                        connection.vertices[len(connection.vertices)-1][1] = self.cursor_y
+                    elif connection.prev_neuron == self.selected_entity.id and \
+                            connection.prev_neuron_function == self.selected_entity.function:
+                        connection.vertices[0][0] = self.cursor_x
+                        connection.vertices[0][1] = self.cursor_y
+                elif isinstance(self.selected_entity, Subnetwork):
+                    for node in chain(self.selected_entity.input_node_list, self.selected_entity.output_node_list):
+                        if connection.next_neuron == node.id and connection.next_neuron_function == node.function:
+                            connection.vertices[len(connection.vertices) - 1][0] = node.posx
+                            connection.vertices[len(connection.vertices) - 1][1] = node.posy
+                        elif connection.prev_neuron == node.id and connection.prev_neuron_function == node.function:
+                            connection.vertices[0][0] = node.posx
+                            connection.vertices[0][1] = node.posy
+
+    def release_left_click(self, event):
+        self.move_entity = False
+
     def left_click(self, event):
         neuron_collision = False
+        subnet_collision = False
         connection_collision = False
         for neuron in chain(*self.network_manager.networks[self.network_manager.curr_network].all_nodes):
             if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, neuron, self.network_manager.zoom_factor[self.network_manager.curr_network]):
@@ -1163,22 +1204,34 @@ class Mainframe:
                     self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
                     self.deselect_connections()
                     self.selected_neuron = neuron.id
+                    self.selected_entity = neuron
                     self.selected_function = neuron.function
                     self.show_editmenu(store=False)
+                    self.move_entity = True
 
                 neuron_collision = True
 
         for subnet in self.network_manager.networks[self.network_manager.curr_network].subnets:
-            for node in chain(subnet.output_node_list, subnet.input_node_list):
-                if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, node, self.network_manager.zoom_factor[self.network_manager.curr_network]):
-                    if self.tool == TOOL_CONNECTIONS:
+            if self.tool == TOOL_SELECT:
+                if VectorUtils.calc_rect_collision_by_size([self.cursor_x, self.cursor_y],
+                                                           [subnet.posx, subnet.posy],
+                                                           subnet.size_x, subnet.size_y,
+                                                           self.network_manager.zoom_factor[self.network_manager.curr_network]):
+                    self.selected_entity = subnet
+                    subnet_collision = True
+                    self.move_entity = True
+                    self.show_editmenu(store=False)
+
+            if self.tool == TOOL_CONNECTIONS:
+                for node in chain(subnet.output_node_list, subnet.input_node_list):
+                    if VectorUtils.calc_cursor_collision(self.cursor_x, self.cursor_y, node, self.network_manager.zoom_factor[self.network_manager.curr_network]):
                         if not self.do_connection:
                             self.connection_source_neuron = node
                         self.create_neuron_connection(node)
                         if not self.do_connection:
                             self.connection_source_neuron = node
 
-        if not neuron_collision:
+        if not neuron_collision and not subnet_collision:
             for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                            self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
@@ -1212,10 +1265,15 @@ class Mainframe:
                     if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
                                                                self.network_manager.camera_x[self.network_manager.curr_network], self.network_manager.camera_y[self.network_manager.curr_network], self.network_manager.zoom_factor[self.network_manager.curr_network]):
                         self.selected_connection = connection.id
+                        self.selected_entity = connection
                         connection_collision = True
                 if not connection_collision:
                     self.deselect_connections()
                 self.show_editmenu(store=False)
+
+        if not neuron_collision and not subnet_collision and not connection_collision:
+            self.deselect_all()
+            self.show_editmenu(store=False)
 
         self.render_scene()
 
