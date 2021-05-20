@@ -131,8 +131,11 @@ class TransmitterConfigurator:
         self.store_transmitter()
         self.deleted_transmitters.append(self.transmitter_list[trans_index])
         self.transmitter_list.pop(trans_index)
-        self.renamed_transmitters[0].pop(trans_index)
-        self.renamed_transmitters[1].pop(trans_index)
+        try:
+            self.renamed_transmitters[0].pop(trans_index)
+            self.renamed_transmitters[1].pop(trans_index)
+        except:
+            pass
         self.render_editor()
 
     def close_window(self, save):
