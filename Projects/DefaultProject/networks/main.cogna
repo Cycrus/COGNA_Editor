@@ -23,19 +23,21 @@
             "id": 3,
             "posx": -200.0,
             "posy": -300.0,
-            "neuron_type": "Default",
-            "used_transmitter": "CCC"
+            "neuron_type": "123"
         },
         {
             "id": 4,
             "posx": -150.0,
-            "posy": -100.0
+            "posy": -100.0,
+            "neuron_type": "123"
         },
         {
             "id": 5,
             "posx": -750.0,
             "posy": -500.0,
-            "neuron_type": "123"
+            "neuron_type": "123",
+            "influences_transmitter": "Yes",
+            "random_chance": "5"
         },
         {
             "id": 6,

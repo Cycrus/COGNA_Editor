@@ -1322,7 +1322,7 @@ class Mainframe:
 
         if not neuron_collision and not subnet_collision and not connection_collision:
             self.deselect_all()
-            self.show_editmenu(store=False)
+            #self.show_editmenu(store=False)
 
         self.render_scene()
 
