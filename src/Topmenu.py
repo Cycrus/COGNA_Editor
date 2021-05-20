@@ -41,8 +41,8 @@ class Topmenu:
         self.file.add_command(label="Save Network     <ctr-s>", command=self.save_command)
         self.file.add_command(label="Save Network as", command=self.save_as_command)
         self.file.add_command(label="Open Network   <ctr-o>", command=self.open_command)
-        self.file.add_separator()
         self.file.add_command(label="Close Network     <ctr-w>", command=self.close_command)
+        self.file.add_separator()
         self.file.add_command(label="Exit", command=self.root_frame.quit)
         self.menubar.add_cascade(label="File", menu=self.file)
 
@@ -76,7 +76,7 @@ class Topmenu:
                             foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
                             activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
         self.help.add_command(label="About COGNA Editor", command=self.show_about)
-        self.help.add_command(label="Manual/Help", command=self.show_help)
+        self.help.add_command(label="Manual/Help    <F1>", command=self.show_help)
         self.menubar.add_cascade(label="Help", menu=self.help)
 
         self.root_frame.config(menu=self.menubar)
