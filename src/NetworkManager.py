@@ -313,6 +313,8 @@ class NetworkManager:
             self.curr_network = 0
         if len(self.networks) < 1:
             self.add_network()
+            return Globals.WARNING
+        return Globals.SUCCESS
 
     def convert_parameter_to_dict(self, target_dict, parameter):
         for idx, param in enumerate(parameter):

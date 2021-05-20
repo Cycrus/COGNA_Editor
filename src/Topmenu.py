@@ -282,8 +282,10 @@ class Topmenu:
 
     def delete_network(self, network_id):
         if len(self.network_manager.networks) > 0:
-            self.network_manager.clear_single_network(network_id)
+            reset_view = self.network_manager.clear_single_network(network_id)
             self.delete_tab(network_id)
+            if reset_view:
+                self.mainframe.reset_camera()
         self.mainframe.show_editmenu(store=False)
 
     def close_command(self, event=None, del_network=None):
