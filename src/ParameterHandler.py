@@ -2,7 +2,6 @@ from src.GlobalLibraries import *
 
 neuron_activation_parameter = ["neuron_type", #String<Possible neuron types:?>
                                "activation_threshold", #numeric
-                               "used_transmitter", #String<Possible transmitter:?>
                                "max_activation", #numeric
                                "min_activation", #numeric
                                "activation_backfall_curvature", #numeric
@@ -79,7 +78,7 @@ class ParameterHandler:
                               "Neuron Transmitter",
                               "Neuron Random",
                               "Network",
-                              "Interface NOde Settings",
+                              "Interface Node Settings",
                               "Subnet Node Settings"]
     param_drop_options_connection = ["Connection Specific",
                                      "Connection Habituation",
@@ -177,6 +176,8 @@ class ParameterHandler:
         for idx, key in enumerate(keylist):
             if key in self.list:
                 try:
+                    if ParameterHandler.is_menu(key) or key == "ip_address" or key == "port" or key == "channel":
+                        raise ValueError
                     self.list[key] = float(loading_dict[key])
                 except ValueError:
                     self.list[key] = loading_dict[key]

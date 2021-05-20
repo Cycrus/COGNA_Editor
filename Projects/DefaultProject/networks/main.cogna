@@ -1,11 +1,22 @@
 {
     "network": {
+        "base_weight": "1",
+        "max_weight": "5",
+        "min_weight": "0",
+        "activation_threshold": "1",
+        "max_activation": "50",
+        "min_activation": "0",
+        "activation_backfall_curvature": "1",
+        "activation_backfall_steepness": "0.04",
         "transmitter_backfall_curvature": "1",
         "transmitter_backfall_steepness": "0.0000001",
         "max_transmitter_weight": "5",
         "min_transmitter_weight": "0",
-        "input_nodes": "0",
-        "output_nodes": "0"
+        "input_nodes": "3",
+        "output_nodes": "3",
+        "ip_address": "192.168.0.2",
+        "port": "Missing...",
+        "channel": "Missing..."
     },
     "neurons": [
         {
@@ -69,22 +80,24 @@
             "id": 2,
             "posx": 50.0,
             "posy": -250.0,
-            "function": "subnet_output"
+            "function": "subnet_output",
+            "node_id": "2"
         },
         {
             "id": 3,
             "posx": 200.0,
             "posy": -250.0,
-            "function": "subnet_output"
+            "function": "subnet_output",
+            "node_id": "1"
         },
         {
             "id": 4,
             "posx": 200.0,
             "posy": -500.0,
             "function": "interface_output",
-            "ip_address": "Missing...",
-            "port": "Missing...",
-            "channel": "Missing..."
+            "ip_address": "192.168.0.2",
+            "port": "5003",
+            "channel": "2"
         }
     ],
     "subnetworks": [
