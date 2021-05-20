@@ -36,6 +36,8 @@ class Mainframe:
         self.connecting_neuron = None
         self.connection_source_neuron = None
 
+        self.clipboard = None
+
         self.root_frame = root
         self.network_manager = network_manager
         self.param_list = network_parameter
@@ -229,7 +231,42 @@ class Mainframe:
         self.root_frame.bind("<space>", self.reset_camera)
         self.root_frame.bind("<Return>", self.show_editmenu)
 
+        self.root_frame.bind("<Control-c>", self.copy_entity)
+        self.root_frame.bind("<Control-v>", self.paste_entity)
+
         self.switch_tool_select()
+
+    def copy_entity(self, event=None):
+        if self.tool == TOOL_SELECT:
+            if self.selected_entity is not None:
+                self.clipboard = copy.deepcopy(self.selected_entity)
+            else:
+                self.clipboard = None
+        if isinstance(self.clipboard, Connection):
+            if "input" in self.clipboard.prev_neuron_function:
+                self.clipboard = None
+        if isinstance(self.clipboard, Subnetwork):
+            self.clipboard = None
+
+        print(self.clipboard)
+
+    def paste_entity(self, event=None):
+        if self.tool == TOOL_SELECT and self.selected_entity is not None and self.clipboard is not None:
+            if isinstance(self.selected_entity, type(self.clipboard)):
+                can_copy = True
+
+                if isinstance(self.clipboard, Neuron):
+                    if self.clipboard.function != self.selected_entity.function:
+                        can_copy = False
+
+                if isinstance(self.clipboard, Connection):
+                    if "input" in self.selected_entity.prev_neuron_function:
+                        can_copy = False
+
+                if can_copy:
+                    self.selected_entity.param = copy.deepcopy(self.clipboard.param)
+                    self.show_editmenu(store=False)
+                    print("Did the thing")
 
     def check_parameter_uniqueness(self, parameter_name):
         """

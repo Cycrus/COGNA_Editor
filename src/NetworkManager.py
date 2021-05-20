@@ -35,8 +35,7 @@ class NetworkManager:
         self.curr_network = 0
         try:
             self.load_network(filename=self.project_path + os.sep + "networks" + os.sep + self.main_network)
-        except Exception as e:
-            print(e)
+        except:
             self.add_network(name="main.cogna")
 
     def default_neuron_types(self):

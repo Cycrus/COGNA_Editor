@@ -49,12 +49,8 @@ class Topmenu:
         self.edit = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
                             foreground=design.grey_c[design.theme], activebackground=design.dark_blue[design.theme],
                             activeforeground=design.grey_c[design.theme], borderwidth=1, relief=tk.RIDGE)
-        self.edit.add_command(label="Undo     <ctr-z>")
-        self.edit.add_command(label="Redo     <ctr-y>")
-        self.edit.add_separator()
-        self.edit.add_command(label="Cut        <ctr-x>")
-        self.edit.add_command(label="Copy      <ctr-c>")
-        self.edit.add_command(label="Paste     <ctr-v>")
+        self.edit.add_command(label="Copy      <ctr-c>", command=self.copy_entity)
+        self.edit.add_command(label="Paste     <ctr-v>", command=self.paste_entity)
         self.menubar.add_cascade(label="Edit", menu=self.edit)
 
         self.configuration = tk.Menu(master=self.menubar, tearoff=0, background=design.grey_4[design.theme],
@@ -101,6 +97,12 @@ class Topmenu:
             self.root_frame.bind("<Shift-Tab>", self.prev_network)
 
         self.create_spashscreen()
+
+    def copy_entity(self):
+        self.mainframe.copy_entity()
+
+    def paste_entity(self):
+        self.mainframe.paste_entity()
 
     def create_spashscreen(self):
         #splash_screen = SplashScreen(self.network_manager, self.root_frame)
