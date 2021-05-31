@@ -47,7 +47,11 @@ connection_special_parameter = ["base_weight", #numeric
                                 "activation_type", #String<Excitatory:1, Inhibitory:-1, Nondirectional:0>
                                 "activation_function", #String<1:Sigmoid, 2:Linear, 3:relu>
                                 "learning_type", #String<None:1, Habituation:2, Sensitization:3, Habisens:4>
-                                "transmitter_type"] #String<Possible transmitters:?>
+                                "transmitter_type", #String<Possible transmitters:?>
+                                "long_learning_weight_reduction_curvature",
+                                "long_learning_weight_reduction_steepness",
+                                "long_learning_weight_backfall_curvature",
+                                "long_learning_weight_backfall_steepness"]
 
 network_parameter = ["transmitter_backfall_curvature",
                      "transmitter_backfall_steepness",
@@ -161,6 +165,11 @@ class ParameterHandler:
         self.list["presynaptic_potential_steepness"] = 0.3
         self.list["presynaptic_backfall_curvature"] = 1.00
         self.list["presynaptic_backfall_steepness"] = 0.0000002
+
+        self.list["long_learning_weight_reduction_curvature"] = 0.5
+        self.list["long_learning_weight_reduction_steepness"] = 0.5
+        self.list["long_learning_weight_backfall_curvature"] = 1.0
+        self.list["long_learning_weight_backfall_steepness"] = 0.00000006
 
         self.list["base_weight"] = 1.0
         self.list["max_weight"] = 5.0
