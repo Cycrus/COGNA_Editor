@@ -180,6 +180,9 @@ class ParameterHandler:
 
         self.list["transmitter_type"] = "Default"
 
+    def is_equal(self, other):
+        return self.__dict__ == other.__dict__
+
     def load_by_dict(self, loading_dict):
         keylist = loading_dict.keys()
         for idx, key in enumerate(keylist):

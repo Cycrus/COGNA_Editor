@@ -116,10 +116,14 @@ class NetworkManager:
         with open(self.project_path + os.sep + "transmitters.config", "w") as file:
             file.write(json_obj)
 
-    def load_transmitters(self, project_path):
+    def load_transmitters(self, project_path, override_project_transmitters=True):
         with open(project_path + os.sep + "transmitters.config", "r") as file:
             transmitter_dict = json.loads(file.read())
-            self.transmitters = transmitter_dict["transmitters"]
+            if override_project_transmitters:
+                self.transmitters = transmitter_dict["transmitters"]
+                return None
+            else:
+                return transmitter_dict["transmitters"]
 
     def load_global_info(self, path):
         with open(self.project_path + os.sep + "global.config", "r") as file:
@@ -141,14 +145,22 @@ class NetworkManager:
         with open(self.project_path + os.sep + "neuron_type.config", "w") as file:
             file.write(json_obj)
 
-    def load_neuron_types(self, project_path):
+    def load_neuron_types(self, project_path, override_project_neurons=True):
         with open(project_path + os.sep + "neuron_type.config", "r") as file:
             neuron_dict = json.loads(file.read())
-            self.neuron_types.clear()
+            if override_project_neurons:
+                self.neuron_types.clear()
+            temp_neuron_list = []
             for idx, neuron in enumerate(neuron_dict.keys()):
                 neuron_params = ParameterHandler()
                 neuron_params.load_by_dict(neuron_dict[neuron])
-                self.neuron_types.append([neuron, neuron_params])
+                temp_neuron_list.append([neuron, neuron_params])
+
+            if override_project_neurons:
+                self.neuron_types = temp_neuron_list
+                return None
+            else:
+                return temp_neuron_list
 
     def network_default_name(self, name_nr):
         name = "network-" + str(name_nr) + ".cogna"
@@ -489,6 +501,94 @@ class NetworkManager:
         self.read_connections_from_dict(network_dict["connections"], error_subnets)
         self.filename[self.curr_network] = network_name
         self.fixed_location[self.curr_network] = True
+
+        file.close()
+
+        return Globals.SUCCESS
+
+    def check_if_networkfile_exists(self, file):
+        network_name = file.name.split(os.sep)[-1]
+        temp_network_name = network_name.rsplit('.', 1)[0]
+        name_iterator = 2
+        while True:
+            is_duplicate = False
+            for idx, name in enumerate(self.get_network_list()):
+                if temp_network_name == name.rsplit('.', 1)[0]:
+                    temp_network_name = network_name.rsplit('.', 1)[0] + "_" + str(name_iterator)
+                    is_duplicate = True
+                    break
+            name_iterator = name_iterator + 1
+            if not is_duplicate:
+                break
+
+        return temp_network_name + ".cogna"
+
+    def import_network(self):
+        file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "..", title="Save Network",
+                                      filetypes=(("cogna network", "*.cogna"),))
+
+        if not file:
+            return Globals.ERROR
+
+        check_path = (self.project_path + os.sep + "networks").replace("\\", "/")
+        corrected_filename = file.name.replace("\\", "/")
+
+        if check_path in corrected_filename:
+            messagebox.showerror("Load Error", "Cannot import networks from same project.")
+            file.close()
+            return Globals.ERROR
+
+        network_name = self.check_if_networkfile_exists(file)
+        network_dict = json.loads(file.read())
+
+        if network_dict["subnetworks"]:
+            messagebox.showerror("Load Error", "Cannot import networks referencing other networks.")
+            file.close()
+            return Globals.ERROR
+
+        file_project_name = file.name.rsplit(os.sep, 2)[0]
+
+        neuron_types = self.load_neuron_types(project_path=file_project_name, override_project_neurons=False)
+        transmitter_types = self.load_transmitters(project_path=file_project_name, override_project_transmitters=False)
+
+        for transmitter in transmitter_types:
+            if transmitter not in self.transmitters:
+                self.transmitters.append(transmitter)
+
+        old_neuron_names = []
+        new_neuron_names = []
+        for new_neuron in neuron_types:
+            is_contained = False
+            for old_neuron in self.neuron_types:
+                if new_neuron[0] == old_neuron[0]:
+                    if new_neuron[1].is_equal(old_neuron[1]):
+                        is_contained = True
+                    else:
+                        old_neuron_names.append(new_neuron[0])
+                        new_neuron[0] = new_neuron[0] + "_" + network_name.rsplit('.', 1)[0]
+                        new_neuron_names.append(new_neuron[0])
+            if not is_contained:
+                self.neuron_types.append(new_neuron)
+
+        self.save_transmitters()
+        self.save_neuron_types()
+
+        messagebox.showinfo("Import Info", "Imported other network's neuron types and neurotransmitters.")
+
+        network_parameter = self.read_parameter_list(network_dict["network"])
+        self.add_network(network_parameter)
+        self.read_neurons_from_dict(network_dict["neurons"])
+        for neuron in self.networks[self.curr_network].neurons:
+            if neuron.param.list["neuron_type"] in old_neuron_names:
+                neuron.param.list["neuron_type"] = new_neuron_names[old_neuron_names.index(neuron.param.list["neuron_type"])]
+            elif not neuron.param.list["neuron_type"] and "Default" in old_neuron_names:
+                neuron.param.list["neuron_type"] = new_neuron_names[
+                    old_neuron_names.index("Default")]
+
+        self.read_nodes_from_dict(network_dict["nodes"])
+        self.read_connections_from_dict(network_dict["connections"], [])
+        self.filename[self.curr_network] = network_name
+        self.fixed_location[self.curr_network] = False
 
         file.close()
 
