@@ -86,6 +86,7 @@ class Topmenu:
         self.root_frame.bind("<Control-Left>", self.prev_network)
         self.root_frame.bind("<Control-Right>", self.next_network)
         self.root_frame.bind("<Control-n>", self.new_command)
+        self.root_frame.bind("<Control-i>", self.import_command)
         self.root_frame.bind("<Control-o>", self.open_command)
         self.root_frame.bind("<Control-w>", self.close_command)
         self.root_frame.bind("<Control-s>", self.save_command)
