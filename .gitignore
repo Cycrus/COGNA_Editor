@@ -2,5 +2,6 @@
 venv
 .idea
 
-# Projects which are created
+# Created Projects
 Projects/*
+COGNA_PATH.config
