@@ -25,10 +25,14 @@ class NetworkManager:
         self.frequency = 10
         self.main_network = "main.cogna"
 
+        self.root_path = ""
+        self.projects_folder = ""
+        self.get_root_path()
         self.project_path = None
         self.project_name = None
         try:
-            self.open_project(os.getcwd() + os.sep + "Projects" + os.sep + "DefaultProject")
+            self.open_project(self.root_path + os.sep + self.projects_folder + os.sep + "DefaultProject",
+                              show_warnings=False)
         except:
             self.new_project("DefaultProject")
 
@@ -37,6 +41,22 @@ class NetworkManager:
             self.load_network(filename=self.project_path + os.sep + "networks" + os.sep + self.main_network)
         except:
             self.add_network(name="main.cogna")
+
+        print(self.project_path)
+
+    def get_root_path(self):
+        with open(os.getcwd() + os.sep + "COGNA_PATH.config", "r") as file:
+            path = file.read()
+            if not path:
+                self.root_path = os.getcwd()
+                self.projects_folder = "Projects"
+            elif os.path.exists(path):
+                self.root_path = path.rsplit(os.sep, 1)[0]
+                self.projects_folder = path.rsplit(os.sep, 1)[1]
+            else:
+                messagebox.showwarning("Project Error", "Path set in COGNA_PATH.config does not exist.")
+                self.root_path = os.getcwd()
+                self.projects_folder = "Projects"
 
     def default_neuron_types(self):
         default_neuron_params = ParameterHandler()
@@ -52,7 +72,7 @@ class NetworkManager:
 
     def new_project(self, project_name):
         try:
-            os.mkdir(os.getcwd() + os.sep + "Projects")
+            os.mkdir(self.root_path + os.sep + self.projects_folder)
         except:
             pass
 
@@ -60,7 +80,7 @@ class NetworkManager:
         self.default_neuron_types()
         self.default_global_info()
 
-        new_path = os.getcwd() + os.sep + "Projects" + os.sep + project_name
+        new_path = self.root_path + os.sep + self.projects_folder + os.sep + project_name
         self.project_path = new_path
         self.project_name = project_name
         try:
@@ -76,7 +96,7 @@ class NetworkManager:
         self.save_transmitters()
         self.save_neuron_types()
 
-    def open_project(self, path):
+    def open_project(self, path, show_warnings=True):
         if path[-1] == os.sep:
             path = path[:len(path)-1]
         self.project_name = path.split(os.sep)[-1]
@@ -85,17 +105,20 @@ class NetworkManager:
             self.load_global_info(path)
         except:
             self.default_global_info()
-            messagebox.showwarning("Invalid Global Info", "global.config is invalid. Loading default values.")
+            if show_warnings:
+                messagebox.showwarning("Invalid Global Info", "global.config is invalid. Loading default values.")
         try:
             self.load_transmitters(path)
         except:
             self.default_transmitters()
-            messagebox.showwarning("Invalid Transmitters", "transmitters.config is invalid. Loading default values.")
+            if show_warnings:
+                messagebox.showwarning("Invalid Transmitters", "transmitters.config is invalid. Loading default values.")
         try:
             self.load_neuron_types(path)
         except:
             self.default_neuron_types()
-            messagebox.showwarning("Invalid Neuron Types", "neuron_type.config is invalid. Loading default values.")
+            if show_warnings:
+                messagebox.showwarning("Invalid Neuron Types", "neuron_type.config is invalid. Loading default values.")
 
     def save_meta_info(self):
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:

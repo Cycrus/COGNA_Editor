@@ -218,8 +218,8 @@ class Topmenu:
 
     def open_project_command(self, event=None):
         self.mainframe.deselect_all()
-        file = filedialog.askopenfile(initialdir=os.getcwd() + os.sep + "Projects", title="Open Project",
-                                      filetypes=(("project files", "*.project"),))
+        file = filedialog.askopenfile(initialdir=self.network_manager.root_path + os.sep + self.network_manager.projects_folder,
+                                      title="Open Project", filetypes=(("project files", "*.project"),))
         if not file:
             return
         if not "Valid COGNA Project" in file.read():
