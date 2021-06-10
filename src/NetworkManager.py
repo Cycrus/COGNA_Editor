@@ -30,10 +30,9 @@ class NetworkManager:
         self.get_root_path()
         self.project_path = None
         self.project_name = None
-        try:
-            self.open_project(self.root_path + os.sep + self.projects_folder + os.sep + "DefaultProject",
-                              show_warnings=False)
-        except:
+        load_error = self.open_project(self.root_path + os.sep + self.projects_folder + os.sep + "DefaultProject",
+                                       show_warnings=False)
+        if load_error == Globals.ERROR:
             self.new_project("DefaultProject")
 
         self.curr_network = 0
@@ -101,24 +100,32 @@ class NetworkManager:
             path = path[:len(path)-1]
         self.project_name = path.split(os.sep)[-1]
         self.project_path = path
+
         try:
             self.load_global_info(path)
         except:
             self.default_global_info()
             if show_warnings:
                 messagebox.showwarning("Invalid Global Info", "global.config is invalid. Loading default values.")
+            return Globals.ERROR
+
         try:
             self.load_transmitters(path)
         except:
             self.default_transmitters()
             if show_warnings:
                 messagebox.showwarning("Invalid Transmitters", "transmitters.config is invalid. Loading default values.")
+            return Globals.ERROR
+
         try:
             self.load_neuron_types(path)
         except:
             self.default_neuron_types()
             if show_warnings:
                 messagebox.showwarning("Invalid Neuron Types", "neuron_type.config is invalid. Loading default values.")
+            return Globals.ERROR
+
+        return Globals.SUCCESS
 
     def save_meta_info(self):
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
