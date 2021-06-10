@@ -30,6 +30,7 @@ class NetworkManager:
         self.get_root_path()
         self.project_path = None
         self.project_name = None
+
         load_error = self.open_project(self.root_path + os.sep + self.projects_folder + os.sep + "DefaultProject",
                                        show_warnings=False)
         if load_error == Globals.ERROR:
