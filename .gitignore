@@ -1,0 +1,6 @@
+# Pycharm Specific Files
+venv
+.idea
+
+# Projects which are created
+Projects/*
