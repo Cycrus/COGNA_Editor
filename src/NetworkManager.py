@@ -42,8 +42,6 @@ class NetworkManager:
         except:
             self.add_network(name="main.cogna")
 
-        print(self.project_path)
-
     def get_root_path(self):
         with open(os.getcwd() + os.sep + "COGNA_PATH.config", "r") as file:
             path = file.read()
