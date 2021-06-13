@@ -401,7 +401,7 @@ class Mainframe:
         show_parameters = True
         if isinstance(self.selected_entity, Connection):
             if "neuron" in self.selected_entity.prev_neuron_function and \
-                    "Interface Output" not in self.selected_entity.next_neuron_function:
+                    "interface_output" not in self.selected_entity.next_neuron_function:
                 prev_entity_name = "neuron"
                 prev_entity_id = self.selected_entity.prev_neuron
             else:
@@ -749,6 +749,8 @@ class Mainframe:
             if connection.id == self.selected_connection:
                 color = design.white[design.theme]
             elif connection.prev_subnet != -1:
+                color = design.grey_c[design.theme]
+            elif "interface_output" in connection.next_neuron_function:
                 color = design.grey_c[design.theme]
             elif activation_type == "Excitatory":
                 color = design.light_blue[design.theme]
