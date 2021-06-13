@@ -237,15 +237,15 @@ class ParameterHandler:
             menu = []
             if "input" in neuron_function:
                 try:
-                    node_number = int(network_manager.networks[network_manager.curr_network].param.list["input_nodes"])
+                    node_number = int(network_manager.networks[network_manager.curr_network].param.list["input_nodes"])+1
                 except TypeError:
                     node_number = 0
             elif "output" in neuron_function:
                 try:
-                    node_number = int(network_manager.networks[network_manager.curr_network].param.list["output_nodes"])
+                    node_number = int(network_manager.networks[network_manager.curr_network].param.list["output_nodes"])+1
                 except TypeError:
                     node_number = 0
-            for i in range(0, node_number):
+            for i in range(1, node_number):
                 menu.append(str(i))
             if not menu:
                 menu = None
