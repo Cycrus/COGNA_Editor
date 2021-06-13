@@ -22,7 +22,7 @@ class NetworkManager:
 
         self.transmitters = []
         self.neuron_types = []
-        self.frequency = 10
+        self.frequency = "10"
         self.main_network = "main.cogna"
 
         self.root_path = ""
@@ -65,7 +65,7 @@ class NetworkManager:
         self.transmitters = ["Default"]
 
     def default_global_info(self):
-        self.frequency = 10
+        self.frequency = "10"
         self.main_network = "main.cogna"
 
     def new_project(self, project_name):

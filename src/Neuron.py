@@ -17,3 +17,9 @@ class Neuron:
             self.param = ParameterHandler()
         else:
             self.param = None
+
+        if function == "interface_input":
+            self.param.list["port"] = 40001
+            self.param.list["ip_address"] = "0.0.0.0"
+        elif function == "interface_output":
+            self.param.list["port"] = 40002

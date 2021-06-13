@@ -750,7 +750,7 @@ class Mainframe:
                 color = design.white[design.theme]
             elif connection.prev_subnet != -1:
                 color = design.grey_c[design.theme]
-            elif "interface_output" in connection.next_neuron_function:
+            elif connection.next_neuron_function == "interface_output":
                 color = design.grey_c[design.theme]
             elif activation_type == "Excitatory":
                 color = design.light_blue[design.theme]
