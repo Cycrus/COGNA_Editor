@@ -155,7 +155,7 @@ class NetworkManager:
                 return transmitter_dict["transmitters"]
 
     def load_global_info(self, path):
-        with open(self.project_path + os.sep + "global.config", "r") as file:
+        with open(path + os.sep + "global.config", "r") as file:
             global_dict = json.loads(file.read())
             self.frequency = global_dict["frequency"]
             self.main_network = global_dict["main_network"]

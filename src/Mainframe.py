@@ -400,7 +400,8 @@ class Mainframe:
         """
         show_parameters = True
         if isinstance(self.selected_entity, Connection):
-            if "neuron" in self.selected_entity.prev_neuron_function:
+            if "neuron" in self.selected_entity.prev_neuron_function and \
+                    "Interface Output" not in self.selected_entity.next_neuron_function:
                 prev_entity_name = "neuron"
                 prev_entity_id = self.selected_entity.prev_neuron
             else:
