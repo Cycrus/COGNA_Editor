@@ -1072,9 +1072,9 @@ class Mainframe:
 
         self.network_manager.add_connection(self.connection_source_neuron, self.network_manager.curr_network)
         connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
-        self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].vertices.append(
-            np.array([self.cursor_x,
-                      self.cursor_y]))
+        this_connection = self.network_manager.networks[self.network_manager.curr_network].connections[connection_position]
+        this_connection.vertices.append(np.array([self.cursor_x, self.cursor_y]))
+        this_connection.prev_subnet = neuron.subnet_id
         if neuron.function == "input" or neuron.function == "output":
             self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron_function = neuron.function
 
