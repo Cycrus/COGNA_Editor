@@ -1075,9 +1075,12 @@ class Mainframe:
         this_connection = self.network_manager.networks[self.network_manager.curr_network].connections[connection_position]
         this_connection.vertices.append(np.array([self.cursor_x, self.cursor_y]))
         this_connection.prev_subnet = neuron.subnet_id
-        if neuron.function == "input" or neuron.function == "output":
-            self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_neuron_function = neuron.function
-
+        self.network_manager.networks[self.network_manager.curr_network].connections[
+            connection_position].prev_neuron_function = neuron.function
+        if neuron.function == "input":
+            self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_subnet_node_id = neuron.id
+        elif neuron.function == "subnet_input":
+            self.network_manager.networks[self.network_manager.curr_network].connections[connection_position].prev_subnet_node_id = neuron.param.list["node_id"]
 
     def draw_connection(self):
         if self.do_connection:
@@ -1165,6 +1168,10 @@ class Mainframe:
                 connection_list[connection_position].next_neuron = neuron.id
                 connection_list[connection_position].next_subnet = neuron.subnet_id
                 connection_list[connection_position].next_neuron_function = neuron.function
+                if neuron.function == "output":
+                    connection_list[connection_position].next_subnet_node_id = neuron.id
+                elif neuron.function == "subnet_output":
+                    connection_list[connection_position].next_subnet_node_id = neuron.param.list["node_id"]
                 connection_list[connection_position].vertices[vertex_position] = [neuron.posx, neuron.posy]
             else:
                 self.discard_connection()

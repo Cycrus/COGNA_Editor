@@ -18,6 +18,8 @@ class Connection:
 
         self.next_neuron = None
         self.next_subnet = None
+        self.next_subnet_node_id = None
+        self.prev_subnet_node_id = None
         self.next_neuron_function = None
         self.next_connection = None
 

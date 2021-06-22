@@ -410,6 +410,8 @@ class NetworkManager:
             self.store_single_parameter(temp_dict, "next_subnetwork", connection.next_subnet)
             self.store_single_parameter(temp_dict, "next_neuron", connection.next_neuron)
             self.store_single_parameter(temp_dict, "next_connection", connection.next_connection)
+            self.store_single_parameter(temp_dict, "next_subnet_node_id", connection.next_subnet_node_id)
+            self.store_single_parameter(temp_dict, "prev_subnet_node_id", connection.prev_subnet_node_id)
             temp_dict["vertices"] = []
             for vert in connection.vertices:
                 temp_dict["vertices"].append([vert[0], vert[1]])
