@@ -399,6 +399,27 @@ class NetworkManager:
             self.store_single_parameter(temp_dict, "posy", subnet.posy)
             target_dict["subnetworks"].append(temp_dict)
 
+    def get_subnet_node_ids(self, connection):
+        temp_prev_node_id = None
+        temp_next_node_id = None
+        if connection.prev_neuron_function == "input":
+            temp_prev_node_id = connection.prev_neuron
+
+        elif connection.prev_neuron_function == "subnet_input":
+            for node in self.networks[self.curr_network].nodes:
+                if node.function == "subnet_input" and node.id == connection.prev_neuron:
+                    temp_prev_node_id = node.param.list["node_id"]
+
+        if connection.next_neuron_function == "output":
+            temp_next_node_id = connection.next_neuron
+
+        elif connection.next_neuron_function == "subnet_output":
+            for node in self.networks[self.curr_network].nodes:
+                if node.function == "subnet_output" and node.id == connection.next_neuron:
+                    temp_next_node_id = node.param.list["node_id"]
+
+        return temp_prev_node_id, temp_next_node_id
+
     def store_connections_in_dict(self, target_dict, network_id):
         for connection in self.networks[network_id].connections:
             temp_dict = {}
@@ -410,8 +431,12 @@ class NetworkManager:
             self.store_single_parameter(temp_dict, "next_subnetwork", connection.next_subnet)
             self.store_single_parameter(temp_dict, "next_neuron", connection.next_neuron)
             self.store_single_parameter(temp_dict, "next_connection", connection.next_connection)
-            self.store_single_parameter(temp_dict, "next_subnet_node_id", connection.next_subnet_node_id)
-            self.store_single_parameter(temp_dict, "prev_subnet_node_id", connection.prev_subnet_node_id)
+
+            temp_prev_node_id, temp_next_node_id = self.get_subnet_node_ids(connection)
+
+            self.store_single_parameter(temp_dict, "prev_subnet_node_id", temp_prev_node_id)
+            self.store_single_parameter(temp_dict, "next_subnet_node_id", temp_next_node_id)
+
             temp_dict["vertices"] = []
             for vert in connection.vertices:
                 temp_dict["vertices"].append([vert[0], vert[1]])
