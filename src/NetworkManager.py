@@ -403,20 +403,20 @@ class NetworkManager:
         temp_prev_node_id = None
         temp_next_node_id = None
         if connection.prev_neuron_function == "input":
-            temp_prev_node_id = connection.prev_neuron
+            temp_prev_node_id = int(connection.prev_neuron)
 
         elif connection.prev_neuron_function == "subnet_input":
             for node in self.networks[self.curr_network].nodes:
                 if node.function == "subnet_input" and node.id == connection.prev_neuron:
-                    temp_prev_node_id = node.param.list["node_id"]
+                    temp_prev_node_id = int(node.param.list["node_id"])
 
         if connection.next_neuron_function == "output":
-            temp_next_node_id = connection.next_neuron
+            temp_next_node_id = int(connection.next_neuron)
 
         elif connection.next_neuron_function == "subnet_output":
             for node in self.networks[self.curr_network].nodes:
                 if node.function == "subnet_output" and node.id == connection.next_neuron:
-                    temp_next_node_id = node.param.list["node_id"]
+                    temp_next_node_id = int(node.param.list["node_id"])
 
         return temp_prev_node_id, temp_next_node_id
 
