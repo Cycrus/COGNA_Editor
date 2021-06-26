@@ -1089,7 +1089,7 @@ class Mainframe:
     def discard_connection(self):
         if self.do_connection:
             connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
-            self.network_manager.delete_connection(connection_position)
+            self.network_manager.delete_connection(connection_position, self.network_manager.curr_network)
             self.do_connection = False
 
     def deselect_neurons(self):

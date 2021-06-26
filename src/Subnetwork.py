@@ -35,8 +35,8 @@ class Subnetwork:
         x_pos = min_x
         y_pos = min_y
 
-        input_count = self.input_node_number
-        output_count = self.output_node_number
+        output_count = self.input_node_number
+        input_count = self.output_node_number
 
         for pos in range(0, loop_number):
             can_create = False

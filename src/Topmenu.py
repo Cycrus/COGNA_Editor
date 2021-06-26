@@ -266,11 +266,11 @@ class Topmenu:
 
     def open_command(self, event=None, filename=None):
         self.mainframe.show_editmenu(store=True)
-        self.mainframe.deselect_all()
         error_code = self.network_manager.load_network(filename=filename)
         if error_code == Globals.SUCCESS:
             self.mainframe.reset_camera()
             self.mainframe.render_scene()
+            self.mainframe.deselect_all()
             self.mainframe.show_editmenu(store=False)
             self.create_tab(self.network_manager.curr_network)
         else:
