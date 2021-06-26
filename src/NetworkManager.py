@@ -510,10 +510,11 @@ class NetworkManager:
                 temp_connection = connection_list[len(connection_list)-1]
                 temp_connection.vertices = connection["vertices"]
                 temp_connection.prev_neuron_function = connection["prev_neuron_function"]
+                temp_connection.next_subnet = connection["next_subnetwork"]
+                temp_connection.prev_subnet = connection["prev_subnetwork"]
 
                 if "next_neuron" in connection:
                     temp_connection.next_neuron_function = connection["next_neuron_function"]
-                    temp_connection.next_subnet = connection["next_subnetwork"]
                     connection_list[len(connection_list) - 1].next_neuron = connection["next_neuron"]
                 elif "next_connection" in connection:
                     connection_list[len(connection_list)-1].next_connection = connection["next_connection"]
