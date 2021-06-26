@@ -1318,9 +1318,6 @@ class Mainframe:
                         self.selected_connection = connection.id
                         self.selected_entity = connection
                         connection_collision = True
-                        print(f"prev neuron id = {self.selected_entity.prev_neuron} : {self.selected_entity.prev_neuron_function}")
-                        print(f"next neuron id = {self.selected_entity.next_neuron} : {self.selected_entity.next_neuron_function}")
-                        print("")
                 if not connection_collision:
                     self.deselect_connections()
                 self.show_editmenu(store=False)

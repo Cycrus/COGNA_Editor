@@ -186,29 +186,33 @@ class Topmenu:
                     break
 
     def prev_network(self, event=None):
-        self.mainframe.deselect_all()
+        self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
+                                        parameter_names=self.mainframe.param_list)
         self.network_manager.curr_network = self.network_manager.curr_network - 1
         if self.network_manager.curr_network < 0:
             self.network_manager.curr_network = len(self.network_manager.networks)-1
         self.mainframe.render_scene()
-        self.mainframe.show_editmenu(store=True)
+        self.mainframe.deselect_all()
+        self.mainframe.show_editmenu(store=False)
         self.mark_active_tab()
 
     def next_network(self, event=None):
-        self.mainframe.deselect_all()
+        self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
+                                        parameter_names=self.mainframe.param_list)
         self.network_manager.curr_network = self.network_manager.curr_network + 1
         if self.network_manager.curr_network > len(self.network_manager.networks)-1:
             self.network_manager.curr_network = 0
         self.mainframe.render_scene()
-        self.mainframe.show_editmenu(store=True)
+        self.mainframe.deselect_all()
+        self.mainframe.show_editmenu(store=False)
         self.mark_active_tab()
 
     def show_specific_network(self, network_id):
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
-        self.mainframe.deselect_all()
         self.network_manager.curr_network = network_id
         self.mainframe.render_scene()
+        self.mainframe.deselect_all()
         self.mainframe.show_editmenu(store=False)
         self.mark_active_tab()
 
