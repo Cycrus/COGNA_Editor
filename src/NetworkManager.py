@@ -408,7 +408,10 @@ class NetworkManager:
         elif connection.prev_neuron_function == "subnet_input":
             for node in self.networks[self.curr_network].nodes:
                 if node.function == "subnet_input" and node.id == connection.prev_neuron:
-                    temp_prev_node_id = int(node.param.list["node_id"])
+                    try:
+                        temp_prev_node_id = int(node.param.list["node_id"])
+                    except TypeError:
+                        temp_prev_node_id = -1
 
         if connection.next_neuron_function == "output":
             temp_next_node_id = int(connection.next_neuron)
@@ -416,7 +419,10 @@ class NetworkManager:
         elif connection.next_neuron_function == "subnet_output":
             for node in self.networks[self.curr_network].nodes:
                 if node.function == "subnet_output" and node.id == connection.next_neuron:
-                    temp_next_node_id = int(node.param.list["node_id"])
+                    try:
+                        temp_next_node_id = int(node.param.list["node_id"])
+                    except TypeError:
+                        temp_prev_node_id = -1
 
         return temp_prev_node_id, temp_next_node_id
 
