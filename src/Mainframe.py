@@ -521,7 +521,8 @@ class Mainframe:
 
     def show_import_menu(self):
         network_list = self.get_network_list()
-        if network_list:
+        network_list.remove(self.network_manager.filename[self.network_manager.curr_network])
+        if len(network_list) > 0:
             self.network_option.set(network_list[0])
 
             self.parameter_textbox.append([tk.OptionMenu(self.parameter_frame[1], self.network_option, *network_list)])

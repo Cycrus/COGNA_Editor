@@ -200,6 +200,7 @@ class NetworkManager:
                 break
         return name
 
+
     def add_network(self, params=None, name=None):
         self.networks.append(Network(params))
         self.curr_network = len(self.networks)-1
@@ -214,6 +215,7 @@ class NetworkManager:
         self.camera_y.append(0.0)
         self.zoom_factor.append(1.0)
 
+
     def add_neuron(self, posx, posy, size, network_id=0, function="neuron"):
         if function == "neuron":
             temp_neuron = Neuron(len(self.networks[network_id].neurons) + null_neuron_correcter,
@@ -224,6 +226,7 @@ class NetworkManager:
                                  posx, posy, size, network_id, function=function)
             self.networks[network_id].nodes.append(temp_neuron)
 
+
     def delete_subnet(self, id, network_id=0):
         for connection in reversed(self.networks[self.curr_network].connections):
             if connection.prev_subnet == id or connection.next_subnet == id:
@@ -233,6 +236,7 @@ class NetworkManager:
         for subnet in reversed(self.networks[network_id].subnets):
             if subnet.id > id:
                 subnet.id = subnet.id - 1
+
 
     def delete_neuron(self, id, function, network_id=0):
         for connection in reversed(self.networks[network_id].connections):
