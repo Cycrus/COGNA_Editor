@@ -1192,7 +1192,7 @@ class Mainframe:
                 if can_connect:
                     vertex_position = len(connection_list[connection_position].vertices) - 1
                     connection_list[connection_position].next_connection = connection.id
-                    connection_list[connection_position].next_subnet = connection.next_subnet
+                    connection_list[connection_position].next_subnet = -1
                     connection_list[connection_position].vertices[vertex_position] = [self.cursor_x, self.cursor_y]
                 else:
                     self.discard_connection()
