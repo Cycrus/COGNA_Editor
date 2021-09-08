@@ -1073,10 +1073,11 @@ class Mainframe:
         self.network_manager.add_connection(self.connection_source_neuron, self.network_manager.curr_network)
         connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
         this_connection = self.network_manager.networks[self.network_manager.curr_network].connections[connection_position]
-        this_connection.vertices.append(np.array([self.cursor_x, self.cursor_y]))
         this_connection.prev_subnet = neuron.subnet_id
+        this_connection.vertices.append(np.array([self.cursor_x, self.cursor_y]))
         self.network_manager.networks[self.network_manager.curr_network].connections[
             connection_position].prev_neuron_function = neuron.function
+
 
     def draw_connection(self):
         if self.do_connection:
@@ -1223,10 +1224,12 @@ class Mainframe:
                         connection.vertices[0][1] = self.cursor_y
                 elif isinstance(self.selected_entity, Subnetwork):
                     for node in chain(self.selected_entity.input_node_list, self.selected_entity.output_node_list):
-                        if connection.next_neuron == node.id and connection.next_neuron_function == node.function:
+                        if connection.next_neuron == node.id and connection.next_neuron_function == node.function and \
+                                connection.next_subnet == self.selected_entity.id:
                             connection.vertices[len(connection.vertices) - 1][0] = node.posx
                             connection.vertices[len(connection.vertices) - 1][1] = node.posy
-                        elif connection.prev_neuron == node.id and connection.prev_neuron_function == node.function:
+                        elif connection.prev_neuron == node.id and connection.prev_neuron_function == node.function and \
+                                connection.prev_subnet == self.selected_entity.id:
                             connection.vertices[0][0] = node.posx
                             connection.vertices[0][1] = node.posy
 
@@ -1277,6 +1280,8 @@ class Mainframe:
                         self.create_neuron_connection(node)
                         if not self.do_connection:
                             self.connection_source_neuron = node
+                        else:
+                            neuron_collision = True
 
         if not neuron_collision and not subnet_collision:
             for connection in self.network_manager.networks[self.network_manager.curr_network].connections:
