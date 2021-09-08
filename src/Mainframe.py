@@ -1161,6 +1161,9 @@ class Mainframe:
                         if check_con.prev_neuron_function == connection_list[connection_position].prev_neuron_function \
                                 and check_con.next_neuron_function == neuron.function:
                             can_connect = False
+                if connection_list[connection_position].prev_neuron_function == "subnet_input" and neuron.function == "subnet_output":
+                    can_connect = False
+
             if can_connect:
                 vertex_position = len(connection_list[connection_position].vertices) - 1
                 connection_list[connection_position].next_neuron = neuron.id
