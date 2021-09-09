@@ -1,9 +1,24 @@
+"""
+GlobalConfig.py
+
+The settings of the dialog window for global settings of a projects.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.NetworkManager import NetworkManager
 
 
 class GlobalConfig:
     def __init__(self, root, network_manager):
+        """
+        Constructor. Builds the tkinter window for global settings.
+        :param root:            The root window of tkinter, where every other window is placed on.
+        :param network_manager: The network manager, which handles all networks and projects.
+        :return:                None
+        """
         self.root_frame = root
         self.network_manager = network_manager
         self.frame_number = 30
@@ -78,10 +93,11 @@ class GlobalConfig:
 
         self.render_editor()
 
-    def only_numbers(self, char):
-        return char.isdigit()
-
     def render_editor(self):
+        """
+        Renders the contents of the widgets in the window.
+        :return:    None
+        """
         self.main_network_menu = tk.OptionMenu(self.edit_frames[0], self.main_network_option,
                                                *self.network_list)
         self.main_network_menu.config(bg=design.grey_4[design.theme], width=20,
@@ -106,6 +122,11 @@ class GlobalConfig:
         self.fps_label.pack(side=tk.LEFT, padx=20, pady=10)
 
     def close_window(self, save):
+        """
+        Closes the window down and saves the contents of widgets/settings if save button is pressed.
+        :param save:    A boolean. If true, the content of the widgets is saved.
+        :return:        None
+        """
         if save:
             self.network_manager.main_network = self.main_network_option.get()
             self.network_manager.frequency = self.fps_entry.get()

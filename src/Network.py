@@ -1,8 +1,22 @@
+"""
+Network.py
+
+The class handling the informations and parameters for the network.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.ParameterHandler import *
 
 
 class Network:
     def __init__(self, default_params=None):
+        """
+        Constructor.
+        :param default_params:  The default parameters stored in the networks parameter.
+        :return:                None
+        """
         self.neurons = []
         self.nodes = []
         self.all_nodes = [self.neurons, self.nodes]

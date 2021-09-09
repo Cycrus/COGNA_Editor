@@ -1,3 +1,12 @@
+"""
+Mainframe.py
+
+The class controlling the appearance and function of the whole editor and parameter area.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.ParameterHandler import ParameterHandler
 from src.VectorUtils import VectorUtils
@@ -15,6 +24,7 @@ class Mainframe:
         Constructor. Creates frames, widgets, etc.
         :param root: The root frame/window of program.
         :param network_manager: The object handling all currently opened networks.
+        :return:    None
         """
         self.neuron_size = design.neuron_size
 
@@ -81,8 +91,9 @@ class Mainframe:
 
     def pack_widgets(self):
         """
-        Under construction: Will place all GUI widgets onto screen. Will be called in UI.py, to ensure correct
+        Places all GUI widgets onto the screen. Called in UI.py, to ensure correct
         order of widgets.
+        :return:    None
         """
         self.mainframe = tk.Frame(master=self.root_frame, background=design.grey_7[design.theme],
                                   borderwidth=0,
@@ -237,6 +248,12 @@ class Mainframe:
         self.switch_tool_select()
 
     def copy_entity(self, event=None):
+        """
+        An event handler for copying the parameters of a selected entity.
+        Uses the self.selected_entity member variable.
+        :parameter event:   tkinter event parameter.
+        :return:            None
+        """
         if self.tool == TOOL_SELECT:
             if self.selected_entity is not None:
                 self.clipboard = copy.deepcopy(self.selected_entity)
@@ -249,6 +266,12 @@ class Mainframe:
             self.clipboard = None
 
     def paste_entity(self, event=None):
+        """
+        An event handler for pasting the copied parameters of a selected entity.
+        Uses the self.selected_entity member variable.
+        :parameter event:   tkinter event parameter.
+        :return:            None
+        """
         if self.tool == TOOL_SELECT and self.selected_entity is not None and self.clipboard is not None:
             if isinstance(self.selected_entity, type(self.clipboard)):
                 can_copy = True
@@ -297,6 +320,13 @@ class Mainframe:
         return True
 
     def check_and_save_parameters(self, entity, container, parameter_name):
+        """
+        Checks if parameter is valid and saves a parameter locally in the entity class member parameters.
+        :param entity:          The entity which is manipulated right now (eqivalent to self.selected_entity).
+        :param container:       The tkinter widget which contains the user-edited parameter value.
+        :param parameter_name:  The name of the parameter which is currently addressed (string).
+        :return:                None
+        """
         if not ParameterHandler.is_menu(parameter_name):
             temp_param = container[0].get()
             try:
@@ -316,6 +346,9 @@ class Mainframe:
     def store_parameters(self, entity, parameter_names):
         """
         Stores all parameter, which are currently opened in the GUI.
+        :param entity:          The entity which is manipulated right now (eqivalent to self.selected_entity).
+        :param parameter_names: The list of all parameters the currently selected entity can have.
+        :return:                None
         """
         if self.tool == TOOL_SELECT:
             for i, name in enumerate(parameter_names):
@@ -329,6 +362,12 @@ class Mainframe:
                         self.check_and_save_parameters(entity, param_container, "neuron_type")
 
     def store_menu_parameters(self, option, name):
+        """
+        Stores a parameter, if it is chosen from a drop-down list.
+        :param option:  The option from the user chosen.
+        :param name:    The name of the addressed parameter.
+        :return:        None
+        """
         self.selected_entity.param.list[name] = option
         if not self.check_parameter_uniqueness(name):
             self.selected_entity.param.list[name] = None
@@ -336,11 +375,13 @@ class Mainframe:
 
     def print_entry_parameter(self, entity, entity_param, param_index, name):
         """
-        Prints the parameter into its textbox given corresponding index value.
-        :param entity: The entity the parameter is assigned to.
-        :param param_index: The index of the parameter
-        :param name: The name of the parameter. Must be given for other functions and to check for rule exceptions
-                     in parameter GUI handling.
+        Prints the parameter with a textbox into its textbox given corresponding index value.
+        :param entity:          The entity the parameter is assigned to.
+        :param entity_param:    The current parameter of the currently selected entity.
+        :param param_index:     The index of the parameter
+        :param name:            The name of the parameter. Must be given for other functions and to check for
+                                rule exceptions in parameter GUI handling.
+        :return:                None
         """
         if entity_param.list[name] is None:
             if isinstance(entity, Connection):
@@ -371,6 +412,13 @@ class Mainframe:
                 self.parameter_textbox[param_index][0].config(fg=design.dark_red[design.theme])
 
     def print_menu_parameter(self, entity, entity_param, name):
+        """
+        Prints a parameter with a drop-down menu.
+        :param entity:          The selected entity.
+        :param entity_param:    The current parameter value of the current entity.
+        :param name:            The name of the parameter.
+        :return:                None
+        """
         parameter = None
         color = design.black[design.theme]
 
@@ -396,7 +444,8 @@ class Mainframe:
 
     def show_entity_parameters(self):
         """
-        The function which renders the parameters to the left frame of the program.
+        The function which renders all parameters to the left frame of the program.
+        :return:    None
         """
         show_parameters = True
         if isinstance(self.selected_entity, Connection):
@@ -517,9 +566,17 @@ class Mainframe:
                     self.parameter_info[i].pack(side=tk.LEFT)
 
     def get_network_list(self):
+        """
+        Returns the list of all networks in the project.
+        :return:    A list of Strings of all networks in the project.
+        """
         return os.listdir(self.network_manager.project_path + os.sep + "networks")
 
     def show_import_menu(self):
+        """
+        Prints the menu to the left, if the currently selected tool is IMPORT.
+        :return:    None
+        """
         network_list = self.get_network_list()
         network_list.remove(self.network_manager.filename[self.network_manager.curr_network])
         if len(network_list) > 0:
@@ -537,6 +594,10 @@ class Mainframe:
             self.parameter_info[0].pack(side=tk.LEFT)
 
     def show_exchange_menu(self):
+        """
+        Prints the menu to the left, if the currently selected tool is EXCHANGE.
+        :return:    None
+        """
         self.exchange_option.set(self.option_list[0])
 
         self.parameter_textbox.append([tk.OptionMenu(self.parameter_frame[1], self.exchange_option, *self.option_list)])
@@ -553,8 +614,9 @@ class Mainframe:
     def show_editmenu(self, event=None, store=True):
         """
         Initializes and prepares parameter frame for rendering new parameters.
-        :param event: Variable for use as callback function
-        :param store: Determines whether parameters should be stored before rendering new parameters.
+        :param event:   tkinter parameter for use as callback function
+        :param store:   Determines whether parameters should be stored before rendering new parameters.
+        :return:        None
         """
         self.project_name_label.config(text=self.network_manager.project_name)
 
@@ -584,6 +646,7 @@ class Mainframe:
     def switch_tool_neurons(self):
         """
         Function to switch tool stance to neuron editing.
+        :return:    None
         """
         self.tool = TOOL_NEURONS
         self.selected_entity = None
@@ -600,6 +663,7 @@ class Mainframe:
     def switch_tool_connections(self):
         """
         Function to switch tool stance to connection editing.
+        :return:    None
         """
         self.tool = TOOL_CONNECTIONS
         self.selected_entity = None
@@ -615,6 +679,7 @@ class Mainframe:
     def switch_tool_select(self):
         """
         Function to switch tool stance to selecting and parameter editing.
+        :return:    None
         """
         self.tool = TOOL_SELECT
         self.neuron_button.configure(background=design.grey_3[design.theme])
@@ -630,6 +695,7 @@ class Mainframe:
     def switch_tool_import(self):
         """
         Function to switch tool stance to importing other networks.
+        :return:    None
         """
         self.tool = TOOL_IMPORT
         self.neuron_button.configure(background=design.grey_3[design.theme])
@@ -645,6 +711,7 @@ class Mainframe:
     def switch_tool_exchange(self):
         """
         Function to switch tool stance to importing other networks.
+        :return:    None
         """
         self.tool = TOOL_EXCHANGE
         self.neuron_button.configure(background=design.grey_3[design.theme])
@@ -661,6 +728,7 @@ class Mainframe:
         """
         Resets camera view and zoom.
         :param event: Parameter for use as callback function.
+        :return:    None
         """
         self.network_manager.camera_x[self.network_manager.curr_network] = self.editorcanvas.winfo_width() / 2
         self.network_manager.camera_y[self.network_manager.curr_network] = self.editorcanvas.winfo_height() / 2
@@ -670,6 +738,7 @@ class Mainframe:
     def render_grid(self):
         """
         Renders the grid onto the edit canvas, if grid snap is activated.
+        :return:    None
         """
         temp_x = self.network_manager.camera_x[self.network_manager.curr_network] % self.grid_size
         temp_y = self.network_manager.camera_y[self.network_manager.curr_network] % self.grid_size
@@ -703,6 +772,13 @@ class Mainframe:
             temp_y = temp_y + self.grid_size
 
     def get_valid_parameter_value(self, entity, param):
+        """
+        Determines a valid parameter for a selected entity in a hierarchical way. A connection looks in its source
+        neuron and a neuron looks in its neuron type.
+        :param entity:  The currently selected entity.
+        :param param:   The name of the addressed parameter.
+        :return:        The valid parameter
+        """
         return_value = None
 
         if isinstance(entity, Connection):
@@ -726,6 +802,7 @@ class Mainframe:
     def render_connections(self):
         """
         Renders all connections of the currently active network.
+        :return:    None
         """
         for connection_i, connection in enumerate(self.network_manager.networks[self.network_manager.curr_network].connections):
             distance = 5
@@ -815,6 +892,7 @@ class Mainframe:
     def render_neurons(self):
         """
         Renders all neurons of the currently active network.
+        :return:    None
         """
         temp_camera_x = self.network_manager.camera_x[self.network_manager.curr_network]
         temp_camera_y = self.network_manager.camera_y[self.network_manager.curr_network]
@@ -894,6 +972,10 @@ class Mainframe:
                                           text=temp_text, fill=design.grey_1[design.theme])
 
     def render_subnet_nodes(self, subnet):
+        """
+        Renders all subnet nodes of the current network.
+        :return:    None
+        """
         temp_camera_x = self.network_manager.camera_x[self.network_manager.curr_network]
         temp_camera_y = self.network_manager.camera_y[self.network_manager.curr_network]
         temp_zoom = self.network_manager.zoom_factor[self.network_manager.curr_network]
@@ -915,6 +997,10 @@ class Mainframe:
             self.editorcanvas.create_text(corr_x, corr_y, text=node.id)
 
     def render_subnets(self):
+        """
+        Renders all subnetworks of the current network.
+        :return:    None
+        """
         temp_camera_x = self.network_manager.camera_x[self.network_manager.curr_network]
         temp_camera_y = self.network_manager.camera_y[self.network_manager.curr_network]
         temp_zoom = self.network_manager.zoom_factor[self.network_manager.curr_network]
@@ -945,6 +1031,7 @@ class Mainframe:
     def render_ui_description(self):
         """
         Renders text elements onto the canvas.
+        :return:    None
         """
         self.editorcanvas.create_text(5, self.editorcanvas.winfo_height() - 15, anchor="w",
                                       text="Mode:", fill=design.grey_c[design.theme])
@@ -987,6 +1074,7 @@ class Mainframe:
         """
         Function responsible for calling all other rendering functions and rendering the whole scene in the
         edit canvas.
+        :return:    None
         """
         if len(self.network_manager.networks) > 0:
             if self.editorcanvas is not None:
@@ -1013,6 +1101,7 @@ class Mainframe:
     def snap_cursor_to_grid(self):
         """
         Toggles grid snapping and visibility of grid.
+        :return:    None
         """
         if self.tool != TOOL_SELECT or self.move_entity:
             if self.grid_snap:
@@ -1034,7 +1123,8 @@ class Mainframe:
     def get_free_cursor(self, event):
         """
         Returns free cursor (not snapped to the grid) to the cursor member variables, even if grid snapping is active.
-        :param event: Parameter for use as callback function.
+        :param event:   Parameter for use as callback function.
+        :return:        None
         """
         self.cursor_x = VectorUtils.correct_zoom(event.x, self.network_manager.zoom_factor[self.network_manager.curr_network]) - self.network_manager.camera_x[self.network_manager.curr_network]
         self.cursor_y = VectorUtils.correct_zoom(event.y, self.network_manager.zoom_factor[self.network_manager.curr_network]) - self.network_manager.camera_y[self.network_manager.curr_network]
@@ -1044,8 +1134,8 @@ class Mainframe:
         Returns free cursor (not snapped to the grid) to the cursor member variables, even if grid snapping is active.
         Afterwards it renders the scene and snaps cursor back to the grid.
         Useful if a very specific action should be independent from the grid.
-        :param event:
-        :return:
+        :param event:   Parameter for use as callback function.
+        :return:        None
         """
         self.get_free_cursor(event)
         self.render_scene()
@@ -1054,6 +1144,8 @@ class Mainframe:
     def add_neuron(self, function="neuron"):
         """
         Adds a neuron to the network.
+        :param function:    The function of the new neuron in its network. Can be neuron, input, output, ...
+        :return:            None
         """
         neuron_x = self.cursor_x
         neuron_y = self.cursor_y
@@ -1062,12 +1154,18 @@ class Mainframe:
     def add_subnet(self):
         """
         Adds a subnetwork to the network.
+        :return:    None
         """
         subnet_x = self.cursor_x
         subnet_y = self.cursor_y
         self.network_manager.add_subnet(self.network_option.get(), subnet_x, subnet_y, self.network_manager.curr_network)
 
     def init_connection(self, neuron):
+        """
+        Initializes a new connection.
+        :param neuron:  The neuron where the new connection starts.
+        :return:    None
+        """
         self.connecting_neuron = neuron
         self.do_connection = True
 
@@ -1081,6 +1179,11 @@ class Mainframe:
 
 
     def draw_connection(self):
+        """
+        Changes the last vertex of the connection to the position of the cursor if not yet connected with a target
+        neuron.
+        :return:    None
+        """
         if self.do_connection:
             self.render_scene()
             connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
@@ -1089,25 +1192,46 @@ class Mainframe:
                                                                                                            self.cursor_y]
 
     def discard_connection(self):
+        """
+        Discards a connection, if a cancel event happens.
+        :return:    None
+        """
         if self.do_connection:
             connection_position = len(self.network_manager.networks[self.network_manager.curr_network].connections) - 1
             self.network_manager.delete_connection(connection_position, self.network_manager.curr_network)
             self.do_connection = False
 
     def deselect_neurons(self):
+        """
+        Deselects a currently selected neuron.
+        :return:    None
+        """
         self.selected_neuron = -1
         self.selected_function = ""
 
     def deselect_connections(self):
+        """
+        Deselects a currently selected connection.
+        :return:    None
+        """
         self.selected_connection = -1
         self.selected_function = ""
        
     def deselect_all(self):
+        """
+        Deselects everything which is currently selected.
+        :return:    None
+        """
         self.deselect_neurons()
         self.deselect_connections()
         self.selected_entity = self.network_manager.networks[self.network_manager.curr_network]
 
     def escape_event(self, event):
+        """
+        Handles the press of the escape button.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.store_parameters(entity=self.selected_entity, parameter_names=self.param_list)
         self.discard_connection()
         self.deselect_neurons()
@@ -1115,6 +1239,11 @@ class Mainframe:
         self.render_scene()
 
     def delete_event(self, event):
+        """
+        Handles the deletion of a selected entity.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         if isinstance(self.selected_entity, Neuron):
             self.network_manager.delete_neuron(self.selected_neuron, self.selected_function,
                                                self.network_manager.curr_network)
@@ -1129,6 +1258,11 @@ class Mainframe:
         self.render_scene()
 
     def tab_event(self, event):
+        """
+        Handles the press of the tab button.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.escape_event(event)
         if self.tool == TOOL_SELECT:
             self.switch_tool_neurons()
@@ -1142,6 +1276,11 @@ class Mainframe:
             self.switch_tool_select()
 
     def toggle_grid_snap(self, event):
+        """
+        Toggles the grid snap function.
+        :param event: tkinter parameter for callback function.
+        :return:        None
+        """
         if self.grid_snap:
             self.grid_snap = False
         else:
@@ -1149,6 +1288,11 @@ class Mainframe:
         self.render_scene()
 
     def create_neuron_connection(self, neuron):
+        """
+        Initializes and connects a new neuron connection.
+        :param neuron:  The left clicked neuron.
+        :return:        None
+        """
         if self.do_connection and ("output" in neuron.function or "neuron" in neuron.function):
             can_connect = True
             connection_list = self.network_manager.networks[self.network_manager.curr_network].connections
@@ -1181,6 +1325,11 @@ class Mainframe:
             self.discard_connection()
 
     def create_synaptic_connection(self, connection):
+        """
+        Connects a synaptic connection.
+        :param connection:  The left clicked connection.
+        :return:            None
+        """
         if self.do_connection:
             connection_list = self.network_manager.networks[self.network_manager.curr_network].connections
             if connection.id < len(connection_list) - 1:
@@ -1204,6 +1353,11 @@ class Mainframe:
                 self.do_connection = False
 
     def move_entity_event(self, event):
+        """
+        Handles the event when an entity is moved.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         if self.move_entity and self.tool == TOOL_SELECT and self.selected_entity is not None:
             self.get_cursor_position(event)
 
@@ -1238,9 +1392,18 @@ class Mainframe:
                             connection.vertices[0][1] = node.posy
 
     def release_left_click(self, event):
+        """
+        Drops a selected entity when moved around and left click if released.
+        :return:        None
+        """
         self.move_entity = False
 
     def left_click(self, event):
+        """
+        Handles the left click eventy.
+        :param event: tkinter parameter for event callback.
+        :return:        None
+        """
         neuron_collision = False
         subnet_collision = False
         connection_collision = False
@@ -1337,10 +1500,19 @@ class Mainframe:
         self.render_scene()
 
     def motion_event(self, event):
+        """
+        Handles what happens when the cursor is moved.
+        :param event:   tkinter parameter for event handling.
+        :return:        None
+        """
         self.get_cursor_position(event)
         self.draw_connection()
 
     def delete_neuron(self):
+        """
+        Deletes a specific neuron based on the position of the cursor.
+        :return:        None
+        """
         if self.tool == TOOL_NEURONS:
             for neuron in chain(*self.network_manager.networks[self.network_manager.curr_network].all_nodes):
                 if neuron.function == "neuron":
@@ -1357,6 +1529,10 @@ class Mainframe:
         self.render_scene()
 
     def delete_connection(self):
+        """
+        Deletes a connection based on the cursor position.
+        :return:        None
+        """
         if self.tool == TOOL_CONNECTIONS and not self.do_connection:
             for connection in reversed(self.network_manager.networks[self.network_manager.curr_network].connections):
                 if VectorUtils.connection_cursor_collision(connection, self.cursor_x, self.cursor_y,
@@ -1368,6 +1544,10 @@ class Mainframe:
             self.render_scene()
 
     def delete_subnet(self):
+        """
+        Deletes a subnetwork based on the cursor position.
+        :return:        None
+        """
         if self.tool == TOOL_IMPORT:
             for subnet in reversed(self.network_manager.networks[self.network_manager.curr_network].subnets):
                 does_collide = VectorUtils.calc_rect_collision_by_size([self.cursor_x, self.cursor_y],
@@ -1380,18 +1560,33 @@ class Mainframe:
             self.render_scene()
 
     def delete_entity(self, event):
+        """
+        Deletes an entity based on cursor position.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.get_free_cursor(event)
         self.delete_neuron()
         self.delete_connection()
         self.delete_subnet()
 
     def init_camera(self, event):
+        """
+        Initializes the zoom wheel.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.prev_wheel_pos_x = event.x
         self.prev_wheel_pos_y = event.y
         self.next_wheel_pos_x = event.x
         self.next_wheel_pos_y = event.y
 
     def move_camera(self, event):
+        """
+        Moves the camera through the network.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.prev_wheel_pos_x = event.x
         self.prev_wheel_pos_y = event.y
 
@@ -1406,6 +1601,11 @@ class Mainframe:
         self.render_scene()
 
     def zoom_scene(self, event):
+        """
+        Handles the zoom of the camera.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.get_free_cursor(event)
         old_cursor_x = self.cursor_x
         old_cursor_y = self.cursor_y
@@ -1426,10 +1626,20 @@ class Mainframe:
         self.render_scene()
 
     def init_resize(self, event):
+        """
+        Sets position of the cursor for resizing.
+        :param event:   tkinter parameter for event handling.
+        :return:        None
+        """
         self.prev_wheel_pos_x = event.x
         self.next_wheel_pos_x = event.x
 
     def do_resize(self, event):
+        """
+        Resizes the parameter window when its borders are dragged.
+        :param event:   tkinter parameter for event handling.
+        :return:        None
+        """
         offset = self.editframe.winfo_width() + event.x
         self.editresize.config(width=7)
         self.editframe.config(width=offset)

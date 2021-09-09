@@ -1,8 +1,18 @@
-# Color inverter: https://colorinverter.imageonline.co/
+"""
+Design.py
 
+The class containing all colors, sizes and positions of tkinter widgets and objects in the program.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
 
 class Design:
     def __init__(self):
+        """
+        Constructor. Change values here to change the appearance of the editor.
+        :return:    None
+        """
         self.theme = 0
 
         self.grey_c = ["#CCCCCC", "#333333"]
@@ -39,4 +49,5 @@ class Design:
         self.neuron_size = 25
 
 
+# Creates a global instance of the Design class all other classes can access.
 design = Design()
