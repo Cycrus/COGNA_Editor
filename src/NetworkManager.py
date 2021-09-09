@@ -1,3 +1,12 @@
+"""
+NetworkManager.py
+
+This class handles most aspects of the networks and their entities.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.Network import *
 from src.Neuron import *
@@ -12,6 +21,10 @@ null_neuron_correcter = 1
 
 class NetworkManager:
     def __init__(self):
+        """
+        Constructor.
+        :return:    None
+        """
         self.networks = []
         self.filename = []
         self.locations = []
@@ -43,6 +56,11 @@ class NetworkManager:
             self.add_network(name="main.cogna")
 
     def get_root_path(self):
+        """
+        Finds the path of the program and its projects.
+        Every value is returned implicitly in a member variable.
+        :return:    None
+        """
         with open(os.getcwd() + os.sep + "COGNA_PATH.config", "r") as file:
             path = file.read()
             if not path:
@@ -57,18 +75,35 @@ class NetworkManager:
                 self.projects_folder = "Projects"
 
     def default_neuron_types(self):
+        """
+        Generates the default parameters for neurons and stores them in the Default neuron type.
+        :return:    None
+        """
         default_neuron_params = ParameterHandler()
         default_neuron_params.fill_in_params()
         self.neuron_types = [["Default", default_neuron_params]]
 
     def default_transmitters(self):
+        """
+        Generates the Default neurotransmitter.
+        :return:    None
+        """
         self.transmitters = ["Default"]
 
     def default_global_info(self):
+        """
+        Generates the default global values for the project.
+        :return:    None
+        """
         self.frequency = "10"
         self.main_network = "main.cogna"
 
     def new_project(self, project_name):
+        """
+        Creates a new project and sets it as the current project.
+        :param project_name:    The name of the new project.
+        :return:                None
+        """
         try:
             os.mkdir(self.root_path + os.sep + self.projects_folder)
         except:
@@ -95,6 +130,12 @@ class NetworkManager:
         self.save_neuron_types()
 
     def open_project(self, path, show_warnings=True):
+        """
+        Opens a saved project and sets it as the current project.
+        :param path:            The path to the project description file.
+        :param show_warnings:   A boolean. If set to true warnings are shown if they happen.
+        :return:                None
+        """
         if path[-1] == os.sep:
             path = path[:len(path)-1]
         self.project_name = path.split(os.sep)[-1]
@@ -127,11 +168,19 @@ class NetworkManager:
         return Globals.SUCCESS
 
     def save_meta_info(self):
+        """
+        Saves the description file with the meta info about the current project.
+        :return:    None
+        """
         with open(self.project_path + os.sep + self.project_name + ".project", "w") as file:
             file.write("Valid COGNA Project\n")
             file.write(self.project_name)
 
     def save_global_info(self):
+        """
+        Saves the global information about the current project in a file.
+        :return:    None
+        """
         dict_obj = {}
         dict_obj["frequency"] = self.frequency
         dict_obj["main_network"] = self.main_network
@@ -140,12 +189,23 @@ class NetworkManager:
             file.write(json_obj)
 
     def save_transmitters(self):
+        """
+        Saves the neurotransmitter list of the current project in a file.
+        :return:    None
+        """
         dict_obj = {"transmitters": self.transmitters}
         json_obj = json.dumps(dict_obj, indent=4)
         with open(self.project_path + os.sep + "transmitters.config", "w") as file:
             file.write(json_obj)
 
     def load_transmitters(self, project_path, override_project_transmitters=True):
+        """
+        Loads the transmitter list of a project into the memory.
+        :param project_path:                    The path of the target project.
+        :param override_project_transmitters:   A boolean. If set true, there is no return value, but the project
+                                                transmitter list is overridden implicitly.
+        :return:                                transmitter list as a dictionary
+        """
         with open(project_path + os.sep + "transmitters.config", "r") as file:
             transmitter_dict = json.loads(file.read())
             if override_project_transmitters:
@@ -155,12 +215,21 @@ class NetworkManager:
                 return transmitter_dict["transmitters"]
 
     def load_global_info(self, path):
+        """
+        Loads the global parameters of a project into memory.
+        :param path:    The path of the target project.
+        :return:        None
+        """
         with open(path + os.sep + "global.config", "r") as file:
             global_dict = json.loads(file.read())
             self.frequency = global_dict["frequency"]
             self.main_network = global_dict["main_network"]
 
     def save_neuron_types(self):
+        """
+        Saves the neuron types of the current project to a file.
+        :return:    None
+        """
         dict_obj = {}
         for neuron in self.neuron_types:
             dict_obj[neuron[0]] = {}
@@ -175,6 +244,13 @@ class NetworkManager:
             file.write(json_obj)
 
     def load_neuron_types(self, project_path, override_project_neurons=True):
+        """
+        Loads the neuron types of a project into the memory.
+        :param project_path:    The path of the target project.
+        :param override_project_neurons:    A boolean. If set to true, there is no return value, but the project
+                                            neuron type list is overridden implicitly.
+        :return:                            The list of neuron types.
+        """
         with open(project_path + os.sep + "neuron_type.config", "r") as file:
             neuron_dict = json.loads(file.read())
             if override_project_neurons:
@@ -192,6 +268,11 @@ class NetworkManager:
                 return temp_neuron_list
 
     def network_default_name(self, name_nr):
+        """
+        Generates the default names for new networks.
+        :param name_nr: The current number of the network.
+        :return:    The generated default name.
+        """
         name = "network-" + str(name_nr) + ".cogna"
         for file in self.filename:
             if name == file:
@@ -202,6 +283,12 @@ class NetworkManager:
 
 
     def add_network(self, params=None, name=None):
+        """
+        Adds a new network to the project and puts the focus on it.
+        :param params:  The parameter list given to the new network.
+        :param name:    The name of the new network.
+        :return:        None
+        """
         self.networks.append(Network(params))
         self.curr_network = len(self.networks)-1
         if name is None:
@@ -217,6 +304,15 @@ class NetworkManager:
 
 
     def add_neuron(self, posx, posy, size, network_id=0, function="neuron"):
+        """
+        Adds a new neuron to a network.
+        :param posx:        The x position of the neuron.
+        :param posy:        The y position of the neuron.
+        :param size:        The size of the neuron.
+        :param network_id:  The ID of the network where the neuron should be placed in.
+        :param function:    The function the neuron is supposed to have.
+        :return:            None
+        """
         if function == "neuron":
             temp_neuron = Neuron(len(self.networks[network_id].neurons) + null_neuron_correcter,
                                  posx, posy, size, network_id, function=function)
@@ -228,6 +324,12 @@ class NetworkManager:
 
 
     def delete_subnet(self, id, network_id=0):
+        """
+        Deletes a subnetwork from a network.
+        :param id:          The id of the subnetwork to delete.
+        :param network_id:  The id of the network where the subnetwork is in.
+        :return:            None
+        """
         for connection in reversed(self.networks[self.curr_network].connections):
             if connection.prev_subnet == id or connection.next_subnet == id:
                 self.delete_connection(connection.id, self.curr_network)
@@ -239,6 +341,13 @@ class NetworkManager:
 
 
     def delete_neuron(self, id, function, network_id=0):
+        """
+        Deletes a neuron from a network.
+        :param id:          The id of the neuron to delete.
+        :param function:    The function of the neuron to delete.
+        :param network_id:  The id of the network the neuron is in.
+        :return:            None
+        """
         for connection in reversed(self.networks[network_id].connections):
             if connection.prev_neuron == id and connection.prev_neuron_function == function \
                     or connection.next_neuron == id and connection.next_neuron_function == function:
@@ -270,10 +379,22 @@ class NetworkManager:
                     neuron.id = neuron.id - 1
 
     def add_connection(self, source_neuron, network_id=0):
+        """
+        Adds a new connection to a network. Only defines where the connection stems from.
+        :param source_neuron:   The neuron where the connection stems from.
+        :param network_id:      The id of the network where the connection should be placed.
+        :return:                None
+        """
         self.networks[network_id].connections.append(Connection(len(self.networks[network_id].connections),
                                                                 source_neuron, network_id))
 
     def delete_connection(self, id, network_id=0):
+        """
+        Deletes a connection from a network.
+        :param id:          The id of the connection to delete.
+        :param network_id:  The id of the network the connection is in.
+        :return:            None
+        """
         for connection in reversed(self.networks[network_id].connections):
             if connection.next_connection == id:
                 self.delete_connection(connection.id, network_id)
@@ -283,16 +404,30 @@ class NetworkManager:
                 connection.id = connection.id - 1
 
     def get_network_dict(self, network_name):
+        """
+        Loads the json dictionary of a network from the current project.
+        :param network_name:    The name of the network.
+        :return:                The json file of the network as a dictionary.
+        """
         with open(self.project_path + os.sep + "networks" + os.sep + network_name, "r") as file:
             network_dict = json.loads(file.read())
         return network_dict
 
     def get_neuron_types(self):
+        """
+        Loads the neuron type file of the project.
+        :return:    The neuron type file as a dictionary.
+        """
         with open(self.project_path + os.sep + "neuron_type.config", "r") as file:
             neuron_dict = json.loads(file.read())
         return neuron_dict
 
     def save_neuron_types_by_dict(self, dict):
+        """
+        Saves the neuron types from a dictionary to a file.
+        :param dict:    The dictionary to save.
+        :return:        None
+        """
         with open(self.project_path + os.sep + "neuron_type.config", "w") as file:
             neuron_json = json.dumps(dict, indent=4)
             file.write(neuron_json)
