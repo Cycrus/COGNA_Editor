@@ -1,9 +1,25 @@
+"""
+TransmitterConfigurator.py
+
+Controls the dialog box for changing transmitter types of the projects.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.NetworkManager import NetworkManager
 
 
 class TransmitterConfigurator:
     def __init__(self, root, network_manager, mainframe):
+        """
+        Constructor. Creates the dialog box.
+        :param root:            The tkinter root frame.
+        :param network_manager: The network manager object of the program.
+        :param mainframe:       The mainframe of the program.
+        :return:                None
+        """
         self.root_frame = root
         self.transmitter_list = copy.deepcopy(network_manager.transmitters)
         self.deleted_transmitters = []
@@ -77,6 +93,10 @@ class TransmitterConfigurator:
         self.save_button.pack(side=tk.RIGHT, padx=20, pady=5)
 
     def render_editor(self):
+        """
+        Renders the dialog box editor area.
+        :return:    None
+        """
         for widget in self.edit_widgets:
             if widget[0] is not None:
                 widget[0].forget()
@@ -111,6 +131,10 @@ class TransmitterConfigurator:
                     widget[1].pack(side=tk.LEFT, padx=0, pady=10)
 
     def store_transmitter(self):
+        """
+        Stores all transmitters.
+        :return:    None
+        """
         for idx, tran in enumerate(self.transmitter_list):
             if idx > 0:
                 temp_tran = self.edit_widgets[idx][0].get().replace("\n", "").replace(" ", "")
@@ -123,11 +147,20 @@ class TransmitterConfigurator:
         self.render_editor()
 
     def add_transmitter(self):
+        """
+        Adds a new transmitter without a name.
+        :return:    None
+        """
         self.store_transmitter()
         self.transmitter_list.append("")
         self.render_editor()
 
     def delete_transmitter(self, trans_index):
+        """
+        Deletes a transmitter based on its index.
+        :param trans_index: The index of the transmitter.
+        :return:            None
+        """
         self.store_transmitter()
         self.deleted_transmitters.append(self.transmitter_list[trans_index])
         self.transmitter_list.pop(trans_index)
@@ -139,6 +172,11 @@ class TransmitterConfigurator:
         self.render_editor()
 
     def close_window(self, save):
+        """
+        Closes the dialog box and saves all transmitters.
+        :param save:    A boolean indicating whether the transmitters should be saved.
+        :return:        None
+        """
         if save:
             self.store_transmitter()
             temp_list = []

@@ -1,9 +1,25 @@
+"""
+NewProject.py
+
+Controls the dialog box for creating a new project.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.NetworkManager import NetworkManager
 
 
 class NewProject:
     def __init__(self, root, network_manager, mainframe):
+        """
+        Constructor. Creates the dialog box.
+        :param root:            The tkinter root frame.
+        :param network_manager: The network manager object of the program.
+        :param mainframe:       The mainframe object of the program.
+        :return:                None
+        """
         self.root_frame = root
         self.network_manager = network_manager
         self.mainframe = mainframe
@@ -56,10 +72,20 @@ class NewProject:
         self.create_button.pack(side=tk.RIGHT, pady=20, padx=20)
 
     def project_is_unique(self, project_name):
+        """
+        Checks if the new project name is already used.
+        :param project_name:    The checked project name.
+        :return:                A boolean value indicating if the name is already used.
+        """
         existing_projects = os.listdir(os.getcwd() + os.sep + "Projects")
         return not project_name in existing_projects
 
     def close_window(self, save=False):
+        """
+        Closes the dialog box and saves the new project.
+        :param save:    A boolean indicating if the project should be saved or not.
+        :return:        None
+        """
         can_close = True
         if save:
             project_name = self.name_entry.get()

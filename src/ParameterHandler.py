@@ -1,3 +1,12 @@
+"""
+ParameterHandler.py
+
+Contains all information and methods required for using and changing COGNA parameter.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 
 neuron_activation_parameter = ["neuron_type", #String<Possible neuron types:?>
@@ -101,6 +110,10 @@ class ParameterHandler:
     param_drop_options_subnet = ["Subnet Node Settings"]
 
     def __init__(self):
+        """
+        Constructor.
+        :return:    None
+        """
         self.list = {}
         for idx, name in enumerate(connection_special_parameter):
             self.list[name] = None
@@ -124,6 +137,10 @@ class ParameterHandler:
             self.list[name] = None
 
     def fill_in_params(self):
+        """
+        Fills in the parameters with a set of default parameters.
+        :return:    None
+        """
         self.list["neuron_type"] = "Default"
         self.list["activation_threshold"] = 1.0
         self.list["used_transmitter"] = "Default"
@@ -181,9 +198,19 @@ class ParameterHandler:
         self.list["transmitter_type"] = "Default"
 
     def is_equal(self, other):
+        """
+        Checks if two parameter objects are equal.
+        :param other:   The parameter handler object to campare this one.
+        :return:        A boolean. True if both are equal.
+        """
         return self.__dict__ == other.__dict__
 
     def load_by_dict(self, loading_dict):
+        """
+        Loads a parameter list based on a loaded dictionary.
+        :param loading_dict:    The dictionary to load into the parameter list.
+        :return:                None
+        """
         keylist = loading_dict.keys()
         for idx, key in enumerate(keylist):
             if key in self.list:
@@ -196,6 +223,11 @@ class ParameterHandler:
 
     @staticmethod
     def is_menu(name):
+        """
+        Determines if a parameter is accessed with a drop down menu or an entry box.
+        :param name:    Parameter name to check.
+        :return:        A boolean which determines whether the parameter is a dropdown parameter.
+        """
         if name == "transmitter_type" or name == "used_transmitter" or name == "learning_type" or \
                 name == "activation_function" or name == "activation_type" or name == "transmitter_influence_direction" or \
                 name == "influences_transmitter" or name == "influenced_transmitter" or name == "neuron_type" or \
@@ -205,6 +237,16 @@ class ParameterHandler:
 
     @staticmethod
     def get_option_menu_list(name, network_manager, neuron_function=None, entity=None):
+        """
+        Returns the list of options for a dropdown parameter.
+        :param name:            The name of the parameter in question.
+        :param network_manager: The network manager object of the program.
+        :param neuron_function: The function of the neuron, if it is relevant. Can sometimes change what a dropdown menu
+                                contains.
+        :param entity:          The type of entity of the entity the parameter is stored in. Can sometimes change what
+                                a dropdown menu ontains.
+        :return:                A list of strings representing the list of options for the dropdown menu.
+        """
         menu = None
         if name == "influences_transmitter":
             menu = copy.copy(influences_transmitter_options)
@@ -254,6 +296,13 @@ class ParameterHandler:
 
     @staticmethod
     def get_paramter_list(parameter_selector, type, neuron_function="neuron"):
+        """
+        Based on the type of entity returns what parameter list can be accessed by the user.
+        :param parameter_selector:  The currently chosen option of the dropdown menu.
+        :param type:                The type of entity as a string.
+        :param neuron_function:     The function of a neuron, if the entity is a neuron.
+        :return:                    The parameter list.
+        """
         param_list = None
 
         if type == "Connection":
@@ -316,6 +365,12 @@ class ParameterHandler:
 
     @staticmethod
     def get_base_neuron(neuron_type_list, entity_param):
+        """
+        Returns the parameter list of the neuron type of a neuron.
+        :param neuron_type_list:    The list of all neuron types in the project.
+        :param entity_param:        The parameter list which should be checked for a neuron type.
+        :return:                    The parameter list of the neuron type.
+        """
         neuron_type = neuron_type_list[0][1]
         for n_type in neuron_type_list:
             if n_type[0] == entity_param.list["neuron_type"]:
@@ -324,6 +379,11 @@ class ParameterHandler:
 
     @staticmethod
     def deny_scientific_notation(param):
+        """
+        Forces floating point notation for floats. Otherwise python always tries to print those in scientific notations.
+        :param param:   The value of the parameter to change to floating point notation.
+        :return:        The float as a string.
+        """
         try:
             regex = re.compile("(-?[0-9]*(\.[0 -9]*[1-9])?)", re.IGNORECASE)
             param_str = regex.findall(format(param, ".15f"))

@@ -1,9 +1,29 @@
+"""
+Subnetwork.py
+
+The class containing all information of a subnetwork.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.Neuron import *
 
 
 class Subnetwork:
     def __init__(self, id, network_name, posx, posy, network_id, input_nodes, output_nodes):
+        """
+        Constructor.
+        :param id:              The ID of the new subnetwork.
+        :param network_name:    The name of the new subnetwork.
+        :param posx:            x position of the new subnetwork.
+        :param posy:            y position of the new subnetwork.
+        :param network_id:      The ID of the network where the subnetwork should be added in.
+        :param input_nodes:     The number of input nodes of the subnetwork.
+        :param output_nodes:    The number of output nodes of the subnetwork.
+        :return:                None
+        """
         self.id = id
         self.network_name = network_name
         self.posx = posx
@@ -24,6 +44,10 @@ class Subnetwork:
         self.generate_node_lists()
 
     def generate_node_lists(self):
+        """
+        Generates the input and output nodes which are drawn to the screen.
+        :return:    None
+        """
         loop_number = (self.size_x * 4 + self.size_y * 4) // 50
         direction = "right"
 
@@ -95,6 +119,13 @@ class Subnetwork:
                     y_pos = y_pos - 50
 
     def set_node_position(self, prev_x, prev_y, new_x, new_y):
+        """
+        Resets the position of all nodes if the subnetwork moves.
+        :param prev_x:  The previous x position of the subnetwork.
+        :param prev_y:  The previous y position of the subnetwork.
+        :param new_x:   The new x position of the subnetwork.
+        :param new_y:   The new y position of the subnetwork.
+        """
         for node in chain(self.input_node_list, self.output_node_list):
             node.posx = node.posx + (new_x - prev_x)
             node.posy = node.posy + (new_y - prev_y)

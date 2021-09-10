@@ -1,3 +1,12 @@
+"""
+NeuronConfigurator.py
+
+Controls the dialog box for configuring the neuron types of the current project.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.NetworkManager import NetworkManager
 from src.ParameterHandler import ParameterHandler
@@ -5,6 +14,13 @@ from src.ParameterHandler import ParameterHandler
 
 class NeuronConfigurator:
     def __init__(self, root, mainframe, network_manager):
+        """
+        Constructor. Creates the dialog box.
+        :param root:            The tkinter root frame.
+        :param mainframe:       The mainframe of the program.
+        :param network_manager: The network manager object of the program.
+        :return:                None
+        """
         self.root_frame = root
         self.mainframe = mainframe
         self.neuron_list = copy.deepcopy(network_manager.neuron_types)
@@ -108,9 +124,16 @@ class NeuronConfigurator:
         self.top_frame.bind("<Return>", self.render_parameter)
 
     def __del__(self):
+        """
+        Destructor.
+        """
         self.close_window(save=False)
 
     def render_buttons(self):
+        """
+        Renders all buttons on the dialog box.
+        :return:    None
+        """
         for buttons in self.neuron_buttons:
             if buttons[0] is not None:
                 buttons[0].forget()
@@ -146,6 +169,12 @@ class NeuronConfigurator:
                 button[1].pack(side=tk.RIGHT, pady=20, padx=20)
 
     def print_parameter(self, entity, param_index, param_name):
+        """
+        Prints a parameter into its widget.
+        :param entity:      The neuron type entity which is addressed for printing.
+        :param param_index: The index of the printed parameter.
+        :param param_name:  The name of the printed parameter.
+        """
         if entity.list[param_name] is None:
             self.param_textbox[param_index][0].insert(tk.END, "Invalid")
             self.param_textbox[param_index][0].config(fg=design.dark_red[design.theme])
@@ -154,6 +183,10 @@ class NeuronConfigurator:
             self.param_textbox[param_index][0].insert(tk.END, param_string)
 
     def get_current_neuron_entity(self):
+        """
+        Returns the currently active neuron type entity.
+        :return:    The currently active neuron type entity.
+        """
         curr_neuron_entity = None
         for idx, neuron in enumerate(self.neuron_list):
             if self.curr_neuron == neuron[0]:
@@ -162,10 +195,20 @@ class NeuronConfigurator:
         return curr_neuron_entity
 
     def store_option_parameter(self, option, name):
+        """
+        Stores a parameter in the neuron type.
+        :param option:  The new value of the parameter.
+        :param name:    The name of the addressed parameter.
+        :return:        None
+        """
         curr_neuron_entity = self.get_current_neuron_entity()
         curr_neuron_entity.list[name] = option
 
     def store_parameter(self):
+        """
+        Saves all parameters of the currently active neuron type.
+        :return:    None
+        """
         curr_neuron_entity = self.get_current_neuron_entity()
 
         for idx, container in enumerate(self.param_textbox):
@@ -177,6 +220,12 @@ class NeuronConfigurator:
                     curr_neuron_entity.list[container[1]] = None
 
     def render_parameter(self, event=None, store=True):
+        """
+        Renders all parameters and their widgets.
+        :param event:   tkinter parameter for event callback.
+        :param store:   A boolean indicating if the parameters should be stored before rendering.
+        :return:        None
+        """
         if store:
             self.store_parameter()
 
@@ -225,12 +274,22 @@ class NeuronConfigurator:
             self.param_info[i].pack(side=tk.LEFT, padx=20, pady=10)
 
     def switch_neuron(self, n):
+        """
+        Switches the currently active neuron and calls all functions for that.
+        :param n:   The name of the neuron which should be activated.
+        :return:    None
+        """
         self.store_parameter()
         self.curr_neuron = n[0]
         self.render_buttons()
         self.render_parameter(store=False)
 
     def del_neuron(self, n):
+        """
+        Deletes a neuron type based on its name.
+        :param n:   The name of the neuron which should be activated.
+        :return:    None
+        """
         for idx, neuron in enumerate(self.neuron_list):
             if n == neuron:
                 self.deleted_neurons.append(neuron[0])
@@ -247,6 +306,10 @@ class NeuronConfigurator:
         self.render_parameter()
 
     def add_neuron_window(self):
+        """
+        Activates another dialog box for naming a new neuron.
+        :return:    None
+        """
         def add_neuron():
             self.store_parameter()
             name = add_entry.get()
@@ -291,6 +354,11 @@ class NeuronConfigurator:
         add_frame.grab_set()
 
     def close_window(self, save):
+        """
+        Closes the dialog box and saves the neuron types.
+        :param save:    A boolean indicating if the neuron types should be saved.
+        :return:        None
+        """
         if save:
             self.store_parameter()
             error_code = self.network_manager.save_storing(["neuron_type"], self.deleted_neurons, [self.neuron_list[0][0]])

@@ -1,3 +1,12 @@
+"""
+Topmenu.py
+
+Controls the menu at the top of the window and a lot of project operations.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 from src.Mainframe import *
 from src.TransmitterConfigurator import TransmitterConfigurator
@@ -11,6 +20,13 @@ from src.GlobalConfig import GlobalConfig
 
 class Topmenu:
     def __init__(self, root, network_manager, mainframe):
+        """
+        Constructor. Creates the menu.
+        :param root:            The tkinter root frame.
+        :param network_manager: The network manager object of the program.
+        :param mainframe:       The mainframe of the program.
+        :return:                None
+        """
         self.root_frame = root
         self.network_manager = network_manager
         self.mainframe = mainframe
@@ -101,19 +117,40 @@ class Topmenu:
         self.create_spashscreen()
 
     def copy_entity(self):
+        """
+        For binding a key to copying an entity.
+        :return:    None
+        """
         self.mainframe.copy_entity()
 
     def paste_entity(self):
+        """
+        For binding a key to pasting an entity.
+        :return:    None
+        """
         self.mainframe.paste_entity()
 
     def create_spashscreen(self):
+        """
+        Creates the slashscreen. Not finished yet.
+        """
         #splash_screen = SplashScreen(self.network_manager, self.root_frame)
         pass
 
     def create_tab_text(self, network_id):
+        """
+        Returns the name of a network as a String. For putting in the tabs later.
+        :param network_id:  The ID of the network.
+        :return:            The Filename of the network.
+        """
         return self.network_manager.filename[network_id]
 
     def create_tab(self, network_id):
+        """
+        Creates a new tab and associates it with a network.
+        :param network_id:  The ID of the new tab.
+        :return:            None
+        """
         temp_frame = tk.Frame(master=self.tabframe, background=design.grey_4[design.theme],
                               borderwidth=0,
                               highlightthickness=1,
@@ -141,6 +178,11 @@ class Topmenu:
         self.mark_active_tab()
 
     def delete_tab(self, network_id):
+        """
+        Deletes a certain tab.
+        :param network_id:  The ID of the network to delete.
+        :return:            None
+        """
         if len(self.tablist) > 1:
             self.tablist.pop(network_id)
             for idx, tab in enumerate(self.tablist):
@@ -159,6 +201,10 @@ class Topmenu:
         self.mark_active_tab()
 
     def mark_active_tab(self):
+        """
+        Changes the design of the active tab.
+        :return:    None
+        """
         for tab in self.tablist:
             if tab[1] == self.network_manager.curr_network:
                 tab[0].config(background=design.dark_blue[design.theme])
@@ -170,11 +216,21 @@ class Topmenu:
             tab[2].config(text=tab_text)
 
     def resize_window(self, event):
+        """
+        Event handler for resizing the window.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         for tab in self.tablist:
             tab[0].config(width=self.root_frame.winfo_width()/len(self.tablist))
         self.mainframe.render_scene()
 
     def click_tab(self, event=None):
+        """
+        Event handler for clicking a tab. Changes to the selected tab.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         for tab in self.tablist:
             if event.widget == tab[0] or event.widget == tab[2]:
                 if event.num == 1:
@@ -186,6 +242,11 @@ class Topmenu:
                     break
 
     def prev_network(self, event=None):
+        """
+        Selects the previous network.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.network_manager.curr_network = self.network_manager.curr_network - 1
@@ -197,6 +258,11 @@ class Topmenu:
         self.mark_active_tab()
 
     def next_network(self, event=None):
+        """
+        Selects the next network.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.network_manager.curr_network = self.network_manager.curr_network + 1
@@ -208,6 +274,11 @@ class Topmenu:
         self.mark_active_tab()
 
     def show_specific_network(self, network_id):
+        """
+        Selects a specific network based on ID.
+        :param network_id:   The ID of the network to select.
+        :return:            None
+        """
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.network_manager.curr_network = network_id
@@ -217,10 +288,20 @@ class Topmenu:
         self.mark_active_tab()
 
     def new_project_command(self, event=None):
+        """
+        Opens the dialog box for creating a new project.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         new_project_frame = NewProject(self.root_frame, self.network_manager, self.mainframe)
         self.close_all_command()
 
     def open_project_command(self, event=None):
+        """
+        Opens the dialog box for opening a network.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.mainframe.deselect_all()
         file = filedialog.askopenfile(initialdir=self.network_manager.root_path + os.sep + self.network_manager.projects_folder,
                                       title="Open Project", filetypes=(("project files", "*.project"),))
@@ -255,6 +336,12 @@ class Topmenu:
         file.close()
 
     def new_command(self, event=None, filename=None):
+        """
+        Creates a new network and adds a tab for it.
+        :param event:       tkinter parameter for event callback.
+        :param filename:    The filename of the new network.
+        :return:            None
+        """
         self.mainframe.store_parameters(entity=self.mainframe.selected_entity,
                                         parameter_names=self.mainframe.param_list)
         self.mainframe.deselect_all()
@@ -265,6 +352,12 @@ class Topmenu:
         self.create_tab(self.network_manager.curr_network)
 
     def open_command(self, event=None, filename=None):
+        """
+        Opens an existing network of the project.
+        :param event:       tkinter parameter for event callback.
+        :param filename:    The name of the network to open.
+        :return:            None
+        """
         self.mainframe.show_editmenu(store=True)
         error_code = self.network_manager.load_network(filename=filename)
         if error_code == Globals.SUCCESS:
@@ -277,6 +370,11 @@ class Topmenu:
             self.mark_active_tab()
 
     def import_command(self, event=None):
+        """
+        Opens the dialogbox for importing a foreign network.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.mainframe.show_editmenu(store=True)
         self.mainframe.deselect_all()
         error_code = self.network_manager.import_network()
@@ -289,16 +387,31 @@ class Topmenu:
             self.mark_active_tab()
 
     def save_command(self, event=None):
+        """
+        Saves the currently active network.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.mainframe.show_editmenu(store=True)
         self.network_manager.save_network(save_as=False)
         self.mark_active_tab()
 
     def save_as_command(self, event=None):
+        """
+        Saves the currently active network with a "save as" dialogbox.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         self.mainframe.show_editmenu(store=True)
         self.network_manager.save_network(save_as=True)
         self.mark_active_tab()
 
     def delete_network(self, network_id):
+        """
+        Deletes a network based on its ID.
+        :param network_id:  The ID of the network to delete.
+        :return:            None
+        """
         if len(self.network_manager.networks) > 0:
             reset_view = self.network_manager.clear_single_network(network_id)
             self.delete_tab(network_id)
@@ -307,6 +420,12 @@ class Topmenu:
         self.mainframe.show_editmenu(store=False)
 
     def close_command(self, event=None, del_network=None):
+        """
+        Eventhandler for closing down a network.
+        :param event:       tkinter parameter for event callback.
+        :param del_network: The ID of the network to delete. If None the current network will be deleted.
+        :return:            None
+        """
         if del_network is None:
             deleted_network = self.network_manager.curr_network
         else:
@@ -319,30 +438,64 @@ class Topmenu:
         self.mark_active_tab()
 
     def close_all_command(self, event=None):
+        """
+        Closes all networks down.
+        :param event:   tkinter parameter for event callback.
+        :return:        None
+        """
         for tab in reversed(self.tablist):
             self.delete_network(self.network_manager.curr_network)
         self.mainframe.render_scene()
         self.mark_active_tab()
 
     def neuron_config_command(self):
+        """
+        Opens dialogbox for neuron type configuration.
+        :return:    None
+        """
         neuron_configurator = NeuronConfigurator(self.root_frame, self.mainframe, self.network_manager)
 
     def transmitter_config_command(self):
+        """
+        Opens dialogbox for neurotransmitter configuration.
+        :return:    None
+        """
         transmitter_configurator = TransmitterConfigurator(self.root_frame, self.network_manager, self.mainframe)
 
     def plasticity_rules_command(self):
+        """
+        No finished yet. Opens dialogbox for plasticity configuration.
+        :return:    None
+        """
         pass
 
     def global_config_command(self):
+        """
+        Opens dialogbox for global configuration.
+        :return:    None
+        """
         global_configurator = GlobalConfig(self.root_frame, self.network_manager)
 
     def grid_command(self):
+        """
+        Toggles grid snap of cursor on the canvas.
+        :return:    None
+        """
         self.mainframe.toggle_grid_snap(None)
 
     def reset_view_command(self):
+        """
+        Resets the camera view on the canvas to the center.
+        :return:    None
+        """
         self.mainframe.reset_camera(None)
 
     def toggle_mode(self, mode):
+        """
+        Toggles between dark mode and light mode.
+        :param mode:    The mode to select.
+        :return:        None
+        """
         if mode == "Light":
             design.theme = 1
         elif mode == "Dark":
@@ -398,12 +551,21 @@ class Topmenu:
         self.root_frame.update()
 
     def show_about(self):
+        """
+        Shows information about the program.
+        :return:    None
+        """
         messagebox.showinfo('About COGNA Editor',
                             'Editor for constructing COGNA network architectures.\n'
                             'Author: Cyril Marx\n'
                             'Copyright (c) by Cyril Marx 2021')
 
     def show_help(self, event=None):
+        """
+        Shows helf for the program in the web browser.
+        :param event:       tkinter parameter for event callback.
+        :return:            None
+        """
         if platform == "linux" or platform == "linux2":
             error_code = os.system("google-chrome html" + os.sep + "help.html")
             if error_code != Globals.SUCCESS:
@@ -413,10 +575,3 @@ class Topmenu:
                                      "Cannot open help file probably due to unexpected browser. Try opening html/help manually.")
         elif platform == "win32":
             os.system("start html" + os.sep + "help.html")
-
-    def show_controls(self):
-        messagebox.showinfo("Controls of COGNA Editor",
-                            "Select tool with top left buttons [S][N][C]:\n"
-                            "   [S] Select and control parameters\n"
-                            "   [N] Add and manipulate neurons\n"
-                            "   [C] Add and manipulate connections")

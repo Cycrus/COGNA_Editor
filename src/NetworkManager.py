@@ -433,6 +433,11 @@ class NetworkManager:
             file.write(neuron_json)
 
     def load_network_nodes(self, network_name):
+        """
+        Loads the input/output nodes of a certain network.
+        :param network_name:    The name of the network from which the nodes should be loaded.
+        :return:                A tuple with the input node list at index 0 and the output node list at index 1.
+        """
         input_nodes = 0
         output_nodes = 0
         with open(self.project_path + os.sep + "networks" + os.sep + network_name, "r") as file:
@@ -449,12 +454,25 @@ class NetworkManager:
         return input_nodes, output_nodes
 
     def add_subnet(self, network_name, posx, posy, network_id=0):
+        """
+        Adds a subnetwork to a certain opened network.
+        :param network_name:    The name of the network the new subnet refers to.
+        :param posx:            The x position of the subnetwork.
+        :param posy:            The y position of the subnetwork.
+        :param network_id:      The ID of the opened network the new subnet is added to.
+        :return:                None
+        """
         input_nodes, output_nodes = self.load_network_nodes(network_name)
         temp_subnet = Subnetwork(len(self.networks[network_id].subnets), network_name, posx, posy, network_id,
                                  input_nodes, output_nodes)
         self.networks[network_id].subnets.append(temp_subnet)
 
     def clear_all_networks(self):
+        """
+        Clears all opened networks and deletes them from the opened networks.
+        Adds one new empty network at the end of the procedure.
+        :return:    None
+        """
         for network_id, network in enumerate(self.networks):
             network.connections.clear()
             network.neurons.clear()
@@ -468,6 +486,12 @@ class NetworkManager:
         self.add_network()
 
     def clear_single_network(self, network_id):
+        """
+        Clears every entity of a single network and removes it from the opened networks.
+        If 0 networks are left one empty network is added.
+        :param network_id:  The network which should be deleted.
+        :return:            None
+        """
         for idx, network in enumerate(self.networks):
             if idx > network_id:
                 for neuron in chain(*network.all_nodes):
@@ -497,20 +521,45 @@ class NetworkManager:
         return Globals.SUCCESS
 
     def convert_parameter_to_dict(self, target_dict, parameter):
+        """
+        Converts the parameters of an entity to a dictionary. Return value is implicit to a function parameter.
+        :param target_dict: The dictionary all parameters should be added to.
+        :param parameter:   The parameter list of the entity which should be converted.
+        :return:            None
+        """
         for idx, param in enumerate(parameter):
             if parameter[param] is not None:
                 target_dict[param] = ParameterHandler.deny_scientific_notation(parameter[param])
 
     def store_single_parameter(self, target_dict, param, value):
+        """
+        Append a single parameter of a parameter list of an entity to a dictionary.
+        Return value is implicit to a function parameter.
+        :param target_dict: The dictionary the parameter should be added to.
+        :param param:       The name of the parameter which should be added to the dictionary.
+        :param value:       The value of the parameter which should be added to the dictionary.
+        """
         if value is not None:
             target_dict[param] = value
 
     def store_network_param_in_dict(self, network_id):
+        """
+        Stores all network-parameters of an opened network to a dictionary.
+        :param network_id:  The ID of the opened network to be stored in a dictionary.
+        :return:            None
+        """
         temp_dict = {}
         self.convert_parameter_to_dict(temp_dict, self.networks[network_id].param.list)
         return temp_dict
 
     def store_neurons_in_dict(self, target_dict, network_id):
+        """
+        Stores parameters of all neurons of a single opened network in a dictionary.
+        Return value is implicit to a function parameter.
+        :param target_dict: The dictionary where the parameters should be stored in.
+        :param network_id:  The ID of the opened network which should be stored.
+        :return:            None
+        """
         for neuron in self.networks[network_id].neurons:
             temp_dict = {}
             self.store_single_parameter(temp_dict, "id", neuron.id)
@@ -520,6 +569,13 @@ class NetworkManager:
             target_dict["neurons"].append(temp_dict)
 
     def store_nodes_in_dict(self, target_dict, network_id):
+        """
+        Stores parameters of all input/output nodes of a single opened network in a dictionary.
+        Return value is implicit to a function parameter.
+        :param target_dict: The dictionary where the parameters should be stored in.
+        :param network_id:  The ID of the opened network which should be stored.
+        :return:            None
+        """
         for node in self.networks[network_id].nodes:
             temp_dict = {}
             self.store_single_parameter(temp_dict, "id", node.id)
@@ -530,6 +586,13 @@ class NetworkManager:
             target_dict["nodes"].append(temp_dict)
 
     def store_subnets_in_dict(self, target_dict, network_id):
+        """
+        Stores parameters of all subnets of a single opened network in a dictionary.
+        Return value is implicit to a function parameter.
+        :param target_dict: The dictionary where the parameters should be stored in.
+        :param network_id:  The ID of the opened network which should be stored.
+        :return:            None
+        """
         for subnet in self.networks[network_id].subnets:
             temp_dict = {}
             self.store_single_parameter(temp_dict, "id", subnet.id)
@@ -539,6 +602,12 @@ class NetworkManager:
             target_dict["subnetworks"].append(temp_dict)
 
     def get_subnet_node_ids(self, connection):
+        """
+        Finds and returns the IDs of the subnetwork related input/output nodes connected to a single connection.
+        :param connection:  The connection object which should be searched in.
+        :return:            A tuple with the prev node ID at index 0 and next node ID at index 1.
+                            If a prev or next node is not subnetwork input/output related, it stores a None value.
+        """
         temp_prev_node_id = None
         temp_next_node_id = None
         if connection.prev_neuron_function == "input":
@@ -566,6 +635,13 @@ class NetworkManager:
         return temp_prev_node_id, temp_next_node_id
 
     def store_connections_in_dict(self, target_dict, network_id):
+        """
+        Stores parameters of all connections of a single opened network in a dictionary.
+        Return value is implicit to a function parameter.
+        :param target_dict: The dictionary where the parameters should be stored in.
+        :param network_id:  The ID of the opened network which should be stored.
+        :return:            None
+        """
         for connection in self.networks[network_id].connections:
             temp_dict = {}
             self.store_single_parameter(temp_dict, "id", connection.id)
@@ -589,6 +665,11 @@ class NetworkManager:
             target_dict["connections"].append(temp_dict)
 
     def store_network_in_json(self, network_id):
+        """
+        Stores a whole opened network and all its entities in a json format.
+        :param network_id:  The ID of the saved network which should be saved.
+        :return:            The json formatted network.
+        """
         network_dict = {}
         network_dict["network"] = self.store_network_param_in_dict(network_id)
 
@@ -608,11 +689,21 @@ class NetworkManager:
         return network_json
 
     def read_parameter_list(self, param_dict):
+        """
+        Reads a parameter dictionary into a parameter object which can be addressed to an entity.
+        :param param_dict:  The dictionary where the parameters are stored.
+        :return:            The finished parameter object.
+        """
         parameter = ParameterHandler()
         parameter.load_by_dict(param_dict)
         return parameter
 
     def read_neurons_from_dict(self, neurons_dict):
+        """
+        Reads all neurons of a network from a neuron list dictionary into neuron entity objects.
+        :param neurons_dict:    The dictionary where the neurons are saved.
+        :return:                None
+        """
         for neuron in neurons_dict:
             try:
                 neuron_list = self.networks[self.curr_network].neurons
@@ -622,6 +713,11 @@ class NetworkManager:
                 pass
 
     def read_nodes_from_dict(self, nodes_dict):
+        """
+        Reads all input/output nodes of a node list dictionary into neuron entity objects.
+        :param nodes_dict:      The dictionary where the nodes are saved.
+        :return:                None
+        """
         for node in nodes_dict:
             try:
                 node_list = self.networks[self.curr_network].nodes
@@ -632,6 +728,11 @@ class NetworkManager:
                 pass
 
     def read_subnets_from_dict(self, subnet_dict):
+        """
+        Reads all subnetworks of a subnetwork list dictionary into subnetwork entity objects.
+        :param subnet_dict:     The dictionary where the subnetworks are saved.
+        :return:                A list of error codes.
+        """
         error_ids = []
         for subnet in subnet_dict:
             try:
@@ -641,6 +742,13 @@ class NetworkManager:
         return error_ids
 
     def read_connections_from_dict(self, connections_dict, error_subnets):
+        """
+        Reads all connections of a connection list dictionary into connection entity objects.
+        :param connection_dict:     The dictionary where the connections are saved.
+        :param error_subnets:       List of subnetworks in the network where the connections are in.
+                                    Checks if the connection is associated with a stored subnetwork of the network.
+        :return:                    None
+        """
         for connection in connections_dict:
             try:
                 if connection["next_subnetwork"] in error_subnets or \
@@ -669,6 +777,11 @@ class NetworkManager:
                 pass
 
     def load_network(self, filename=None):
+        """
+        Loads a whole network into the project and adds it to the opened networks.
+        :param filename:    The name of the network.
+        :return:            Error Code.
+        """
         if filename is None:
             file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "networks", title="Save Network",
                                           filetypes=(("cogna network", "*.cogna"),))
@@ -709,6 +822,12 @@ class NetworkManager:
         return Globals.SUCCESS
 
     def check_if_networkfile_exists(self, file):
+        """
+        Checks if the asked network-name already exists in the project. If it does, it will be renamed by adding a
+        number at the end.
+        :param file:    The filename which should be checked.
+        :return:        The old or new name as a String.
+        """
         network_name = file.name.split(os.sep)[-1]
         temp_network_name = network_name.rsplit('.', 1)[0]
         name_iterator = 2
@@ -726,6 +845,11 @@ class NetworkManager:
         return temp_network_name + ".cogna"
 
     def import_network(self):
+        """
+        Imports a whole network from another project into the currently open project. Adds the network, its neuron types,
+        and its neurotransmitters as well.
+        :return:    Error Code
+        """
         file = filedialog.askopenfile(initialdir=self.project_path + os.sep + "..", title="Save Network",
                                       filetypes=(("cogna network", "*.cogna"),))
 
@@ -797,11 +921,22 @@ class NetworkManager:
         return Globals.SUCCESS
 
     def save_network_by_dict(self, network_name, network_dict):
+        """
+        Saves a complete and prepared network dictionary to a file.
+        :param network_name:    The name under which the network should be saved.
+        :param network_dict:    The dictionary which should be saved under the filename.
+        :return:                None
+        """
         network_json = json.dumps(network_dict, indent=4)
         with open(self.project_path + os.sep + "networks" + os.sep + network_name, "w") as file:
             file.write(network_json)
 
     def save_network(self, save_as):
+        """
+        Saves the currently active network to a file.
+        :param save_as: The filename under which the network should be saved.
+        :return:        None
+        """
         file = None
 
         if not save_as:
@@ -835,10 +970,22 @@ class NetworkManager:
         file.close()
 
     def get_network_list(self):
+        """
+        Returns the whole list of all networks in the currently opened project.
+        :return:    The list of network names.
+        """
         path = self.project_path + os.sep + "networks"
         return os.listdir(path)
 
     def save_storing(self, parameter_names, prev_values, new_values):
+        """
+        Checks conditions of saving a certain parameter list and changes all networks based on the changes.
+        E.g. used in NeuronConfigurator.py and TransmitterConfigurator.py.
+        :param parameter_names: The names of all parameters.
+        :param prev_values:     The values of the parameters in parameter_names before changing.
+        :param new_values:      The values of the parameters in parameter_names after changing.
+        :return:                Error Code
+        """
         if len(new_values) == 1:
             temp_value = new_values[0]
             new_values = []

@@ -1,3 +1,12 @@
+"""
+SplashScreen.py
+
+Not finished. Will maybe be a splashscreen before the project starts.
+
+Author: Cyril Marx
+Date: 09.09.2021
+"""
+
 from src.GlobalLibraries import *
 
 class SplashScreen:
