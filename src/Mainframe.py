@@ -457,7 +457,8 @@ class Mainframe:
                 prev_entity_name = "node"
                 prev_entity_id = self.selected_entity.prev_neuron
                 show_parameters = False
-            if self.selected_entity.next_neuron_function is None:
+
+            if "connection" in self.selected_entity.next_neuron_function:
                 next_entity_name = "connection"
                 next_entity_id = self.selected_entity.next_connection
             elif "neuron" in self.selected_entity.next_neuron_function:
@@ -1347,6 +1348,7 @@ class Mainframe:
                     vertex_position = len(connection_list[connection_position].vertices) - 1
                     connection_list[connection_position].next_connection = connection.id
                     connection_list[connection_position].next_subnet = -1
+                    connection_list[connection_position].next_neuron_function = "connection"
                     connection_list[connection_position].vertices[vertex_position] = [self.cursor_x, self.cursor_y]
                 else:
                     self.discard_connection()
