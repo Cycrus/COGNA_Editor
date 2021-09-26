@@ -1175,8 +1175,7 @@ class Mainframe:
         this_connection = self.network_manager.networks[self.network_manager.curr_network].connections[connection_position]
         this_connection.prev_subnet = neuron.subnet_id
         this_connection.vertices.append(np.array([self.cursor_x, self.cursor_y]))
-        self.network_manager.networks[self.network_manager.curr_network].connections[
-            connection_position].prev_neuron_function = neuron.function
+        this_connection.prev_neuron_function = neuron.function
 
 
     def draw_connection(self):
@@ -1338,7 +1337,8 @@ class Mainframe:
                 connection_position = len(connection_list) - 1
                 for check_con in connection_list:
                     if check_con.prev_neuron == connection_list[connection_position].prev_neuron \
-                            and check_con.next_connection == connection.id:
+                            and check_con.next_connection == connection.id \
+                            and check_con.prev_neuron_function == connection_list[connection_position].prev_neuron_function:
                         can_connect = False
                         break
                 if "neuron" not in connection.prev_neuron_function:
