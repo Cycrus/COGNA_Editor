@@ -62,7 +62,7 @@ class NetworkManager:
         :return:    None
         """
         with open(os.getcwd() + os.sep + "COGNA_PATH.config", "r") as file:
-            path = file.read()
+            path = file.read().rstrip("\n")
             if not path:
                 self.root_path = os.getcwd()
                 self.projects_folder = "Projects"
