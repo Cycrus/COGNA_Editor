@@ -17,7 +17,7 @@ The left side shows at the top the different tools you can use:
 - N: The neuron tool. With left click you can place new neurons, with right click, you can remove them.
 - C: The connection tool. With left click on a neuron you can start a new connection. Then click on a neuron, an output node or on another connection to connect it with this entity.
 - I: The incode tool. With this you can include all other networks in the network folder of your current project. Only possible if another network exists, which enables a drop down list on the left side. You can connect the included network with your outer network if you defined input/output nodes in the inner network.
-- E: The exchange tool. With this you can place nodes. Subnet input/output are used with an ID. Interface input/output are UDP networking nodes which can be given an ip address to send to or receive from, a port, and a channel, which defines the position of a message coming in on the same port.
+- E: The exchange tool. With this you can place nodes. Subnet input/output are used with an ID. Interface input/output are UDP networking nodes which can be given an ip address to send to or receive from, a port, and a channel, which defines the position of a message coming in on the same port. Subnet nodes can only be given an ID and therefore be activated, if the parameters input_nodes/output_nodes in the network parameters are larger than 0.
 
 The top menu offers options to load/save a project/network and to import a network into another project. You can also in the Configuration tab edit multiple crucial parameters for the network, such as neuron types acting as templates for neurons, and neurotransmitters.
 
