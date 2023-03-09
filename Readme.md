@@ -4,6 +4,10 @@
 You need at least Python 3.6 and the packages defined in the Requirements.txt file.
 Start the editor by launching either "Run COGNA Editor.bat" or "Run COGNA Editor.sh" or by simply launching COGNA_Editor_entry.py with Python.
 
+On a Linux based system you must install tkinter and pillow with the following lines:
+- sudo apt install python3-tk
+- sudo apt install python3-pil python3-pil.imagetk
+
 ## Description
 This editor is supposed to allow an easier way of building and editing COGNA networks and architectures than scripting. The main advantage is a better overview due to the visualization of neural pathways while editing.
 
