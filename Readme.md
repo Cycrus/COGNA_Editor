@@ -1,4 +1,15 @@
-# COGNA Graphical Editor
+<div align="center">
+  <img src="planning/cogna_editor_logo.png" alt="Cogna Graphical Editor Logo" width="250">
+  <h1>Cogna Graphical Editor</h1>
+  <h2>A Graphical Editor for Networks of the Cogna Framework</h2>
+</div>
+
+<div align="center">
+  <img alt="License" src=https://img.shields.io/badge/License-MIT-green?style=flat-square>
+  <img alt="OS" src=https://img.shields.io/badge/OS-Linux,Windows-yellow?style=flat-square>
+  <img alt="Platforms" src=https://img.shields.io/badge/Platforms-x86__64-blue?style=flat-square>
+  <img alt="Languages" src=https://img.shields.io/badge/Languages-Python-red?style=flat-square>
+</div>
 
 ## Requirements and Startup
 You need at least Python 3.6 and the packages defined in the Requirements.txt file.
